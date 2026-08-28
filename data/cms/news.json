@@ -1,0 +1,35 @@
+[
+  {
+    "id": "news-1",
+    "title": "Applications open for the 2026 intake",
+    "slug": "applications-open-2026-intake",
+    "excerpt": "Prospective students can now enquire for upcoming diploma and degree pathways, including the BSc in Information Technology.",
+    "content": "Nextway College International is welcoming enquiries for the 2026 intake. Students and parents can explore programmes, speak with Admissions and begin the application conversation through our website or WhatsApp.",
+    "coverImageUrl": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=80",
+    "publishedAt": "2026-07-15",
+    "category": "Admissions",
+    "status": "published"
+  },
+  {
+    "id": "news-2",
+    "title": "Introducing the BSc in Information Technology",
+    "slug": "introducing-bsc-information-technology",
+    "excerpt": "A flagship undergraduate computing pathway designed for career-focused learners in Kandy.",
+    "content": "The BSc in Information Technology brings structured undergraduate learning, practical labs and project experience to Nextway College International. Explore the programme page for curriculum highlights and how to apply.",
+    "coverImageUrl": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1200&q=80",
+    "publishedAt": "2026-06-20",
+    "category": "Programmes",
+    "status": "published"
+  },
+  {
+    "id": "news-3",
+    "title": "Campus orientation and student support briefing",
+    "slug": "campus-orientation-student-support",
+    "excerpt": "New students are invited to learn about facilities, academic expectations and support services.",
+    "content": "Orientation helps students settle quickly into academic life. Details of upcoming sessions will be shared with registered applicants by the Student Support team.",
+    "coverImageUrl": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80",
+    "publishedAt": "2026-05-28",
+    "category": "Campus",
+    "status": "published"
+  }
+]

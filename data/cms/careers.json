@@ -1,0 +1,34 @@
+[
+  {
+    "id": "career-counsellor",
+    "title": "Student Counsellor",
+    "slug": "student-counsellor",
+    "department": "Admissions & Student Services",
+    "location": "Island-wide branches",
+    "type": "Full-time / Part-time",
+    "description": "Guide prospective and enrolled students through programme selection, hybrid learning onboarding and academic planning.",
+    "requirements": [
+      "Excellent communication in English and/or Tamil",
+      "Customer-focused mindset with counselling experience preferred",
+      "Ability to work across online and direct student engagement"
+    ],
+    "status": "published",
+    "postedAt": "2026-08-01"
+  },
+  {
+    "id": "career-field-officer",
+    "title": "Field Officer",
+    "slug": "field-officer",
+    "department": "Outreach & Operations",
+    "location": "Multiple branch locations",
+    "type": "Full-time",
+    "description": "Represent Nextway College International in the field, support branch operations, community outreach and student recruitment activities.",
+    "requirements": [
+      "Valid driving licence and willingness to travel",
+      "Strong interpersonal and organisational skills",
+      "Experience in education outreach is an advantage"
+    ],
+    "status": "published",
+    "postedAt": "2026-08-01"
+  }
+]

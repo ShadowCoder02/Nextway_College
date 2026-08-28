@@ -1,0 +1,25 @@
+[
+  {
+    "id": "evt-1",
+    "title": "Open Day: Explore Programmes & Campus Life",
+    "slug": "open-day-explore-programmes",
+    "summary": "Meet faculty, tour facilities and get personalised programme guidance.",
+    "description": "Join our Open Day to discover academic pathways, speak with Admissions and experience campus life at Nextway College International.",
+    "startAt": "2026-09-12T09:00:00+05:30",
+    "endAt": "2026-09-12T15:00:00+05:30",
+    "location": "Kandy Campus",
+    "imageUrl": "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80",
+    "status": "published"
+  },
+  {
+    "id": "evt-2",
+    "title": "BSc IT Information Session",
+    "slug": "bsc-it-information-session",
+    "summary": "A focused briefing on curriculum, labs, careers and entry requirements.",
+    "description": "Learn how the BSc in Information Technology is structured and what support is available for new applicants.",
+    "startAt": "2026-08-28T17:00:00+05:30",
+    "location": "Online / Campus hybrid",
+    "imageUrl": "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80",
+    "status": "published"
+  }
+]

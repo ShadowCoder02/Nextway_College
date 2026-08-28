@@ -1,0 +1,395 @@
+[
+  {
+    "schoolId": "sch-general",
+    "schoolSlug": "general",
+    "schoolName": "Nextway College International",
+    "duration": "3 years",
+    "mode": "Hybrid",
+    "medium": "English",
+    "intake": "2026 Intake",
+    "location": "All island — 22 branches",
+    "overview": "Flagship computing degree with hybrid delivery for modern IT careers.",
+    "whyThisProgramme": "Flagship computing degree with hybrid delivery for modern IT careers.",
+    "learningOutcomes": [
+      "Build professional knowledge aligned with industry and academic standards",
+      "Apply learning through online and direct hybrid sessions",
+      "Develop confidence for career progression and further study"
+    ],
+    "entryRequirements": [
+      "GCE O/L or A/L or equivalent qualification as approved by the College",
+      "English and/or Tamil medium suitability for the selected programme",
+      "Admissions counselling may apply"
+    ],
+    "assessment": "Coursework, examinations and practical assessments as per module outlines.",
+    "careerOpportunities": [
+      "Software support",
+      "Web technology",
+      "IT operations",
+      "Further IT study"
+    ],
+    "progression": "Progression to advanced study or professional pathways subject to partner requirements.",
+    "faqs": [],
+    "imageUrl": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1200&q=80",
+    "featured": true,
+    "flagship": true,
+    "status": "published",
+    "modules": [],
+    "id": "prog-bsc-it",
+    "title": "BSc Information Technology",
+    "slug": "bsc-information-technology",
+    "level": "Degree",
+    "shortPitch": "Flagship computing degree with hybrid delivery for modern IT careers."
+  },
+  {
+    "schoolId": "sch-general",
+    "schoolSlug": "general",
+    "schoolName": "Nextway College International",
+    "duration": "3–4 years",
+    "mode": "Hybrid",
+    "medium": "English & Tamil",
+    "intake": "2026 Intake",
+    "location": "All island — 22 branches",
+    "overview": "Undergraduate law degree pathway for legal and professional careers.",
+    "whyThisProgramme": "Undergraduate law degree pathway for legal and professional careers.",
+    "learningOutcomes": [
+      "Build professional knowledge aligned with industry and academic standards",
+      "Apply learning through online and direct hybrid sessions",
+      "Develop confidence for career progression and further study"
+    ],
+    "entryRequirements": [
+      "GCE O/L or A/L or equivalent qualification as approved by the College",
+      "English and/or Tamil medium suitability for the selected programme",
+      "Admissions counselling may apply"
+    ],
+    "assessment": "Coursework, examinations and practical assessments as per module outlines.",
+    "careerOpportunities": [
+      "Legal practice support",
+      "Corporate compliance",
+      "Public sector roles"
+    ],
+    "progression": "Progression to advanced study or professional pathways subject to partner requirements.",
+    "faqs": [],
+    "imageUrl": "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=80",
+    "featured": true,
+    "flagship": false,
+    "status": "published",
+    "modules": [],
+    "id": "prog-llb",
+    "title": "LLB Bachelors of Law",
+    "slug": "llb-bachelors-of-law",
+    "level": "Degree",
+    "shortPitch": "Undergraduate law degree pathway for legal and professional careers."
+  },
+  {
+    "schoolId": "sch-general",
+    "schoolSlug": "general",
+    "schoolName": "Nextway College International",
+    "duration": "As per programme structure",
+    "mode": "Hybrid",
+    "medium": "English & Tamil",
+    "intake": "2026 Intake",
+    "location": "All island — 22 branches",
+    "overview": "Special degree in Geography with structured hybrid learning.",
+    "whyThisProgramme": "Special degree in Geography with structured hybrid learning.",
+    "learningOutcomes": [
+      "Build professional knowledge aligned with industry and academic standards",
+      "Apply learning through online and direct hybrid sessions",
+      "Develop confidence for career progression and further study"
+    ],
+    "entryRequirements": [
+      "GCE O/L or A/L or equivalent qualification as approved by the College",
+      "English and/or Tamil medium suitability for the selected programme",
+      "Admissions counselling may apply"
+    ],
+    "assessment": "Coursework, examinations and practical assessments as per module outlines.",
+    "careerOpportunities": [
+      "Career pathways related to the programme field",
+      "Further academic progression where eligible"
+    ],
+    "progression": "Progression to advanced study or professional pathways subject to partner requirements.",
+    "faqs": [],
+    "imageUrl": "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=80",
+    "featured": false,
+    "flagship": false,
+    "status": "published",
+    "modules": [],
+    "id": "prog-ba-geo",
+    "title": "BA Geography (SP)",
+    "slug": "ba-geography-sp",
+    "level": "Degree",
+    "shortPitch": "Special degree in Geography with structured hybrid learning."
+  },
+  {
+    "schoolId": "sch-general",
+    "schoolSlug": "general",
+    "schoolName": "Nextway College International",
+    "duration": "As per programme structure",
+    "mode": "Hybrid",
+    "medium": "English & Tamil",
+    "intake": "2026 Intake",
+    "location": "All island — 22 branches",
+    "overview": "Special degree exploring governance, policy and political systems.",
+    "whyThisProgramme": "Special degree exploring governance, policy and political systems.",
+    "learningOutcomes": [
+      "Build professional knowledge aligned with industry and academic standards",
+      "Apply learning through online and direct hybrid sessions",
+      "Develop confidence for career progression and further study"
+    ],
+    "entryRequirements": [
+      "GCE O/L or A/L or equivalent qualification as approved by the College",
+      "English and/or Tamil medium suitability for the selected programme",
+      "Admissions counselling may apply"
+    ],
+    "assessment": "Coursework, examinations and practical assessments as per module outlines.",
+    "careerOpportunities": [
+      "Career pathways related to the programme field",
+      "Further academic progression where eligible"
+    ],
+    "progression": "Progression to advanced study or professional pathways subject to partner requirements.",
+    "faqs": [],
+    "imageUrl": "https://images.unsplash.com/photo-1529107384806-3a0a4a0a0a0a?auto=format&fit=crop&w=1200&q=80",
+    "featured": false,
+    "flagship": false,
+    "status": "published",
+    "modules": [],
+    "id": "prog-ba-pol",
+    "title": "BA Political Science (SP)",
+    "slug": "ba-political-science-sp",
+    "level": "Degree",
+    "shortPitch": "Special degree exploring governance, policy and political systems."
+  },
+  {
+    "schoolId": "sch-general",
+    "schoolSlug": "general",
+    "schoolName": "Nextway College International",
+    "duration": "As per programme structure",
+    "mode": "Hybrid",
+    "medium": "English & Tamil",
+    "intake": "2026 Intake",
+    "location": "All island — 22 branches",
+    "overview": "Higher diploma preparing educators for primary teaching environments.",
+    "whyThisProgramme": "Higher diploma preparing educators for primary teaching environments.",
+    "learningOutcomes": [
+      "Build professional knowledge aligned with industry and academic standards",
+      "Apply learning through online and direct hybrid sessions",
+      "Develop confidence for career progression and further study"
+    ],
+    "entryRequirements": [
+      "GCE O/L or A/L or equivalent qualification as approved by the College",
+      "English and/or Tamil medium suitability for the selected programme",
+      "Admissions counselling may apply"
+    ],
+    "assessment": "Coursework, examinations and practical assessments as per module outlines.",
+    "careerOpportunities": [
+      "Career pathways related to the programme field",
+      "Further academic progression where eligible"
+    ],
+    "progression": "Progression to advanced study or professional pathways subject to partner requirements.",
+    "faqs": [],
+    "imageUrl": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1200&q=80",
+    "featured": true,
+    "flagship": false,
+    "status": "published",
+    "modules": [],
+    "id": "prog-hnd-primary",
+    "title": "HND in Primary Education",
+    "slug": "hnd-primary-education",
+    "level": "Higher Diploma",
+    "shortPitch": "Higher diploma preparing educators for primary teaching environments."
+  },
+  {
+    "schoolId": "sch-general",
+    "schoolSlug": "general",
+    "schoolName": "Nextway College International",
+    "duration": "As per programme structure",
+    "mode": "Hybrid",
+    "medium": "English",
+    "intake": "2026 Intake",
+    "location": "All island — 22 branches",
+    "overview": "Advanced English pathway for academic and professional communication.",
+    "whyThisProgramme": "Advanced English pathway for academic and professional communication.",
+    "learningOutcomes": [
+      "Build professional knowledge aligned with industry and academic standards",
+      "Apply learning through online and direct hybrid sessions",
+      "Develop confidence for career progression and further study"
+    ],
+    "entryRequirements": [
+      "GCE O/L or A/L or equivalent qualification as approved by the College",
+      "English and/or Tamil medium suitability for the selected programme",
+      "Admissions counselling may apply"
+    ],
+    "assessment": "Coursework, examinations and practical assessments as per module outlines.",
+    "careerOpportunities": [
+      "Career pathways related to the programme field",
+      "Further academic progression where eligible"
+    ],
+    "progression": "Progression to advanced study or professional pathways subject to partner requirements.",
+    "faqs": [],
+    "imageUrl": "https://images.unsplash.com/photo-1456513080800-b6bbe9059811?auto=format&fit=crop&w=1200&q=80",
+    "featured": false,
+    "flagship": false,
+    "status": "published",
+    "modules": [],
+    "id": "prog-hnd-english",
+    "title": "HND in English",
+    "slug": "hnd-english",
+    "level": "Higher Diploma",
+    "shortPitch": "Advanced English pathway for academic and professional communication."
+  },
+  {
+    "schoolId": "sch-general",
+    "schoolSlug": "general",
+    "schoolName": "Nextway College International",
+    "duration": "As per programme structure",
+    "mode": "Hybrid",
+    "medium": "Tamil",
+    "intake": "2026 Intake",
+    "location": "All island — 22 branches",
+    "overview": "Special degree in Tamil language, literature and applied communication.",
+    "whyThisProgramme": "Special degree in Tamil language, literature and applied communication.",
+    "learningOutcomes": [
+      "Build professional knowledge aligned with industry and academic standards",
+      "Apply learning through online and direct hybrid sessions",
+      "Develop confidence for career progression and further study"
+    ],
+    "entryRequirements": [
+      "GCE O/L or A/L or equivalent qualification as approved by the College",
+      "English and/or Tamil medium suitability for the selected programme",
+      "Admissions counselling may apply"
+    ],
+    "assessment": "Coursework, examinations and practical assessments as per module outlines.",
+    "careerOpportunities": [
+      "Career pathways related to the programme field",
+      "Further academic progression where eligible"
+    ],
+    "progression": "Progression to advanced study or professional pathways subject to partner requirements.",
+    "faqs": [],
+    "imageUrl": "https://images.unsplash.com/photo-1546410535-e1343712f4a0?auto=format&fit=crop&w=1200&q=80",
+    "featured": false,
+    "flagship": false,
+    "status": "published",
+    "modules": [],
+    "id": "prog-ba-tamil",
+    "title": "BA Tamil (SP)",
+    "slug": "ba-tamil-sp",
+    "level": "Degree",
+    "shortPitch": "Special degree in Tamil language, literature and applied communication."
+  },
+  {
+    "schoolId": "sch-general",
+    "schoolSlug": "general",
+    "schoolName": "Nextway College International",
+    "duration": "As per programme structure",
+    "mode": "Hybrid",
+    "medium": "English & Tamil",
+    "intake": "2026 Intake",
+    "location": "All island — 22 branches",
+    "overview": "Practical legal studies foundation for degree progression or workplace roles.",
+    "whyThisProgramme": "Practical legal studies foundation for degree progression or workplace roles.",
+    "learningOutcomes": [
+      "Build professional knowledge aligned with industry and academic standards",
+      "Apply learning through online and direct hybrid sessions",
+      "Develop confidence for career progression and further study"
+    ],
+    "entryRequirements": [
+      "GCE O/L or A/L or equivalent qualification as approved by the College",
+      "English and/or Tamil medium suitability for the selected programme",
+      "Admissions counselling may apply"
+    ],
+    "assessment": "Coursework, examinations and practical assessments as per module outlines.",
+    "careerOpportunities": [
+      "Career pathways related to the programme field",
+      "Further academic progression where eligible"
+    ],
+    "progression": "Progression to advanced study or professional pathways subject to partner requirements.",
+    "faqs": [],
+    "imageUrl": "https://images.unsplash.com/photo-1589391887882-d48ac6a50f04?auto=format&fit=crop&w=1200&q=80",
+    "featured": false,
+    "flagship": false,
+    "status": "published",
+    "modules": [],
+    "id": "prog-hnd-law",
+    "title": "HND in Law",
+    "slug": "hnd-law",
+    "level": "Higher Diploma",
+    "shortPitch": "Practical legal studies foundation for degree progression or workplace roles."
+  },
+  {
+    "schoolId": "sch-general",
+    "schoolSlug": "general",
+    "schoolName": "Nextway College International",
+    "duration": "As per programme structure",
+    "mode": "Hybrid",
+    "medium": "English & Tamil",
+    "intake": "2026 Intake",
+    "location": "All island — 22 branches",
+    "overview": "Early childhood education diploma for preschool teaching careers.",
+    "whyThisProgramme": "Early childhood education diploma for preschool teaching careers.",
+    "learningOutcomes": [
+      "Build professional knowledge aligned with industry and academic standards",
+      "Apply learning through online and direct hybrid sessions",
+      "Develop confidence for career progression and further study"
+    ],
+    "entryRequirements": [
+      "GCE O/L or A/L or equivalent qualification as approved by the College",
+      "English and/or Tamil medium suitability for the selected programme",
+      "Admissions counselling may apply"
+    ],
+    "assessment": "Coursework, examinations and practical assessments as per module outlines.",
+    "careerOpportunities": [
+      "Career pathways related to the programme field",
+      "Further academic progression where eligible"
+    ],
+    "progression": "Progression to advanced study or professional pathways subject to partner requirements.",
+    "faqs": [],
+    "imageUrl": "https://images.unsplash.com/photo-1503454537194-1dd5c0c0c0c0?auto=format&fit=crop&w=1200&q=80",
+    "featured": false,
+    "flagship": false,
+    "status": "published",
+    "modules": [],
+    "id": "prog-dip-preschool",
+    "title": "Diploma in Preschool",
+    "slug": "diploma-preschool",
+    "level": "Diploma",
+    "shortPitch": "Early childhood education diploma for preschool teaching careers."
+  },
+  {
+    "schoolId": "sch-general",
+    "schoolSlug": "general",
+    "schoolName": "Nextway College International",
+    "duration": "Flexible intake",
+    "mode": "Hybrid",
+    "medium": "English & Tamil",
+    "intake": "2026 Intake",
+    "location": "All island — 22 branches",
+    "overview": "Focused preparation programme for law college entrance examinations.",
+    "whyThisProgramme": "Focused preparation programme for law college entrance examinations.",
+    "learningOutcomes": [
+      "Build professional knowledge aligned with industry and academic standards",
+      "Apply learning through online and direct hybrid sessions",
+      "Develop confidence for career progression and further study"
+    ],
+    "entryRequirements": [
+      "GCE O/L or A/L or equivalent qualification as approved by the College",
+      "English and/or Tamil medium suitability for the selected programme",
+      "Admissions counselling may apply"
+    ],
+    "assessment": "Coursework, examinations and practical assessments as per module outlines.",
+    "careerOpportunities": [
+      "Law college entrance readiness",
+      "Legal foundation studies"
+    ],
+    "progression": "Progression to advanced study or professional pathways subject to partner requirements.",
+    "faqs": [],
+    "imageUrl": "https://images.unsplash.com/photo-1450101499168-0f0c0c0c0c0c?auto=format&fit=crop&w=1200&q=80",
+    "featured": true,
+    "flagship": false,
+    "status": "published",
+    "modules": [],
+    "id": "prog-law-entrance",
+    "title": "Law College Entrance Exam Training",
+    "slug": "law-college-entrance-exam-training",
+    "level": "Training",
+    "shortPitch": "Focused preparation programme for law college entrance examinations."
+  }
+]
