@@ -7,7 +7,8 @@
     "dev:clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\" && node ./node_modules/next/dist/bin/next dev",
     "build": "node ./node_modules/next/dist/bin/next build",
     "start": "node ./node_modules/next/dist/bin/next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check-images": "tsx scripts/check-images.ts"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.3.1",

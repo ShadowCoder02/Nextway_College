@@ -129,8 +129,9 @@ export default async function HomePage() {
         <section className="section-padding bg-navy text-white">
           <div className="container-nwc grid items-center gap-12 lg:grid-cols-2">
             <div className="relative aspect-4/3 overflow-hidden rounded-card shadow-premium">
-              <Image
+              <FallbackImage
                 src={flagship.imageUrl}
+                fallbackSrc={IMAGES.campus}
                 alt={flagship.title}
                 fill
                 className="object-cover"
