@@ -7,6 +7,9 @@ Production domain: TODO (currently nextway-college.vercel.app).
 ## Non-negotiables
 - All dates and times render via the shared date module with
   timeZone: 'Asia/Colombo'. Never call toLocaleDateString directly.
+- Event timestamps are already stored correctly as ISO 8601 with an explicit
+  +05:30 offset (e.g. "2026-09-12T09:00:00+05:30"). The UTC-rendering bug is
+  render-side only — fix the formatter, never the stored data.
 - Phone validation must accept the college's own Kandy landline, 0812201650 —
   9 digits after the leading zero. Never write a "must be 10 digits" rule.
 - Name fields must accept Tamil (நித்தர்சன்) and Sinhala (සමන් පෙරේරා) script.
@@ -20,4 +23,4 @@ Production domain: TODO (currently nextway-college.vercel.app).
   security-sensitive.
 
 ## Commands
-- npm run dev / build / test / test:e2e / lint / typecheck
+- npm run dev / dev:clean / build / start / lint
