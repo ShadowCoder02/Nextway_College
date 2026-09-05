@@ -3,6 +3,9 @@
 import { useState } from "react";
 import type { DocumentCategory, UploadedDocument } from "@/types/admissions";
 import { getCsrfToken } from "@/lib/csrf-client";
+import { CSRF_HEADER_NAME } from "@/lib/csrf-constants";
+import { apiFetch } from "@/lib/api-fetch";
+import { ALLOWED_EXTENSIONS, HEIC_EXTENSIONS, MAX_FILE_SIZE_BYTES } from "@/lib/admissions/file-policy";
 
 interface DocumentSlot {
   category: DocumentCategory;
@@ -56,10 +59,6 @@ const DOCUMENT_SLOTS: DocumentSlot[] = [
   },
 ];
 
-const VALID_EXTENSIONS = [".pdf", ".jpg", ".jpeg", ".png", ".webp"];
-const HEIC_EXTENSIONS = [".heic", ".heif"];
-const MAX_SIZE_BYTES = 5 * 1024 * 1024;
-
 interface DocumentUploaderProps {
   documents: UploadedDocument[];
   onDocumentsChange: (docs: UploadedDocument[]) => void;
@@ -76,7 +75,7 @@ function uploadWithProgress(
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", url);
-    xhr.setRequestHeader("x-csrf-token", getCsrfToken());
+    xhr.setRequestHeader(CSRF_HEADER_NAME, getCsrfToken());
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
     };
@@ -106,7 +105,7 @@ export function DocumentUploader({
 
   async function convertHeicIfNeeded(file: File): Promise<File> {
     const ext = "." + (file.name.split(".").pop()?.toLowerCase() ?? "");
-    if (!HEIC_EXTENSIONS.includes(ext)) return file;
+    if (!HEIC_EXTENSIONS.has(ext)) return file;
 
     setConverting(true);
     try {
@@ -169,14 +168,14 @@ export function DocumentUploader({
       return;
     }
 
-    if (rawFile.size > MAX_SIZE_BYTES) {
+    if (rawFile.size > MAX_FILE_SIZE_BYTES) {
       setErrorMsg(`File "${rawFile.name}" exceeds the 5MB size limit.`);
       resetInput();
       return;
     }
 
     const ext = "." + (rawFile.name.split(".").pop()?.toLowerCase() ?? "");
-    if (!VALID_EXTENSIONS.includes(ext) && !HEIC_EXTENSIONS.includes(ext)) {
+    if (!ALLOWED_EXTENSIONS.has(ext) && !HEIC_EXTENSIONS.has(ext)) {
       setErrorMsg(`File "${rawFile.name}" is not a supported format. Please upload PDF, JPG, PNG, WebP, or HEIC.`);
       resetInput();
       return;
@@ -208,9 +207,8 @@ export function DocumentUploader({
     setSuccessMsg("");
 
     try {
-      const res = await fetch(`/api/applicant/application/documents?id=${documentId}`, {
+      const res = await apiFetch(`/api/applicant/application/documents?id=${documentId}`, {
         method: "DELETE",
-        headers: { "x-csrf-token": getCsrfToken() },
       });
 
       const data = await res.json();

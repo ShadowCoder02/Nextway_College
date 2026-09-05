@@ -3,10 +3,9 @@ import { applicantLoginSchema } from "@/lib/validation";
 import { authenticateApplicant } from "@/services/admissions";
 import { createApplicantSession } from "@/lib/admissions/session";
 import { checkRateLimit, resetRateLimit } from "@/lib/admissions/rate-limiter";
-import { isTurnstileConfigured, verifyTurnstileToken } from "@/lib/turnstile";
+import { isTurnstileConfigured, verifyTurnstileToken, TURNSTILE_AFTER_ATTEMPTS } from "@/lib/turnstile";
 
 const LOGIN_LIMIT = 8;
-const TURNSTILE_AFTER_ATTEMPTS = 3;
 
 export async function POST(request: Request) {
   try {

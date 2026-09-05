@@ -5,6 +5,8 @@
  * key — see src/components/ui/Turnstile.tsx). Set both env vars from a
  * Cloudflare account to actually activate this.
  */
+export { TURNSTILE_AFTER_ATTEMPTS } from "./turnstile-constants";
+
 export function isTurnstileConfigured(): boolean {
   return Boolean(process.env.TURNSTILE_SECRET_KEY);
 }

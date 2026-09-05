@@ -2,10 +2,9 @@ import { NextResponse } from "next/server";
 import { applicantRegisterSchema } from "@/lib/validation";
 import { registerApplicant } from "@/services/admissions";
 import { checkRateLimit } from "@/lib/admissions/rate-limiter";
-import { isTurnstileConfigured, verifyTurnstileToken } from "@/lib/turnstile";
+import { isTurnstileConfigured, verifyTurnstileToken, TURNSTILE_AFTER_ATTEMPTS } from "@/lib/turnstile";
 
 const REGISTER_LIMIT = 10;
-const TURNSTILE_AFTER_ATTEMPTS = 3;
 
 export async function POST(request: Request) {
   try {
@@ -19,6 +18,20 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
+
+    // registerApplicant() emails the existing account holder on every
+    // attempt against an already-registered address (a fresh OTP if
+    // unverified, a heads-up notice if verified) — without a per-email
+    // limit too, spreading attempts across IPs turns registration into an
+    // email-bombing vector against a chosen victim address.
+    const emailForLimit = typeof body?.email === "string" ? body.email.toLowerCase().trim() : "unknown";
+    const emailLimit = checkRateLimit(`register_email_${emailForLimit}`, 5, 15 * 60 * 1000);
+    if (!emailLimit.allowed) {
+      return NextResponse.json(
+        { ok: false, error: "Too many attempts. Please try again shortly." },
+        { status: 429 },
+      );
+    }
 
     // Only required once several attempts have already been made from this
     // IP, and only if Turnstile is actually configured — otherwise inert.

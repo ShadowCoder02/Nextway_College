@@ -38,11 +38,8 @@ export function LeadForm({
   };
 
   function focusFirstInvalid(fieldErrors: Partial<Record<keyof EnquiryFormData, string>>) {
-    (["fullName", "phone", "email"] as const).forEach((field) => {
-      if (fieldErrors[field] && fieldRefs[field].current) {
-        fieldRefs[field].current!.focus();
-      }
-    });
+    const field = (["fullName", "phone", "email"] as const).find((f) => fieldErrors[f]);
+    if (field) fieldRefs[field].current?.focus();
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {

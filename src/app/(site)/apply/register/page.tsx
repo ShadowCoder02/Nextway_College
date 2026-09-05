@@ -11,10 +11,9 @@ import { applicantRegisterSchema, type ApplicantRegisterInput } from "@/lib/vali
 import { rememberProgrammeSlug, readRememberedProgrammeSlug } from "@/lib/applicant-programme";
 import { apiFetch } from "@/lib/api-fetch";
 import { useOnlineStatus } from "@/lib/use-online-status";
+import { TURNSTILE_AFTER_ATTEMPTS } from "@/lib/turnstile-constants";
 
 type FieldErrors = Partial<Record<keyof ApplicantRegisterInput | "confirmPassword" | "general", string>>;
-
-const TURNSTILE_AFTER_ATTEMPTS = 3;
 
 export default function ApplicantRegisterPage() {
   const router = useRouter();
@@ -72,9 +71,11 @@ export default function ApplicantRegisterPage() {
     const fd = new FormData(e.currentTarget);
 
     if (password !== confirmPassword) {
+      // No focusFirstInvalid() call here: password/confirmPassword aren't in
+      // fieldRefs (PasswordField doesn't forward a ref), so it would be a
+      // no-op — the inline error text under the field is the feedback.
       setErrors({ confirmPassword: "Passwords do not match." });
       setLoading(false);
-      focusFirstInvalid({ confirmPassword: "mismatch" });
       return;
     }
 

@@ -1,17 +1,9 @@
 import crypto from "crypto";
 import path from "path";
 import { put, del, get } from "@vercel/blob";
+import { ALLOWED_EXTENSIONS } from "./file-policy";
 
-export const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
-
-export const ALLOWED_EXTENSIONS = new Set([".pdf", ".jpg", ".jpeg", ".png", ".webp"]);
-
-export const ALLOWED_MIME_TYPES = new Set([
-  "application/pdf",
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-]);
+export { MAX_FILE_SIZE_BYTES, ALLOWED_EXTENSIONS, ALLOWED_MIME_TYPES } from "./file-policy";
 
 const BLOB_PATH_PREFIX = "applications";
 
@@ -81,6 +73,16 @@ function buildBlobPathname(applicationId: string, storedFilename: string): strin
   return `${BLOB_PATH_PREFIX}/${sanitizedAppId}/${storedFilename}`;
 }
 
+// The local-filesystem version of this file confined every read/delete to
+// UPLOADS_ROOT before touching disk. Nothing currently passes readStoredFile/
+// deleteStoredFile anything but a pathname this module generated itself, but
+// keep the same backstop here too: never act on a pathname outside the
+// applications/ prefix, in case a future caller or a corrupted record ever
+// does.
+function isConfinedPathname(pathname: string): boolean {
+  return pathname === BLOB_PATH_PREFIX || pathname.startsWith(`${BLOB_PATH_PREFIX}/`);
+}
+
 /**
  * Uploads a file buffer to private Vercel Blob storage. Returns the blob
  * pathname (not a public URL) — the only way to read it back is via
@@ -107,6 +109,7 @@ export async function saveUploadedFile(
  * Reads a stored file back from private Blob storage.
  */
 export async function readStoredFile(pathname: string): Promise<Buffer | null> {
+  if (!isConfinedPathname(pathname)) return null;
   try {
     const result = await get(pathname, { access: "private" });
     if (!result) return null;
@@ -121,6 +124,7 @@ export async function readStoredFile(pathname: string): Promise<Buffer | null> {
  * Deletes a stored file from Blob storage.
  */
 export async function deleteStoredFile(pathname: string): Promise<boolean> {
+  if (!isConfinedPathname(pathname)) return false;
   try {
     await del(pathname);
     return true;

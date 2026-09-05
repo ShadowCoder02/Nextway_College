@@ -2,13 +2,12 @@ import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import { ADMIN_COOKIE } from "@/lib/admin/session";
 import { APPLICANT_COOKIE } from "@/lib/admissions/cookie-names";
+import { CSRF_COOKIE_NAME, CSRF_HEADER_NAME } from "@/lib/csrf-constants";
 
 // Double-submit cookie CSRF pattern: the cookie is deliberately NOT httpOnly
 // so client JS can read it and echo it back as a header — the security
 // guarantee comes from same-origin JS being the only thing that can read it,
 // not from hiding it. See src/lib/csrf-client.ts for the client-side half.
-export const CSRF_COOKIE_NAME = "csrf_token";
-export const CSRF_HEADER_NAME = "x-csrf-token";
 const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
 function portalRedirect(request: NextRequest, from: string, to: string) {

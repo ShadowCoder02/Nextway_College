@@ -9,8 +9,7 @@ import { Turnstile } from "@/components/ui/Turnstile";
 import { rememberProgrammeSlug } from "@/lib/applicant-programme";
 import { apiFetch } from "@/lib/api-fetch";
 import { useOnlineStatus } from "@/lib/use-online-status";
-
-const TURNSTILE_AFTER_ATTEMPTS = 3;
+import { TURNSTILE_AFTER_ATTEMPTS } from "@/lib/turnstile-constants";
 
 export default function ApplicantLoginPage() {
   const router = useRouter();
@@ -103,7 +102,7 @@ export default function ApplicantLoginPage() {
             )}
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="email" className="mb-1 block text-xs font-bold uppercase tracking-wider text-navy">
                 Email Address

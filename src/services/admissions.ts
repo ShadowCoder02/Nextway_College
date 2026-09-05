@@ -181,17 +181,13 @@ export async function verifyApplicantOtp(
     return { ok: false, error: "Account not found." };
   }
 
+  // CRITICAL, pre-existing bug fixed here: this used to grant a full session
+  // for ANY already-verified account without ever checking the submitted
+  // OTP — POSTing {email, otp: "000000"} for any known verified email was a
+  // complete account takeover. Never issue a session without checking a
+  // credential; verified accounts must go through /apply/login instead.
   if (applicant.isVerified) {
-    return {
-      ok: true,
-      applicant,
-      session: {
-        applicantId: applicant.id,
-        email: applicant.email,
-        fullName: applicant.fullName,
-        sessionVersion: applicant.sessionVersion ?? 0,
-      },
-    };
+    return { ok: false, error: "This account is already verified. Please sign in instead." };
   }
 
   const expiresAt = applicant.verificationCodeExpiresAt ? new Date(applicant.verificationCodeExpiresAt).getTime() : 0;
