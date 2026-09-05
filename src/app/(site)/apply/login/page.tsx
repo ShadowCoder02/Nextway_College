@@ -5,9 +5,12 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { PasswordField } from "@/components/ui/PasswordField";
+import { Turnstile } from "@/components/ui/Turnstile";
 import { rememberProgrammeSlug } from "@/lib/applicant-programme";
 import { apiFetch } from "@/lib/api-fetch";
 import { useOnlineStatus } from "@/lib/use-online-status";
+
+const TURNSTILE_AFTER_ATTEMPTS = 3;
 
 export default function ApplicantLoginPage() {
   const router = useRouter();
@@ -16,6 +19,8 @@ export default function ApplicantLoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState("");
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [turnstileToken, setTurnstileToken] = useState("");
   const emailRef = useRef<HTMLInputElement>(null);
 
   // A user can reach /apply/login straight from /apply?programme=<slug> via
@@ -50,13 +55,14 @@ export default function ApplicantLoginPage() {
       const res = await apiFetch("/api/applicant/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, turnstileToken }),
       });
 
       const data = await res.json();
       if (!res.ok || !data.ok) {
         setError(data.error || "Invalid email or password.");
         setLoading(false);
+        setFailedAttempts((n) => n + 1);
         emailRef.current?.focus();
         return;
       }
@@ -135,6 +141,8 @@ export default function ApplicantLoginPage() {
                 </Link>
               </div>
             </div>
+
+            {failedAttempts >= TURNSTILE_AFTER_ATTEMPTS && <Turnstile onVerify={setTurnstileToken} />}
 
             <Button type="submit" variant="primary" className="w-full mt-4" disabled={loading}>
               {loading ? "Signing in..." : "Sign In to Applicant Portal"}

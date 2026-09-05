@@ -6,12 +6,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { PasswordField } from "@/components/ui/PasswordField";
 import { PasswordPolicyChecklist } from "@/components/ui/PasswordPolicyChecklist";
+import { Turnstile } from "@/components/ui/Turnstile";
 import { applicantRegisterSchema, type ApplicantRegisterInput } from "@/lib/validation";
 import { rememberProgrammeSlug, readRememberedProgrammeSlug } from "@/lib/applicant-programme";
 import { apiFetch } from "@/lib/api-fetch";
 import { useOnlineStatus } from "@/lib/use-online-status";
 
 type FieldErrors = Partial<Record<keyof ApplicantRegisterInput | "confirmPassword" | "general", string>>;
+
+const TURNSTILE_AFTER_ATTEMPTS = 3;
 
 export default function ApplicantRegisterPage() {
   const router = useRouter();
@@ -22,6 +25,8 @@ export default function ApplicantRegisterPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmTouched, setConfirmTouched] = useState(false);
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   const fullNameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
@@ -98,13 +103,14 @@ export default function ApplicantRegisterPage() {
       const res = await apiFetch("/api/applicant/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(parsed.data),
+        body: JSON.stringify({ ...parsed.data, turnstileToken }),
       });
 
       const data = await res.json();
       if (!res.ok || !data.ok) {
         setErrors({ general: data.error || "Registration failed. Please try again." });
         setLoading(false);
+        setFailedAttempts((n) => n + 1);
         return;
       }
 
@@ -267,6 +273,8 @@ export default function ApplicantRegisterPage() {
               </span>
             </label>
             {errors.agreeTerms && <p id="agreeTerms-error" className="text-xs text-error" role="alert">{errors.agreeTerms}</p>}
+
+            {failedAttempts >= TURNSTILE_AFTER_ATTEMPTS && <Turnstile onVerify={setTurnstileToken} />}
 
             <Button type="submit" variant="primary" className="w-full mt-4" disabled={loading}>
               {loading ? "Creating Account..." : "Create Account & Start Application"}
