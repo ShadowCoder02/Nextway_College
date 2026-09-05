@@ -8,6 +8,7 @@
     "build": "node ./node_modules/next/dist/bin/next build",
     "start": "node ./node_modules/next/dist/bin/next start",
     "lint": "next lint",
+    "test": "vitest run",
     "check-images": "tsx scripts/check-images.ts",
     "validate-content": "tsx scripts/validate-programme-content.ts",
     "check-links": "tsx scripts/check-links.ts"
@@ -41,7 +42,8 @@
     "eslint-config-next": "^15.3.3",
     "tailwindcss": "^4.1.8",
     "tsx": "^4.23.13",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^5.0.0"
   },
   "optionalDependencies": {
     "lightningcss-darwin-arm64": "^1.33.0"
