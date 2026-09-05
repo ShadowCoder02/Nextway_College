@@ -1,3 +1,26 @@
+function resolveSiteUrl(): string {
+  // Vercel sets VERCEL_ENV to "production" | "preview" | "development" on
+  // every deployment; NODE_ENV alone can't distinguish a production deploy
+  // from a preview one, since both run `next build` with NODE_ENV=production.
+  if (process.env.VERCEL_ENV === "production") {
+    const url = process.env.NEXT_PUBLIC_SITE_URL;
+    if (!url) {
+      throw new Error(
+        "NEXT_PUBLIC_SITE_URL is not set in the Production environment on Vercel. " +
+          "Every canonical URL, Open Graph tag, robots.txt and sitemap entry depends " +
+          "on it — refusing to build with a localhost fallback in production."
+      );
+    }
+    return url;
+  }
+
+  if (process.env.VERCEL_ENV === "preview" && process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+
+  return process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+}
+
 export const SITE = {
   name: "Nextway College International",
   shortName: "Nextway College International",
@@ -6,7 +29,7 @@ export const SITE = {
     "Premium hybrid higher education — 80% online and 20% direct classes across Sri Lanka.",
   description:
     "Nextway College International delivers degree, diploma and certificate programmes through a modern hybrid model with English and Tamil medium classes, serving learners across 22 branches island-wide.",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+  url: resolveSiteUrl(),
   locale: "en_LK",
   location: "Kandy, Sri Lanka",
   address: "Kandy, Sri Lanka, 208000",
