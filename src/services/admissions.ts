@@ -397,6 +397,10 @@ export async function uploadApplicationDocument(
   const app = await getApplicantApplication(applicantId);
   if (!app) return { ok: false, error: "Application not found" };
 
+  if (file.size === 0) {
+    return { ok: false, error: "That file is empty (0 bytes). Please choose a different file." };
+  }
+
   if (file.size > MAX_FILE_SIZE_BYTES) {
     return { ok: false, error: "File size exceeds the 5MB maximum limit." };
   }
@@ -419,7 +423,7 @@ export async function uploadApplicationDocument(
   }
 
   const storedFilename = generateSafeStoredFilename(category, file.name);
-  const filePath = await saveUploadedFile(app.id, storedFilename, buffer);
+  const filePath = await saveUploadedFile(app.id, storedFilename, buffer, file.type);
 
   const doc: UploadedDocument = {
     id: crypto.randomUUID(),

@@ -1,6 +1,6 @@
-import { promises as fs } from "fs";
-import path from "path";
 import crypto from "crypto";
+import path from "path";
+import { put, del, get } from "@vercel/blob";
 
 export const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
 
@@ -13,7 +13,7 @@ export const ALLOWED_MIME_TYPES = new Set([
   "image/webp",
 ]);
 
-const UPLOADS_ROOT = path.join(process.cwd(), "data", "uploads", "applications");
+const BLOB_PATH_PREFIX = "applications";
 
 /**
  * Checks magic byte signatures for uploaded buffers
@@ -76,66 +76,53 @@ export function generateSafeStoredFilename(category: string, originalName: strin
   return `${sanitizedCategory}_${Date.now()}_${randomHex}${safeExt}`;
 }
 
-/**
- * Ensures application upload directory exists and is strictly isolated
- */
-export async function getApplicationUploadDir(applicationId: string): Promise<string> {
+function buildBlobPathname(applicationId: string, storedFilename: string): string {
   const sanitizedAppId = applicationId.replace(/[^a-z0-9_-]/gi, "");
-  const targetDir = path.resolve(UPLOADS_ROOT, sanitizedAppId);
-
-  // Guard against path traversal outside UPLOADS_ROOT
-  if (!targetDir.startsWith(path.resolve(UPLOADS_ROOT))) {
-    throw new Error("Invalid application upload path traversal detected");
-  }
-
-  await fs.mkdir(targetDir, { recursive: true });
-  return targetDir;
+  return `${BLOB_PATH_PREFIX}/${sanitizedAppId}/${storedFilename}`;
 }
 
 /**
- * Saves an uploaded file buffer safely to disk outside the public web root
+ * Uploads a file buffer to private Vercel Blob storage. Returns the blob
+ * pathname (not a public URL) — the only way to read it back is via
+ * readStoredFile() below, which requires the same store credentials this
+ * server process already has. Never expose this pathname to the client;
+ * documents are served through an authenticated proxy route instead of a
+ * direct link, so a logged-out request for a stored document always fails.
  */
 export async function saveUploadedFile(
   applicationId: string,
   storedFilename: string,
   buffer: Buffer,
+  mimeType: string,
 ): Promise<string> {
-  const appDir = await getApplicationUploadDir(applicationId);
-  const filePath = path.resolve(appDir, storedFilename);
-
-  if (!filePath.startsWith(appDir)) {
-    throw new Error("Invalid file path traversal detected");
-  }
-
-  await fs.writeFile(filePath, buffer);
-  return filePath;
+  const pathname = buildBlobPathname(applicationId, storedFilename);
+  const result = await put(pathname, buffer, {
+    access: "private",
+    contentType: mimeType,
+  });
+  return result.pathname;
 }
 
 /**
- * Reads a stored file securely, verifying path boundaries
+ * Reads a stored file back from private Blob storage.
  */
-export async function readStoredFile(filePath: string): Promise<Buffer | null> {
-  const resolved = path.resolve(filePath);
-  if (!resolved.startsWith(path.resolve(UPLOADS_ROOT))) {
-    return null;
-  }
+export async function readStoredFile(pathname: string): Promise<Buffer | null> {
   try {
-    return await fs.readFile(resolved);
+    const result = await get(pathname, { access: "private" });
+    if (!result) return null;
+    const arrayBuffer = await new Response(result.stream).arrayBuffer();
+    return Buffer.from(arrayBuffer);
   } catch {
     return null;
   }
 }
 
 /**
- * Deletes a stored file securely
+ * Deletes a stored file from Blob storage.
  */
-export async function deleteStoredFile(filePath: string): Promise<boolean> {
-  const resolved = path.resolve(filePath);
-  if (!resolved.startsWith(path.resolve(UPLOADS_ROOT))) {
-    return false;
-  }
+export async function deleteStoredFile(pathname: string): Promise<boolean> {
   try {
-    await fs.unlink(resolved);
+    await del(pathname);
     return true;
   } catch {
     return false;

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { DocumentCategory, UploadedDocument } from "@/types/admissions";
-import { apiFetch } from "@/lib/api-fetch";
+import { getCsrfToken } from "@/lib/csrf-client";
 
 interface DocumentSlot {
   category: DocumentCategory;
@@ -56,10 +56,40 @@ const DOCUMENT_SLOTS: DocumentSlot[] = [
   },
 ];
 
+const VALID_EXTENSIONS = [".pdf", ".jpg", ".jpeg", ".png", ".webp"];
+const HEIC_EXTENSIONS = [".heic", ".heif"];
+const MAX_SIZE_BYTES = 5 * 1024 * 1024;
+
 interface DocumentUploaderProps {
   documents: UploadedDocument[];
   onDocumentsChange: (docs: UploadedDocument[]) => void;
   isReadOnly?: boolean;
+}
+
+type RetryState = { category: DocumentCategory; title: string; file: File } | null;
+
+function uploadWithProgress(
+  url: string,
+  formData: FormData,
+  onProgress: (percent: number) => void,
+): Promise<{ status: number; data: { ok?: boolean; error?: string; application?: { documents: UploadedDocument[] } } }> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", url);
+    xhr.setRequestHeader("x-csrf-token", getCsrfToken());
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
+    };
+    xhr.onload = () => {
+      try {
+        resolve({ status: xhr.status, data: JSON.parse(xhr.responseText) });
+      } catch {
+        resolve({ status: xhr.status, data: {} });
+      }
+    };
+    xhr.onerror = () => reject(new Error("Network error"));
+    xhr.send(formData);
+  });
 }
 
 export function DocumentUploader({
@@ -68,31 +98,34 @@ export function DocumentUploader({
   isReadOnly = false,
 }: DocumentUploaderProps) {
   const [uploadingCategory, setUploadingCategory] = useState<DocumentCategory | null>(null);
+  const [progress, setProgress] = useState(0);
+  const [converting, setConverting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [successMsg, setSuccessMsg] = useState<string>("");
+  const [retry, setRetry] = useState<RetryState>(null);
 
-  async function handleFileUpload(category: DocumentCategory, title: string, e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  async function convertHeicIfNeeded(file: File): Promise<File> {
+    const ext = "." + (file.name.split(".").pop()?.toLowerCase() ?? "");
+    if (!HEIC_EXTENSIONS.includes(ext)) return file;
 
-    setErrorMsg("");
-    setSuccessMsg("");
-
-    if (file.size > 5 * 1024 * 1024) {
-      setErrorMsg(`File "${file.name}" exceeds the 5MB size limit.`);
-      e.target.value = "";
-      return;
+    setConverting(true);
+    try {
+      const heic2any = (await import("heic2any")).default;
+      const converted = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.85 });
+      const jpegBlob = Array.isArray(converted) ? converted[0] : converted;
+      const newName = file.name.replace(/\.(heic|heif)$/i, ".jpg");
+      return new File([jpegBlob], newName, { type: "image/jpeg" });
+    } catch {
+      throw new Error("Unable to convert this HEIC photo. Please export it as JPG and try again.");
+    } finally {
+      setConverting(false);
     }
+  }
 
-    const validExtensions = [".pdf", ".jpg", ".jpeg", ".png", ".webp"];
-    const fileExt = "." + file.name.split(".").pop()?.toLowerCase();
-    if (!validExtensions.includes(fileExt)) {
-      setErrorMsg(`File "${file.name}" is not a supported format. Please upload PDF, JPG, PNG, or WebP.`);
-      e.target.value = "";
-      return;
-    }
-
+  async function doUpload(category: DocumentCategory, title: string, file: File) {
     setUploadingCategory(category);
+    setProgress(0);
+    setRetry(null);
 
     try {
       const formData = new FormData();
@@ -100,24 +133,72 @@ export function DocumentUploader({
       formData.append("category", category);
       formData.append("title", title);
 
-      const res = await apiFetch("/api/applicant/application/documents", {
-        method: "POST",
-        body: formData,
-      });
+      const { status, data } = await uploadWithProgress("/api/applicant/application/documents", formData, setProgress);
 
-      const data = await res.json();
-      if (!res.ok || !data.ok) {
+      if (status < 200 || status >= 300 || !data.ok) {
         setErrorMsg(data.error || "Document upload failed. Please try again.");
       } else {
-        onDocumentsChange(data.application.documents || []);
+        onDocumentsChange(data.application?.documents || []);
         setSuccessMsg(`Successfully uploaded ${title}!`);
       }
     } catch {
-      setErrorMsg("Network error while uploading. Please try again.");
+      // A genuine connection drop, not a validation rejection — offer retry
+      // with the same file rather than making the applicant reselect it.
+      setErrorMsg(`Connection dropped while uploading "${file.name}". Your mobile network may be unstable.`);
+      setRetry({ category, title, file });
     } finally {
       setUploadingCategory(null);
-      e.target.value = "";
+      setProgress(0);
     }
+  }
+
+  async function handleFileUpload(category: DocumentCategory, title: string, e: React.ChangeEvent<HTMLInputElement>) {
+    const rawFile = e.target.files?.[0];
+    if (!rawFile) return;
+
+    setErrorMsg("");
+    setSuccessMsg("");
+    setRetry(null);
+    const resetInput = () => {
+      e.target.value = "";
+    };
+
+    if (rawFile.size === 0) {
+      setErrorMsg(`File "${rawFile.name}" is empty (0 bytes). Please choose a different file.`);
+      resetInput();
+      return;
+    }
+
+    if (rawFile.size > MAX_SIZE_BYTES) {
+      setErrorMsg(`File "${rawFile.name}" exceeds the 5MB size limit.`);
+      resetInput();
+      return;
+    }
+
+    const ext = "." + (rawFile.name.split(".").pop()?.toLowerCase() ?? "");
+    if (!VALID_EXTENSIONS.includes(ext) && !HEIC_EXTENSIONS.includes(ext)) {
+      setErrorMsg(`File "${rawFile.name}" is not a supported format. Please upload PDF, JPG, PNG, WebP, or HEIC.`);
+      resetInput();
+      return;
+    }
+
+    let file: File;
+    try {
+      file = await convertHeicIfNeeded(rawFile);
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : "Unable to process this file.");
+      resetInput();
+      return;
+    }
+
+    resetInput();
+    await doUpload(category, title, file);
+  }
+
+  async function handleRetry() {
+    if (!retry) return;
+    setErrorMsg("");
+    await doUpload(retry.category, retry.title, retry.file);
   }
 
   async function handleDeleteDocument(documentId: string, title: string) {
@@ -127,8 +208,9 @@ export function DocumentUploader({
     setSuccessMsg("");
 
     try {
-      const res = await apiFetch(`/api/applicant/application/documents?id=${documentId}`, {
+      const res = await fetch(`/api/applicant/application/documents?id=${documentId}`, {
         method: "DELETE",
+        headers: { "x-csrf-token": getCsrfToken() },
       });
 
       const data = await res.json();
@@ -151,24 +233,36 @@ export function DocumentUploader({
 
   return (
     <div className="space-y-6">
-      {errorMsg && (
-        <div className="rounded-lg border border-error/20 bg-error/10 p-4 text-sm font-medium text-error flex items-center justify-between">
-          <span>{errorMsg}</span>
-          <button type="button" onClick={() => setErrorMsg("")} className="text-xs underline ml-4">Dismiss</button>
-        </div>
-      )}
+      <div aria-live="polite">
+        {errorMsg && (
+          <div className="rounded-lg border border-error/20 bg-error/10 p-4 text-sm font-medium text-error flex items-center justify-between" role="alert">
+            <span>{errorMsg}</span>
+            <span className="flex items-center gap-3 shrink-0 ml-4">
+              {retry && (
+                <button type="button" onClick={handleRetry} className="text-xs font-bold underline">
+                  Retry upload
+                </button>
+              )}
+              <button type="button" onClick={() => { setErrorMsg(""); setRetry(null); }} className="text-xs underline">
+                Dismiss
+              </button>
+            </span>
+          </div>
+        )}
 
-      {successMsg && (
-        <div className="rounded-lg border border-success/20 bg-success/10 p-4 text-sm font-medium text-success flex items-center justify-between">
-          <span>{successMsg}</span>
-          <button type="button" onClick={() => setSuccessMsg("")} className="text-xs underline ml-4">Dismiss</button>
-        </div>
-      )}
+        {successMsg && (
+          <div className="rounded-lg border border-success/20 bg-success/10 p-4 text-sm font-medium text-success flex items-center justify-between">
+            <span>{successMsg}</span>
+            <button type="button" onClick={() => setSuccessMsg("")} className="text-xs underline ml-4">Dismiss</button>
+          </div>
+        )}
+      </div>
 
       <div className="grid gap-5">
         {DOCUMENT_SLOTS.map((slot) => {
           const matchingDocs = documents.filter((d) => d.category === slot.category);
           const isUploading = uploadingCategory === slot.category;
+          const isConverting = isUploading && converting;
 
           return (
             <div
@@ -197,19 +291,21 @@ export function DocumentUploader({
                     <label className="relative inline-flex items-center">
                       <input
                         type="file"
-                        accept=".pdf,.jpg,.jpeg,.png,.webp"
+                        accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif"
                         className="sr-only"
                         disabled={isUploading}
                         onChange={(e) => handleFileUpload(slot.category, slot.title, e)}
                       />
                       <span className="inline-flex cursor-pointer items-center justify-center rounded-lg border border-gold bg-gold/10 px-4 py-2 text-xs font-bold text-navy transition hover:bg-gold hover:text-white disabled:opacity-50">
-                        {isUploading ? (
+                        {isConverting ? (
+                          "Converting photo..."
+                        ) : isUploading ? (
                           <span className="flex items-center gap-1.5">
                             <svg className="animate-spin h-3.5 w-3.5 text-navy" viewBox="0 0 24 24" fill="none">
                               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
-                            Uploading...
+                            Uploading {progress}%
                           </span>
                         ) : matchingDocs.length > 0 ? (
                           "+ Upload Another / Replace"
@@ -221,6 +317,12 @@ export function DocumentUploader({
                   </div>
                 )}
               </div>
+
+              {isUploading && !isConverting && (
+                <div className="mt-3 h-1.5 w-full overflow-hidden rounded bg-ice">
+                  <div className="h-full bg-gold transition-all" style={{ width: `${progress}%` }} />
+                </div>
+              )}
 
               {/* Uploaded files for this slot */}
               {matchingDocs.length > 0 && (
