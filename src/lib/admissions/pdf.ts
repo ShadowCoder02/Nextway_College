@@ -1,5 +1,6 @@
 import PDFDocument from "pdfkit";
 import type { StudentApplication } from "@/types/admissions";
+import { formatDateTime } from "@/lib/utils";
 
 export async function generateApplicationPdf(app: StudentApplication): Promise<Buffer> {
   return new Promise((resolve, reject) => {
@@ -25,7 +26,7 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
     doc.text(`Programme: ${app.programmeChoice.programmeTitle}`);
     doc.text(`Campus: ${app.programmeChoice.campus}`);
     doc.text(`Intake: ${app.programmeChoice.intake}`);
-    doc.text(`Submitted On: ${new Date(app.submittedAt || app.updatedAt).toLocaleString()}`);
+    doc.text(`Submitted On: ${formatDateTime(app.submittedAt || app.updatedAt)}`);
 
     doc.moveDown();
     doc.fontSize(13).text("Personal Information", { underline: true });

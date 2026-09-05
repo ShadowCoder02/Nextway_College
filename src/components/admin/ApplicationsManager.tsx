@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import type { StudentApplication, ApplicationStatus } from "@/types/admissions";
 import type { Programme } from "@/types";
+import { formatDate } from "@/lib/utils";
 
 export function ApplicationsManager() {
   const [applications, setApplications] = useState<StudentApplication[]>([]);
@@ -179,7 +180,7 @@ export function ApplicationsManager() {
                     </td>
                     <td className="px-4 py-3 text-slate">{a.programmeChoice?.intake || "—"}</td>
                     <td className="px-4 py-3 text-slate">
-                      {a.submittedAt ? new Date(a.submittedAt).toLocaleDateString() : "Draft"}
+                      {a.submittedAt ? formatDate(a.submittedAt) : "Draft"}
                     </td>
                     <td className="px-4 py-3">{getStatusPill(a.status)}</td>
                     <td className="px-4 py-3 text-right">

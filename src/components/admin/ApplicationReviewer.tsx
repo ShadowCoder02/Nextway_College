@@ -7,6 +7,7 @@ import type {
   DocumentVerificationStatus,
   StudentApplication,
 } from "@/types/admissions";
+import { formatDate, formatDateTime } from "@/lib/utils";
 
 interface ApplicationReviewerProps {
   initialApplication: StudentApplication;
@@ -255,7 +256,7 @@ export function ApplicationReviewer({ initialApplication }: ApplicationReviewerP
           </div>
 
           <div className="text-xs text-slate">
-            Submitted: <strong>{app.submittedAt ? new Date(app.submittedAt).toLocaleString() : "Draft"}</strong>
+            Submitted: <strong>{app.submittedAt ? formatDateTime(app.submittedAt) : "Draft"}</strong>
           </div>
         </div>
       </div>
@@ -454,7 +455,7 @@ export function ApplicationReviewer({ initialApplication }: ApplicationReviewerP
                         )}
                       </div>
                       <div className="text-slate mt-0.5 text-[11px]">
-                        File: {doc.originalFilename} • Uploaded: {new Date(doc.uploadedAt).toLocaleDateString()}
+                        File: {doc.originalFilename} • Uploaded: {formatDate(doc.uploadedAt)}
                       </div>
                       {doc.rejectionReason && (
                         <div className="text-error font-medium text-[11px] mt-1">
@@ -531,7 +532,7 @@ export function ApplicationReviewer({ initialApplication }: ApplicationReviewerP
                 <div key={n.id} className="rounded-lg bg-ice p-3 text-xs border border-slate/10">
                   <div className="flex justify-between font-bold text-navy text-[11px]">
                     <span>{n.authorName}</span>
-                    <span className="text-slate font-normal">{new Date(n.createdAt).toLocaleDateString()}</span>
+                    <span className="text-slate font-normal">{formatDate(n.createdAt)}</span>
                   </div>
                   <p className="text-charcoal mt-1 leading-relaxed text-xs">{n.note}</p>
                 </div>
@@ -548,7 +549,7 @@ export function ApplicationReviewer({ initialApplication }: ApplicationReviewerP
                   <span className="absolute -left-[9px] top-0.5 h-4 w-4 rounded-full bg-gold border-2 border-white" />
                   <div className="font-bold text-navy">{ev.action}</div>
                   <div className="text-[10px] text-slate">
-                    By <strong>{ev.actor}</strong> • {new Date(ev.timestamp).toLocaleString()}
+                    By <strong>{ev.actor}</strong> • {formatDateTime(ev.timestamp)}
                   </div>
                   {ev.details && <p className="text-charcoal mt-0.5 text-[11px]">{ev.details}</p>}
                 </div>
