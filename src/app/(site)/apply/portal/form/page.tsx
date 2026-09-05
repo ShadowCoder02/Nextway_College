@@ -16,6 +16,7 @@ import type {
 import type { Programme } from "@/types";
 import { BRANCHES } from "@/constants/site";
 import { readRememberedProgrammeSlug, clearRememberedProgrammeSlug } from "@/lib/applicant-programme";
+import { apiFetch } from "@/lib/api-fetch";
 
 export default function ApplicationFormPage() {
   const router = useRouter();
@@ -94,7 +95,7 @@ export default function ApplicationFormPage() {
     async function init() {
       try {
         // 1. Fetch current application
-        const appRes = await fetch("/api/applicant/application");
+        const appRes = await apiFetch("/api/applicant/application");
         if (appRes.status === 401) {
           router.push("/apply/login");
           return;
@@ -120,7 +121,7 @@ export default function ApplicationFormPage() {
         }
 
         // 2. Fetch programmes
-        const progRes = await fetch("/api/portal/programmes");
+        const progRes = await apiFetch("/api/portal/programmes");
         if (progRes.ok) {
           const progData = await progRes.json();
           if (Array.isArray(progData)) {
@@ -177,7 +178,7 @@ export default function ApplicationFormPage() {
     setSaving(true);
     setErrorMsg("");
     try {
-      const res = await fetch("/api/applicant/application", {
+      const res = await apiFetch("/api/applicant/application", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -301,7 +302,7 @@ export default function ApplicationFormPage() {
     setErrorMsg("");
 
     try {
-      const res = await fetch("/api/applicant/application/submit", {
+      const res = await apiFetch("/api/applicant/application/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

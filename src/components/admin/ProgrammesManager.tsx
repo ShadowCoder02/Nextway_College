@@ -5,6 +5,7 @@ import type { Programme } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { IMAGES } from "@/constants/images";
 import { PROGRAMME_LEVELS, STUDY_MODES } from "@/constants/site";
+import { apiFetch } from "@/lib/api-fetch";
 
 const emptyProgramme = (): Programme => ({
   id: "",
@@ -40,7 +41,7 @@ export function ProgrammesManager() {
   const [loading, setLoading] = useState(true);
 
   async function load() {
-    const res = await fetch("/api/portal/programmes");
+    const res = await apiFetch("/api/portal/programmes");
     const data = await res.json();
     setProgrammes(data.programmes ?? []);
     setLoading(false);
@@ -62,13 +63,13 @@ export function ProgrammesManager() {
     const payload = { ...editing, slug };
 
     if (editing.id && programmes.some((p) => p.id === editing.id)) {
-      await fetch(`/api/portal/programmes/${editing.id}`, {
+      await apiFetch(`/api/portal/programmes/${editing.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
     } else {
-      await fetch("/api/portal/programmes", {
+      await apiFetch("/api/portal/programmes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -81,7 +82,7 @@ export function ProgrammesManager() {
 
   async function remove(id: string) {
     if (!confirm("Delete this programme?")) return;
-    await fetch(`/api/portal/programmes/${id}`, { method: "DELETE" });
+    await apiFetch(`/api/portal/programmes/${id}`, { method: "DELETE" });
     load();
   }
 

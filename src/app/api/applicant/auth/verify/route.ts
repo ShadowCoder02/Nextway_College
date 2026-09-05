@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createApplicantSession } from "@/lib/admissions/session";
 import { verifyApplicantOtp } from "@/services/admissions";
+import { checkRateLimit } from "@/lib/admissions/rate-limiter";
 
 const verifySchema = z.object({
   email: z.string().email(),
@@ -10,6 +11,15 @@ const verifySchema = z.object({
 
 export async function POST(request: Request) {
   try {
+    const ip = request.headers.get("x-forwarded-for") || "local";
+    const limit = checkRateLimit(`verify_otp_${ip}`, 10, 60 * 1000);
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { ok: false, error: `Too many attempts. Please try again in ${limit.retryAfterSeconds} seconds.` },
+        { status: 429 },
+      );
+    }
+
     const body = await request.json();
     const parsed = verifySchema.safeParse(body);
     if (!parsed.success) {

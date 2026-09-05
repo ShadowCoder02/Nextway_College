@@ -7,6 +7,7 @@ import type { StudentApplication } from "@/types/admissions";
 import { Button } from "@/components/ui/Button";
 import { formatDate, formatDateTime } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
+import { apiFetch } from "@/lib/api-fetch";
 
 export default function ApplicantDashboardPage() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function ApplicantDashboardPage() {
   useEffect(() => {
     async function loadData() {
       try {
-        const res = await fetch("/api/applicant/application");
+        const res = await apiFetch("/api/applicant/application");
         if (res.status === 401) {
           router.push("/apply/login");
           return;
@@ -38,13 +39,13 @@ export default function ApplicantDashboardPage() {
   }, [router]);
 
   async function handleLogout() {
-    await fetch("/api/applicant/auth/logout", { method: "POST" });
+    await apiFetch("/api/applicant/auth/logout", { method: "POST" });
     router.push("/apply/login");
     router.refresh();
   }
 
   async function handleDownloadPdf() {
-    const res = await fetch("/api/applicant/application/pdf");
+    const res = await apiFetch("/api/applicant/application/pdf");
     if (!res.ok) {
       setError("Unable to download your application PDF right now.");
       return;

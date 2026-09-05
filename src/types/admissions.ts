@@ -135,6 +135,11 @@ export interface ApplicantAccount {
   tokenExpiresAt?: string;
   verificationCode?: string;
   verificationCodeExpiresAt?: string;
+  // Bumped on password reset so every previously-issued session cookie
+  // (which embeds the version it was signed with) stops verifying.
+  sessionVersion: number;
+  resetTokenHash?: string;
+  resetTokenExpiresAt?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -143,4 +148,5 @@ export interface ApplicantSession {
   applicantId: string;
   email: string;
   fullName: string;
+  sessionVersion: number;
 }

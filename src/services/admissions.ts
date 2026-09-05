@@ -17,6 +17,7 @@ import {
   findApplicantById,
   findApplicationById,
   getOrCreateApplicantDraft,
+  getStoredApplicants,
   getStoredApplications,
   saveStoredApplication,
   updateApplicationStatus,
@@ -26,7 +27,8 @@ import {
   addApplicationNote,
   updateStoredApplicant,
 } from "@/lib/cms/admissions-store";
-import { hashPassword, verifyPassword } from "@/lib/admissions/crypto";
+import { hashPassword, verifyPassword, generateSecureToken } from "@/lib/admissions/crypto";
+import crypto from "crypto";
 import {
   saveUploadedFile,
   deleteStoredFile,
@@ -37,7 +39,12 @@ import {
   MAX_FILE_SIZE_BYTES,
 } from "@/lib/admissions/file-security";
 import path from "path";
-import { sendApplicantVerificationEmail, sendApplicationConfirmationEmail } from "@/lib/admissions/mailer";
+import {
+  sendApplicantVerificationEmail,
+  sendApplicationConfirmationEmail,
+  sendPasswordResetEmail,
+  sendAccountAlreadyExistsEmail,
+} from "@/lib/admissions/mailer";
 import { generateOtpCode } from "@/lib/admissions/otp";
 import { generateApplicationPdf } from "@/lib/admissions/pdf";
 import { formatDateTime } from "@/lib/utils";
@@ -52,9 +59,51 @@ export async function registerApplicant(data: {
   phone: string;
   password: string;
 }): Promise<{ ok: true; applicant: ApplicantAccount; requiresVerification: true; debugOtp?: string } | { ok: false; error: string }> {
-  const existing = await findApplicantByEmail(data.email);
+  const email = data.email.toLowerCase().trim();
+  const existing = await findApplicantByEmail(email);
+
+  // Never reveal whether an email is already registered: an unverified
+  // existing account is silently re-issued a fresh OTP (so the legitimate
+  // owner who lost their code can still get in via the normal flow); an
+  // already-verified one gets a heads-up email instead. Either way, the
+  // response echoes back what THIS request submitted, not the real stored
+  // record — returning the actual account's name here would leak it to
+  // anyone who "registers" with a known email.
+  const echoApplicant = {
+    ...(existing ?? ({} as ApplicantAccount)),
+    id: "",
+    fullName: data.fullName.trim(),
+    email,
+    phone: data.phone.trim(),
+  };
+
   if (existing) {
-    return { ok: false, error: "An account with this email address already exists." };
+    if (!existing.isVerified) {
+      const otp = generateOtpCode();
+      const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+      await updateStoredApplicant(existing.id, {
+        verificationCode: otp,
+        verificationCodeExpiresAt: otpExpiresAt,
+      });
+      try {
+        await sendApplicantVerificationEmail({ fullName: existing.fullName, email, otp });
+      } catch (error) {
+        console.warn("[applicant/register] verification email delivery failed; continuing in local mode.", error);
+      }
+      return {
+        ok: true,
+        applicant: echoApplicant,
+        requiresVerification: true,
+        ...(process.env.NODE_ENV !== "production" ? { debugOtp: otp } : {}),
+      };
+    }
+
+    try {
+      await sendAccountAlreadyExistsEmail({ fullName: existing.fullName, email });
+    } catch (error) {
+      console.warn("[applicant/register] already-exists notice email delivery failed.", error);
+    }
+    return { ok: true, applicant: echoApplicant, requiresVerification: true };
   }
 
   const { hash, salt } = await hashPassword(data.password);
@@ -63,13 +112,14 @@ export async function registerApplicant(data: {
 
   const applicant = await createStoredApplicant({
     fullName: data.fullName.trim(),
-    email: data.email.toLowerCase().trim(),
+    email,
     phone: data.phone.trim(),
     passwordHash: hash,
     passwordSalt: salt,
     isVerified: false,
     verificationCode: otp,
     verificationCodeExpiresAt: otpExpiresAt,
+    sessionVersion: 0,
   });
 
   try {
@@ -110,6 +160,7 @@ export async function authenticateApplicant(
     applicantId: applicant.id,
     email: applicant.email,
     fullName: applicant.fullName,
+    sessionVersion: applicant.sessionVersion ?? 0,
   };
 
   return { ok: true, applicant, session };
@@ -130,8 +181,13 @@ export async function verifyApplicantOtp(
     return { ok: false, error: "Account not found." };
   }
 
+  // CRITICAL, pre-existing bug fixed here: this used to grant a full session
+  // for ANY already-verified account without ever checking the submitted
+  // OTP — POSTing {email, otp: "000000"} for any known verified email was a
+  // complete account takeover. Never issue a session without checking a
+  // credential; verified accounts must go through /apply/login instead.
   if (applicant.isVerified) {
-    return { ok: true, applicant, session: { applicantId: applicant.id, email: applicant.email, fullName: applicant.fullName } };
+    return { ok: false, error: "This account is already verified. Please sign in instead." };
   }
 
   const expiresAt = applicant.verificationCodeExpiresAt ? new Date(applicant.verificationCodeExpiresAt).getTime() : 0;
@@ -158,17 +214,22 @@ export async function verifyApplicantOtp(
     applicantId: updated.id,
     email: updated.email,
     fullName: updated.fullName,
+    sessionVersion: updated.sessionVersion ?? 0,
   };
 
   return { ok: true, applicant: updated, session };
 }
 
+const NEUTRAL_OTP_MESSAGE = "If that email is registered and pending verification, a new code has been sent.";
+
 export async function resendVerificationOtp(
   email: string,
 ): Promise<{ ok: true; message: string; debugOtp?: string } | { ok: false; error: string }> {
+  // Never reveal via a distinct error whether the account exists or is
+  // already verified — always the same neutral message.
   const applicant = await findApplicantByEmail(email);
-  if (!applicant) {
-    return { ok: false, error: "Account not found." };
+  if (!applicant || applicant.isVerified) {
+    return { ok: true, message: NEUTRAL_OTP_MESSAGE };
   }
 
   const otp = generateOtpCode();
@@ -189,11 +250,72 @@ export async function resendVerificationOtp(
   } catch (error) {
     console.warn("[applicant/register] resend OTP email delivery failed; continuing in local mode.", error);
     if (process.env.NODE_ENV !== "production") {
-      return { ok: true, message: "A new OTP has been generated for local testing.", debugOtp: otp };
+      return { ok: true, message: NEUTRAL_OTP_MESSAGE, debugOtp: otp };
     }
   }
 
-  return { ok: true, message: "A new OTP has been sent to your email address.", ...(process.env.NODE_ENV !== "production" ? { debugOtp: otp } : {}) };
+  return { ok: true, message: NEUTRAL_OTP_MESSAGE, ...(process.env.NODE_ENV !== "production" ? { debugOtp: otp } : {}) };
+}
+
+/**
+ * Always returns the same neutral outcome regardless of whether the email is
+ * registered — only actually generates and emails a token when it is.
+ */
+export async function requestPasswordReset(email: string): Promise<{ ok: true; message: string; debugToken?: string }> {
+  const neutralMessage = "If that email is registered, we've sent instructions to reset your password.";
+  const applicant = await findApplicantByEmail(email);
+  if (!applicant) {
+    return { ok: true, message: neutralMessage };
+  }
+
+  const token = generateSecureToken();
+  const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 60 minutes, single-use
+
+  await updateStoredApplicant(applicant.id, {
+    resetTokenHash: tokenHash,
+    resetTokenExpiresAt: expiresAt,
+  });
+
+  try {
+    await sendPasswordResetEmail({ fullName: applicant.fullName, email: applicant.email, token });
+  } catch (error) {
+    console.warn("[applicant/forgot-password] reset email delivery failed; continuing in local mode.", error);
+    if (process.env.NODE_ENV !== "production") {
+      return { ok: true, message: neutralMessage, debugToken: token };
+    }
+  }
+
+  return { ok: true, message: neutralMessage, ...(process.env.NODE_ENV !== "production" ? { debugToken: token } : {}) };
+}
+
+export async function resetPasswordWithToken(
+  token: string,
+  newPassword: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+  const applicants = await getStoredApplicants();
+  const applicant = applicants.find((a) => a.resetTokenHash === tokenHash);
+
+  if (!applicant || !applicant.resetTokenExpiresAt) {
+    return { ok: false, error: "This reset link is invalid or has already been used." };
+  }
+
+  if (new Date(applicant.resetTokenExpiresAt).getTime() < Date.now()) {
+    return { ok: false, error: "This reset link has expired. Please request a new one." };
+  }
+
+  const { hash, salt } = await hashPassword(newPassword);
+  await updateStoredApplicant(applicant.id, {
+    passwordHash: hash,
+    passwordSalt: salt,
+    resetTokenHash: undefined,
+    resetTokenExpiresAt: undefined,
+    // Invalidates every previously-issued session cookie for this account.
+    sessionVersion: (applicant.sessionVersion ?? 0) + 1,
+  });
+
+  return { ok: true };
 }
 
 /* -------------------------------------------------------------------------- */
@@ -271,6 +393,10 @@ export async function uploadApplicationDocument(
   const app = await getApplicantApplication(applicantId);
   if (!app) return { ok: false, error: "Application not found" };
 
+  if (file.size === 0) {
+    return { ok: false, error: "That file is empty (0 bytes). Please choose a different file." };
+  }
+
   if (file.size > MAX_FILE_SIZE_BYTES) {
     return { ok: false, error: "File size exceeds the 5MB maximum limit." };
   }
@@ -293,7 +419,7 @@ export async function uploadApplicationDocument(
   }
 
   const storedFilename = generateSafeStoredFilename(category, file.name);
-  const filePath = await saveUploadedFile(app.id, storedFilename, buffer);
+  const filePath = await saveUploadedFile(app.id, storedFilename, buffer, file.type);
 
   const doc: UploadedDocument = {
     id: crypto.randomUUID(),

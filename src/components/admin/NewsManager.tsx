@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { NewsArticle } from "@/types";
 import { Button } from "@/components/ui/Button";
+import { apiFetch } from "@/lib/api-fetch";
 
 const emptyArticle = (): NewsArticle => ({
   id: "",
@@ -23,7 +24,7 @@ export function NewsManager() {
   const [loading, setLoading] = useState(true);
 
   async function load() {
-    const res = await fetch("/api/portal/news");
+    const res = await apiFetch("/api/portal/news");
     const data = await res.json();
     setNews(data.news ?? []);
     setLoading(false);
@@ -38,13 +39,13 @@ export function NewsManager() {
     const payload = { ...editing };
 
     if (editing.id && news.some((n) => n.id === editing.id)) {
-      await fetch(`/api/portal/news/${editing.id}`, {
+      await apiFetch(`/api/portal/news/${editing.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
     } else {
-      await fetch("/api/portal/news", {
+      await apiFetch("/api/portal/news", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -57,7 +58,7 @@ export function NewsManager() {
 
   async function remove(id: string) {
     if (!confirm("Delete this news article?")) return;
-    await fetch(`/api/portal/news/${id}`, { method: "DELETE" });
+    await apiFetch(`/api/portal/news/${id}`, { method: "DELETE" });
     load();
   }
 

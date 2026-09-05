@@ -23,4 +23,5 @@ Production domain: TODO (currently nextway-college.vercel.app).
   security-sensitive.
 
 ## Commands
-- npm run dev / dev:clean / build / start / lint
+- npm run dev / dev:clean / build / start / lint / test
+- npm run check-images / validate-content / check-links (see scripts/)
