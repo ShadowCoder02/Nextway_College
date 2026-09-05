@@ -5,7 +5,7 @@ import { ProgrammeFilters } from "@/components/programme/ProgrammeFilters";
 import { parseProgrammeFilters } from "@/lib/programmes";
 import { PageHero } from "@/components/ui/PageHero";
 import { buildMetadata } from "@/lib/seo";
-import { getProgrammes, getSchools } from "@/services/programmes";
+import { getProgrammes, getSchoolsWithProgrammeCounts } from "@/services/programmes";
 
 export const metadata = buildMetadata({
   title: "Programmes",
@@ -23,7 +23,7 @@ export default async function ProgrammesPage({ searchParams }: PageProps) {
   const filters = parseProgrammeFilters(params);
   const [programmes, schools] = await Promise.all([
     getProgrammes(filters),
-    getSchools(),
+    getSchoolsWithProgrammeCounts(),
   ]);
 
   return (
@@ -31,13 +31,15 @@ export default async function ProgrammesPage({ searchParams }: PageProps) {
       <PageHero
         eyebrow="Academic Catalogue"
         title="Programmes"
-        description="Discover career-focused pathways across computing, business, language and hospitality."
+        description="Discover career-focused pathways across computing, law, education, social sciences and language & communication."
       />
 
       <section className="py-12 lg:py-16">
         <div className="container-nwc space-y-8">
           <Suspense fallback={<div className="h-32 animate-pulse rounded-lg bg-ice" />}>
-            <ProgrammeFilters schools={schools.map((s) => ({ slug: s.slug, name: s.name }))} />
+            <ProgrammeFilters
+              schools={schools.map((s) => ({ slug: s.slug, name: s.name, programmeCount: s.programmeCount }))}
+            />
           </Suspense>
 
           <SectionHeader

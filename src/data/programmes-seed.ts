@@ -9,12 +9,10 @@ const img = (id: string) => {
 };
 
 function baseProgramme(
-  partial: Partial<Programme> & Pick<Programme, "id" | "title" | "slug" | "level" | "shortPitch">,
+  partial: Partial<Programme> &
+    Pick<Programme, "id" | "title" | "slug" | "level" | "shortPitch" | "schoolId" | "schoolSlug" | "schoolName">,
 ): Programme {
   return {
-    schoolId: partial.schoolId ?? "sch-general",
-    schoolSlug: partial.schoolSlug ?? "general",
-    schoolName: partial.schoolName ?? "Nextway College International",
     duration: partial.duration ?? "As per programme structure",
     mode: partial.mode ?? "Hybrid",
     medium: partial.medium ?? "English & Tamil",
@@ -61,6 +59,9 @@ export const programmesSeed: Programme[] = [
     flagship: true,
     imageUrl: img("1517694712202-14dd9538aa97"),
     careerOpportunities: ["Software support", "Web technology", "IT operations", "Further IT study"],
+    schoolId: "sch-computing",
+    schoolSlug: "computing-it",
+    schoolName: "School of Computing & IT",
   }),
   baseProgramme({
     id: "prog-llb",
@@ -72,6 +73,9 @@ export const programmesSeed: Programme[] = [
     featured: true,
     imageUrl: img("1589829545856-d10d557cf95f"),
     careerOpportunities: ["Legal practice support", "Corporate compliance", "Public sector roles"],
+    schoolId: "sch-law",
+    schoolSlug: "law",
+    schoolName: "School of Law",
   }),
   baseProgramme({
     id: "prog-ba-geo",
@@ -80,6 +84,9 @@ export const programmesSeed: Programme[] = [
     level: "Degree",
     shortPitch: "Special degree in Geography with structured hybrid learning.",
     imageUrl: img("1469474968028-56623f02e42e"),
+    schoolId: "sch-social-sciences",
+    schoolSlug: "social-sciences",
+    schoolName: "School of Social Sciences",
   }),
   baseProgramme({
     id: "prog-ba-pol",
@@ -88,6 +95,9 @@ export const programmesSeed: Programme[] = [
     level: "Degree",
     shortPitch: "Special degree exploring governance, policy and political systems.",
     imageUrl: img("1529107384806-3a0a4a0a0a0a"),
+    schoolId: "sch-social-sciences",
+    schoolSlug: "social-sciences",
+    schoolName: "School of Social Sciences",
   }),
   baseProgramme({
     id: "prog-hnd-primary",
@@ -97,6 +107,9 @@ export const programmesSeed: Programme[] = [
     shortPitch: "Higher diploma preparing educators for primary teaching environments.",
     featured: true,
     imageUrl: img("1503676260728-1c00da094a0b"),
+    schoolId: "sch-education",
+    schoolSlug: "education",
+    schoolName: "School of Education",
   }),
   baseProgramme({
     id: "prog-hnd-english",
@@ -106,6 +119,9 @@ export const programmesSeed: Programme[] = [
     medium: "English",
     shortPitch: "Advanced English pathway for academic and professional communication.",
     imageUrl: img("1456513080800-b6bbe9059811"),
+    schoolId: "sch-language",
+    schoolSlug: "language-communication",
+    schoolName: "School of Language & Communication",
   }),
   baseProgramme({
     id: "prog-ba-tamil",
@@ -115,6 +131,9 @@ export const programmesSeed: Programme[] = [
     medium: "Tamil",
     shortPitch: "Special degree in Tamil language, literature and applied communication.",
     imageUrl: img("1546410535-e1343712f4a0"),
+    schoolId: "sch-language",
+    schoolSlug: "language-communication",
+    schoolName: "School of Language & Communication",
   }),
   baseProgramme({
     id: "prog-hnd-law",
@@ -123,6 +142,9 @@ export const programmesSeed: Programme[] = [
     level: "Higher Diploma",
     shortPitch: "Practical legal studies foundation for degree progression or workplace roles.",
     imageUrl: img("1589391887882-d48ac6a50f04"),
+    schoolId: "sch-law",
+    schoolSlug: "law",
+    schoolName: "School of Law",
   }),
   baseProgramme({
     id: "prog-dip-preschool",
@@ -131,6 +153,9 @@ export const programmesSeed: Programme[] = [
     level: "Diploma",
     shortPitch: "Early childhood education diploma for preschool teaching careers.",
     imageUrl: img("1503454537194-1dd5c0c0c0c0"),
+    schoolId: "sch-education",
+    schoolSlug: "education",
+    schoolName: "School of Education",
   }),
   baseProgramme({
     id: "prog-law-entrance",
@@ -142,6 +167,9 @@ export const programmesSeed: Programme[] = [
     featured: true,
     imageUrl: img("1450101499168-0f0c0c0c0c0c"),
     careerOpportunities: ["Law college entrance readiness", "Legal foundation studies"],
+    schoolId: "sch-law",
+    schoolSlug: "law",
+    schoolName: "School of Law",
   }),
 ];
 
