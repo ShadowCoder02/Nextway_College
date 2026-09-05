@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import { ADMIN_COOKIE } from "@/lib/admin/session";
-import { APPLICANT_COOKIE } from "@/lib/admissions/session";
+import { APPLICANT_COOKIE } from "@/lib/admissions/cookie-names";
 
 // Double-submit cookie CSRF pattern: the cookie is deliberately NOT httpOnly
 // so client JS can read it and echo it back as a header — the security

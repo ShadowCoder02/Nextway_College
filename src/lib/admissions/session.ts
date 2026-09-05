@@ -1,8 +1,10 @@
 import { cookies } from "next/headers";
 import type { ApplicantSession } from "@/types/admissions";
 import { signToken, verifySignedToken } from "./crypto";
+import { findApplicantById } from "@/lib/cms/admissions-store";
+import { APPLICANT_COOKIE } from "./cookie-names";
 
-export const APPLICANT_COOKIE = "nwc_applicant_session";
+export { APPLICANT_COOKIE };
 const SESSION_EXPIRY_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
 interface SessionPayload extends ApplicantSession {
@@ -43,10 +45,17 @@ export async function getApplicantSession(): Promise<ApplicantSession | null> {
     if (!parsed.applicantId || !parsed.email || !parsed.exp) return null;
     if (parsed.exp < Math.floor(Date.now() / 1000)) return null;
 
+    // A password reset bumps sessionVersion server-side, invalidating every
+    // cookie signed with an older version — this is what "invalidate all
+    // sessions on reset" means for a stateless signed-cookie session.
+    const applicant = await findApplicantById(parsed.applicantId);
+    if (!applicant || applicant.sessionVersion !== parsed.sessionVersion) return null;
+
     return {
       applicantId: parsed.applicantId,
       email: parsed.email,
       fullName: parsed.fullName,
+      sessionVersion: parsed.sessionVersion,
     };
   } catch {
     return null;

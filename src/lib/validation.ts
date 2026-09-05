@@ -91,6 +91,15 @@ export const applicantLoginSchema = z.object({
   password: z.string().min(1, "Please enter your password"),
 });
 
+export const forgotPasswordSchema = z.object({
+  email: emailSchema,
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, "Missing reset token"),
+  password: passwordSchema,
+});
+
 export type ApplicantLoginInput = z.infer<typeof applicantLoginSchema>;
 
 export const personalInfoSchema = z.object({

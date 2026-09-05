@@ -1,17 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { PasswordField } from "@/components/ui/PasswordField";
 import { rememberProgrammeSlug } from "@/lib/applicant-programme";
 import { apiFetch } from "@/lib/api-fetch";
+import { useOnlineStatus } from "@/lib/use-online-status";
 
 export default function ApplicantLoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isOnline = useOnlineStatus();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [password, setPassword] = useState("");
+  const emailRef = useRef<HTMLInputElement>(null);
 
   // A user can reach /apply/login straight from /apply?programme=<slug> via
   // "Sign In to Continue Application" — remember it so it still pre-selects
@@ -24,17 +29,22 @@ export default function ApplicantLoginPage() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
-    setLoading(true);
 
     const fd = new FormData(e.currentTarget);
     const email = (fd.get("email") as string) || "";
-    const password = (fd.get("password") as string) || "";
 
     if (!email || !password) {
       setError("Please enter your email and password.");
-      setLoading(false);
+      emailRef.current?.focus();
       return;
     }
+
+    if (!isOnline) {
+      setError("You appear to be offline. Please reconnect and try again.");
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const res = await apiFetch("/api/applicant/auth/login", {
@@ -47,13 +57,14 @@ export default function ApplicantLoginPage() {
       if (!res.ok || !data.ok) {
         setError(data.error || "Invalid email or password.");
         setLoading(false);
+        emailRef.current?.focus();
         return;
       }
 
       router.push("/apply/portal");
       router.refresh();
     } catch {
-      setError("Network error. Please try again.");
+      setError(isOnline ? "Network error. Please try again." : "You appear to be offline. Please reconnect and try again.");
       setLoading(false);
     }
   }
@@ -73,23 +84,32 @@ export default function ApplicantLoginPage() {
             </p>
           </div>
 
-          {error && (
-            <div className="mb-6 rounded-lg border border-error/20 bg-error/10 p-4 text-sm font-medium text-error">
-              {error}
-            </div>
-          )}
+          <div aria-live="polite">
+            {!isOnline && (
+              <div className="mb-6 rounded-lg border border-gold/30 bg-gold/10 p-4 text-sm font-medium text-navy">
+                You appear to be offline. Reconnect to sign in.
+              </div>
+            )}
+            {error && (
+              <div className="mb-6 rounded-lg border border-error/20 bg-error/10 p-4 text-sm font-medium text-error" role="alert">
+                {error}
+              </div>
+            )}
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
               <label htmlFor="email" className="mb-1 block text-xs font-bold uppercase tracking-wider text-navy">
                 Email Address
               </label>
               <input
+                ref={emailRef}
                 id="email"
                 name="email"
                 type="email"
                 autoComplete="email"
                 required
+                aria-invalid={Boolean(error)}
                 className={inputClass}
                 placeholder="name@example.com"
               />
@@ -97,19 +117,23 @@ export default function ApplicantLoginPage() {
 
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label htmlFor="password" className="block text-xs font-bold uppercase tracking-wider text-navy">
-                  Password
-                </label>
+                <label htmlFor="password" className="sr-only">Password</label>
               </div>
-              <input
+              <PasswordField
                 id="password"
                 name="password"
-                type="password"
+                label="Password"
+                value={password}
+                onChange={setPassword}
                 autoComplete="current-password"
-                required
-                className={inputClass}
                 placeholder="••••••••"
+                required
               />
+              <div className="mt-1 text-right">
+                <Link href="/apply/forgot-password" className="text-xs font-semibold text-navy hover:text-brand-red">
+                  Forgot password?
+                </Link>
+              </div>
             </div>
 
             <Button type="submit" variant="primary" className="w-full mt-4" disabled={loading}>
