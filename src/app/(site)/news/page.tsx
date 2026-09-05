@@ -4,7 +4,7 @@ import { IMAGES } from "@/constants/images";
 import { buildMetadata } from "@/lib/seo";
 import { formatDate } from "@/lib/utils";
 import { getNewsArticles } from "@/services/news";
-import { getEvents } from "@/services/events";
+import { getUpcomingEvents } from "@/services/events";
 
 export const metadata = buildMetadata({
   title: "News & Events",
@@ -13,7 +13,7 @@ export const metadata = buildMetadata({
 });
 
 export default async function NewsPage() {
-  const [articles, events] = await Promise.all([getNewsArticles(), getEvents()]);
+  const [articles, events] = await Promise.all([getNewsArticles(), getUpcomingEvents(4)]);
 
   return (
     <>
@@ -54,19 +54,25 @@ export default async function NewsPage() {
           </div>
 
           <h2 className="text-section mb-8 mt-16">Upcoming events</h2>
-          <div className="grid gap-6 md:grid-cols-2">
-            {events.map((event) => (
-              <article key={event.id} className="rounded-[var(--radius-card)] bg-ice p-6">
-                <p className="mb-1 text-sm font-medium text-deep-blue">{formatDate(event.startAt)}</p>
-                <h3 className="mb-2 text-xl font-bold">
-                  <Link href={`/events/${event.slug}`} className="hover:text-deep-blue">
-                    {event.title}
-                  </Link>
-                </h3>
-                <p className="text-slate">{event.summary}</p>
-              </article>
-            ))}
-          </div>
+          {events.length === 0 ? (
+            <p className="rounded-[var(--radius-card)] bg-ice p-8 text-center text-slate">
+              No upcoming events are scheduled right now. Check back soon.
+            </p>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2">
+              {events.map((event) => (
+                <article key={event.id} className="rounded-[var(--radius-card)] bg-ice p-6">
+                  <p className="mb-1 text-sm font-medium text-deep-blue">{formatDate(event.startAt)}</p>
+                  <h3 className="mb-2 text-xl font-bold">
+                    <Link href={`/events/${event.slug}`} className="hover:text-deep-blue">
+                      {event.title}
+                    </Link>
+                  </h3>
+                  <p className="text-slate">{event.summary}</p>
+                </article>
+              ))}
+            </div>
+          )}
           <Link href="/events" className="mt-6 inline-block font-semibold text-deep-blue hover:text-gold">
             View all events →
           </Link>

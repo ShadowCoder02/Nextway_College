@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 import { formatDateTime } from "@/lib/utils";
-import { getEvents } from "@/services/events";
+import { getUpcomingEvents, getPastEvents } from "@/services/events";
+import type { EventItem } from "@/types";
 
 export const metadata = buildMetadata({
   title: "Events",
@@ -10,8 +11,28 @@ export const metadata = buildMetadata({
   path: "/events",
 });
 
+function EventCard({ event }: { event: EventItem }) {
+  return (
+    <article className="overflow-hidden rounded-[var(--radius-card)] bg-white shadow-[var(--shadow-soft)]">
+      <div className="relative aspect-[16/9]">
+        <Image src={event.imageUrl} alt="" fill className="object-cover" sizes="50vw" />
+      </div>
+      <div className="p-6">
+        <p className="mb-2 text-sm font-medium text-deep-blue">{formatDateTime(event.startAt)}</p>
+        <h2 className="mb-2 text-xl font-bold">
+          <Link href={`/events/${event.slug}`} className="hover:text-deep-blue">
+            {event.title}
+          </Link>
+        </h2>
+        <p className="mb-2 text-slate">{event.summary}</p>
+        <p className="text-sm text-charcoal">{event.location}</p>
+      </div>
+    </article>
+  );
+}
+
 export default async function EventsPage() {
-  const events = await getEvents();
+  const [upcoming, past] = await Promise.all([getUpcomingEvents(), getPastEvents()]);
 
   return (
     <>
@@ -23,24 +44,36 @@ export default async function EventsPage() {
       </section>
 
       <section className="py-16 lg:py-24">
-        <div className="container-nwc grid gap-8 md:grid-cols-2">
-          {events.map((event) => (
-            <article key={event.id} className="overflow-hidden rounded-[var(--radius-card)] bg-white shadow-[var(--shadow-soft)]">
-              <div className="relative aspect-[16/9]">
-                <Image src={event.imageUrl} alt="" fill className="object-cover" sizes="50vw" />
+        <div className="container-nwc space-y-16">
+          <div>
+            <h2 className="text-section mb-8">Upcoming events</h2>
+            {upcoming.length === 0 ? (
+              <p className="rounded-[var(--radius-card)] bg-ice p-8 text-center text-slate">
+                No upcoming events are scheduled right now. Check back soon.
+              </p>
+            ) : (
+              <div className="grid gap-8 md:grid-cols-2">
+                {upcoming.map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))}
               </div>
-              <div className="p-6">
-                <p className="mb-2 text-sm font-medium text-deep-blue">{formatDateTime(event.startAt)}</p>
-                <h2 className="mb-2 text-xl font-bold">
-                  <Link href={`/events/${event.slug}`} className="hover:text-deep-blue">
-                    {event.title}
-                  </Link>
-                </h2>
-                <p className="mb-2 text-slate">{event.summary}</p>
-                <p className="text-sm text-charcoal">{event.location}</p>
+            )}
+          </div>
+
+          <div>
+            <h2 className="text-section mb-8">Past events</h2>
+            {past.length === 0 ? (
+              <p className="rounded-[var(--radius-card)] bg-ice p-8 text-center text-slate">
+                No past events to show yet.
+              </p>
+            ) : (
+              <div className="grid gap-8 md:grid-cols-2">
+                {past.map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))}
               </div>
-            </article>
-          ))}
+            )}
+          </div>
         </div>
       </section>
     </>
