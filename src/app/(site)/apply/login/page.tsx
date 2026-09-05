@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { rememberProgrammeSlug } from "@/lib/applicant-programme";
+import { apiFetch } from "@/lib/api-fetch";
 
 export default function ApplicantLoginPage() {
   const router = useRouter();
@@ -36,7 +37,7 @@ export default function ApplicantLoginPage() {
     }
 
     try {
-      const res = await fetch("/api/applicant/auth/login", {
+      const res = await apiFetch("/api/applicant/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

@@ -8,6 +8,7 @@ import type {
   StudentApplication,
 } from "@/types/admissions";
 import { formatDate, formatDateTime } from "@/lib/utils";
+import { apiFetch } from "@/lib/api-fetch";
 
 interface ApplicationReviewerProps {
   initialApplication: StudentApplication;
@@ -47,7 +48,7 @@ export function ApplicationReviewer({ initialApplication }: ApplicationReviewerP
   async function handleStatusUpdate() {
     setSavingStatus(true);
     try {
-      const res = await fetch(`/api/portal/applications/${app.id}/status`, {
+      const res = await apiFetch(`/api/portal/applications/${app.id}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: statusInput, notes: statusNotes }),
@@ -72,7 +73,7 @@ export function ApplicationReviewer({ initialApplication }: ApplicationReviewerP
     reason?: string,
   ) {
     try {
-      const res = await fetch(`/api/portal/applications/${app.id}/documents/${docId}`, {
+      const res = await apiFetch(`/api/portal/applications/${app.id}/documents/${docId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status, rejectionReason: reason }),
@@ -94,7 +95,7 @@ export function ApplicationReviewer({ initialApplication }: ApplicationReviewerP
     setAddingNote(true);
 
     try {
-      const res = await fetch(`/api/portal/applications/${app.id}/notes`, {
+      const res = await apiFetch(`/api/portal/applications/${app.id}/notes`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ note: noteInput, isInternal: true }),
@@ -124,7 +125,7 @@ export function ApplicationReviewer({ initialApplication }: ApplicationReviewerP
       // attach that offset explicitly now rather than storing an ambiguous
       // timestamp that a later formatter would have to guess at.
       const scheduledAt = `${interviewDate}:00+05:30`;
-      const res = await fetch(`/api/portal/applications/${app.id}/interview`, {
+      const res = await apiFetch(`/api/portal/applications/${app.id}/interview`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -153,7 +154,7 @@ export function ApplicationReviewer({ initialApplication }: ApplicationReviewerP
     setSubmittingDocRequest(true);
 
     try {
-      const res = await fetch(`/api/portal/applications/${app.id}/request-documents`, {
+      const res = await apiFetch(`/api/portal/applications/${app.id}/request-documents`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ notes: requestDocsText }),

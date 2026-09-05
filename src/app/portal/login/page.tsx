@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { loginSchema } from "@/lib/validation";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/layout/Logo";
+import { apiFetch } from "@/lib/api-fetch";
 
 export default function PortalLoginPage() {
   const router = useRouter();
@@ -28,7 +29,7 @@ export default function PortalLoginPage() {
       return;
     }
 
-    const res = await fetch("/api/portal/login", {
+    const res = await apiFetch("/api/portal/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(parsed.data),

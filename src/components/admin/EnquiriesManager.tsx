@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { StoredEnquiry } from "@/services/enquiries";
 import { formatDate } from "@/lib/utils";
+import { apiFetch } from "@/lib/api-fetch";
 
 const STATUSES = ["new", "contacted", "follow_up", "converted", "closed"] as const;
 
@@ -11,7 +12,7 @@ export function EnquiriesManager() {
   const [loading, setLoading] = useState(true);
 
   async function load() {
-    const res = await fetch("/api/portal/enquiries");
+    const res = await apiFetch("/api/portal/enquiries");
     const data = await res.json();
     setEnquiries(data.enquiries ?? []);
     setLoading(false);
@@ -22,7 +23,7 @@ export function EnquiriesManager() {
   }, []);
 
   async function updateStatus(id: string, status: StoredEnquiry["status"]) {
-    await fetch("/api/portal/enquiries", {
+    await apiFetch("/api/portal/enquiries", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, status }),

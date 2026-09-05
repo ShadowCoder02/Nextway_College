@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { applicantRegisterSchema, type ApplicantRegisterInput } from "@/lib/validation";
 import { rememberProgrammeSlug, readRememberedProgrammeSlug } from "@/lib/applicant-programme";
+import { apiFetch } from "@/lib/api-fetch";
 
 export default function ApplicantRegisterPage() {
   const router = useRouter();
@@ -57,7 +58,7 @@ export default function ApplicantRegisterPage() {
     }
 
     try {
-      const res = await fetch("/api/applicant/auth/register", {
+      const res = await apiFetch("/api/applicant/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(parsed.data),

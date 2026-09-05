@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { DocumentCategory, UploadedDocument } from "@/types/admissions";
+import { apiFetch } from "@/lib/api-fetch";
 
 interface DocumentSlot {
   category: DocumentCategory;
@@ -99,7 +100,7 @@ export function DocumentUploader({
       formData.append("category", category);
       formData.append("title", title);
 
-      const res = await fetch("/api/applicant/application/documents", {
+      const res = await apiFetch("/api/applicant/application/documents", {
         method: "POST",
         body: formData,
       });
@@ -126,7 +127,7 @@ export function DocumentUploader({
     setSuccessMsg("");
 
     try {
-      const res = await fetch(`/api/applicant/application/documents?id=${documentId}`, {
+      const res = await apiFetch(`/api/applicant/application/documents?id=${documentId}`, {
         method: "DELETE",
       });
 

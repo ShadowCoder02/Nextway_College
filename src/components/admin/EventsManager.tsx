@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { EventItem } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { formatDateTime } from "@/lib/utils";
+import { apiFetch } from "@/lib/api-fetch";
 
 const emptyEvent = (): EventItem => ({
   id: "",
@@ -23,7 +24,7 @@ export function EventsManager() {
   const [loading, setLoading] = useState(true);
 
   async function load() {
-    const res = await fetch("/api/portal/events");
+    const res = await apiFetch("/api/portal/events");
     const data = await res.json();
     setEvents(data.events ?? []);
     setLoading(false);
@@ -45,13 +46,13 @@ export function EventsManager() {
     const payload = { ...editing, slug };
 
     if (editing.id && events.some((e) => e.id === editing.id)) {
-      await fetch(`/api/portal/events/${editing.id}`, {
+      await apiFetch(`/api/portal/events/${editing.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
     } else {
-      await fetch("/api/portal/events", {
+      await apiFetch("/api/portal/events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -64,7 +65,7 @@ export function EventsManager() {
 
   async function remove(id: string) {
     if (!confirm("Delete this event?")) return;
-    await fetch(`/api/portal/events/${id}`, { method: "DELETE" });
+    await apiFetch(`/api/portal/events/${id}`, { method: "DELETE" });
     load();
   }
 

@@ -1,14 +1,44 @@
 import { z } from "zod";
+import { normalizeSriLankanPhone } from "@/lib/phone";
+import { isCommonPassword } from "@/lib/common-passwords";
+
+/**
+ * Sri Lanka-only phone field, backed by libphonenumber-js (see
+ * src/lib/phone.ts) — never a digit-count regex. Output is the normalized
+ * E.164 string (e.g. "+94771234567"), not whatever format the user typed.
+ */
+export const phoneSchema = z.string().transform((val, ctx) => {
+  const result = normalizeSriLankanPhone(val);
+  if (!result.valid) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: result.error });
+    return z.NEVER;
+  }
+  return result.e164;
+});
+
+/** Trims before length-checking so whitespace-only input can't pass. */
+const nameSchema = z
+  .string()
+  .trim()
+  .min(2, "Please enter your full name")
+  .max(100, "Name must be under 100 characters");
+
+const emailSchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .email("Please enter a valid email address")
+  .max(254, "Email address is too long");
 
 export const enquirySchema = z.object({
-  fullName: z.string().min(2, "Please enter your full name"),
-  phone: z.string().min(9, "Please enter a valid phone number"),
-  email: z.string().email("Please enter a valid email address"),
+  fullName: nameSchema,
+  phone: phoneSchema,
+  email: emailSchema,
   programmeId: z.string().optional(),
   programmeTitle: z.string().optional(),
-  qualification: z.string().optional(),
-  intake: z.string().optional(),
-  message: z.string().optional(),
+  qualification: z.string().trim().max(200).optional(),
+  intake: z.string().trim().max(100).optional(),
+  message: z.string().trim().max(1000, "Message must be under 1000 characters").optional(),
   source: z.string().optional(),
   consent: z.literal(true, {
     errorMap: () => ({ message: "You must agree to be contacted" }),
@@ -28,15 +58,27 @@ export type LoginFormData = z.infer<typeof loginSchema>;
 /*                        Admissions Portal Schemas                           */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * Shared password policy. Deliberately does NOT trim (leading/trailing
+ * spaces are legal password characters) and caps at 128 chars purely as a
+ * sanity DoS bound — scrypt has no fixed-length truncation issue the way
+ * bcrypt's 72-byte cap does, so this isn't a security-driven limit.
+ */
+export const passwordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters")
+  .max(128, "Password must be under 128 characters")
+  .regex(/[A-Za-z]/, "Password must contain at least one letter")
+  .regex(/[0-9]/, "Password must contain at least one number")
+  .refine((val) => !isCommonPassword(val), {
+    message: "That password is too common — please choose a less predictable one",
+  });
+
 export const applicantRegisterSchema = z.object({
-  fullName: z.string().min(2, "Full name must be at least 2 characters").max(100),
-  email: z.string().email("Please enter a valid email address").toLowerCase().trim(),
-  phone: z.string().min(8, "Please enter a valid contact phone number").max(20),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Za-z]/, "Password must contain at least one letter")
-    .regex(/[0-9]/, "Password must contain at least one number"),
+  fullName: nameSchema,
+  email: emailSchema,
+  phone: phoneSchema,
+  password: passwordSchema,
   agreeTerms: z.literal(true, {
     errorMap: () => ({ message: "You must accept the admission terms and privacy policy" }),
   }),
@@ -45,7 +87,7 @@ export const applicantRegisterSchema = z.object({
 export type ApplicantRegisterInput = z.infer<typeof applicantRegisterSchema>;
 
 export const applicantLoginSchema = z.object({
-  email: z.string().email("Please enter a valid email address").toLowerCase().trim(),
+  email: emailSchema,
   password: z.string().min(1, "Please enter your password"),
 });
 
@@ -53,16 +95,16 @@ export type ApplicantLoginInput = z.infer<typeof applicantLoginSchema>;
 
 export const personalInfoSchema = z.object({
   title: z.string().optional(),
-  fullName: z.string().min(2, "Full name is required"),
+  fullName: nameSchema,
   preferredName: z.string().optional(),
   dateOfBirth: z.string().min(4, "Date of birth is required"),
   gender: z.enum(["Male", "Female", "Other"], {
     errorMap: () => ({ message: "Please select your gender" }),
   }),
-  nationality: z.string().min(2, "Nationality is required"),
-  nicOrPassport: z.string().min(4, "NIC or Passport number is required"),
-  email: z.string().email("Valid email is required"),
-  phone: z.string().min(8, "Valid phone number is required"),
+  nationality: z.string().trim().min(2, "Nationality is required"),
+  nicOrPassport: z.string().trim().min(4, "NIC or Passport number is required"),
+  email: emailSchema,
+  phone: phoneSchema,
   addressLine1: z.string().min(3, "Address line 1 is required"),
   addressLine2: z.string().optional(),
   city: z.string().min(2, "City is required"),

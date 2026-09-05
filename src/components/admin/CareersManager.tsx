@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { CareerVacancy } from "@/types";
 import { Button } from "@/components/ui/Button";
+import { apiFetch } from "@/lib/api-fetch";
 
 const emptyCareer = (): CareerVacancy => ({
   id: "",
@@ -23,7 +24,7 @@ export function CareersManager() {
   const [loading, setLoading] = useState(true);
 
   async function load() {
-    const res = await fetch("/api/portal/careers");
+    const res = await apiFetch("/api/portal/careers");
     const data = await res.json();
     setCareers(data.careers ?? []);
     setLoading(false);
@@ -41,13 +42,13 @@ export function CareersManager() {
     };
 
     if (editing.id && careers.some((c) => c.id === editing.id)) {
-      await fetch(`/api/portal/careers/${editing.id}`, {
+      await apiFetch(`/api/portal/careers/${editing.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
     } else {
-      await fetch("/api/portal/careers", {
+      await apiFetch("/api/portal/careers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -60,7 +61,7 @@ export function CareersManager() {
 
   async function remove(id: string) {
     if (!confirm("Delete this vacancy?")) return;
-    await fetch(`/api/portal/careers/${id}`, { method: "DELETE" });
+    await apiFetch(`/api/portal/careers/${id}`, { method: "DELETE" });
     load();
   }
 

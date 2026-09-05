@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { readRememberedProgrammeSlug } from "@/lib/applicant-programme";
+import { apiFetch } from "@/lib/api-fetch";
 
 export default function ApplicantVerifyPage() {
   const router = useRouter();
@@ -25,7 +26,7 @@ export default function ApplicantVerifyPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/applicant/auth/verify", {
+      const res = await apiFetch("/api/applicant/auth/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp }),
@@ -62,7 +63,7 @@ export default function ApplicantVerifyPage() {
       return;
     }
 
-    const res = await fetch("/api/applicant/auth/resend-otp", {
+    const res = await apiFetch("/api/applicant/auth/resend-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),

@@ -5,13 +5,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/layout/Logo";
 import { PORTAL_NAV } from "@/constants/site";
 import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/api-fetch";
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
   async function logout() {
-    await fetch("/api/portal/logout", { method: "POST" });
+    await apiFetch("/api/portal/logout", { method: "POST" });
     try {
       const { createClient } = await import("@/lib/supabase/client");
       await createClient().auth.signOut();

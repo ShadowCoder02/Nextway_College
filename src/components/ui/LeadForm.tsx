@@ -4,6 +4,7 @@ import { useState } from "react";
 import { enquirySchema, type EnquiryFormData } from "@/lib/validation";
 import { Button } from "./Button";
 import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/api-fetch";
 
 type LeadFormProps = {
   source?: string;
@@ -58,7 +59,7 @@ export function LeadForm({
     }
 
     try {
-      const res = await fetch("/api/enquiries", {
+      const res = await apiFetch("/api/enquiries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(parsed.data),
