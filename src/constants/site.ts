@@ -43,10 +43,14 @@ export const SITE = {
   logoIcon: "/brand/logo-icon.png",
   studyModel: "80% online · 20% direct (hybrid)",
   mediums: ["English", "Tamil"],
+  // TODO(content): these were bare domain roots (facebook.com, not a real
+  // page), not real profile links, so they render as broken/generic
+  // footer links. Left empty until the college supplies real profile
+  // URLs — Footer only renders a key with a non-empty value.
   social: {
-    facebook: "https://www.facebook.com/",
-    instagram: "https://www.instagram.com/",
-    linkedin: "https://www.linkedin.com/",
+    facebook: "",
+    instagram: "",
+    linkedin: "",
   },
 } as const;
 

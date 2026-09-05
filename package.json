@@ -9,7 +9,8 @@
     "start": "node ./node_modules/next/dist/bin/next start",
     "lint": "next lint",
     "check-images": "tsx scripts/check-images.ts",
-    "validate-content": "tsx scripts/validate-programme-content.ts"
+    "validate-content": "tsx scripts/validate-programme-content.ts",
+    "check-links": "tsx scripts/check-links.ts"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.3.1",
