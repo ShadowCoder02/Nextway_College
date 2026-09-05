@@ -15,6 +15,7 @@ import type {
 } from "@/types/admissions";
 import type { Programme } from "@/types";
 import { BRANCHES } from "@/constants/site";
+import { readRememberedProgrammeSlug, clearRememberedProgrammeSlug } from "@/lib/applicant-programme";
 
 export default function ApplicationFormPage() {
   const router = useRouter();
@@ -135,25 +136,46 @@ export default function ApplicationFormPage() {
     init();
   }, [router, searchParams]);
 
-  // Handle preselected programme query parameter
+  // Handle a preselected programme: an explicit ?programme= query param
+  // always wins, falling back to whatever /apply, register or verify
+  // remembered in sessionStorage earlier in this flow. The remembered value
+  // only fills in a choice that hasn't been made yet, so it can't clobber an
+  // application already mid-progress with a different programme.
   useEffect(() => {
-    const progSlugParam = searchParams.get("programme");
-    if (progSlugParam && programmesList.length > 0) {
-      const found = programmesList.find((p) => p.slug === progSlugParam);
-      if (found) {
-        setProgrammeChoice((prev) => ({
-          ...prev,
-          programmeId: found.id,
-          programmeTitle: found.title,
-          programmeSlug: found.slug,
-          level: found.level,
-        }));
-      }
+    if (programmesList.length === 0) return;
+
+    const explicitSlug = searchParams.get("programme");
+    const slug = explicitSlug || readRememberedProgrammeSlug();
+    if (!slug) return;
+
+    const found = programmesList.find((p) => p.slug === slug);
+    if (!found) {
+      clearRememberedProgrammeSlug();
+      return;
     }
+
+    if (!explicitSlug && programmeChoice.programmeId) {
+      clearRememberedProgrammeSlug();
+      return;
+    }
+
+    const nextChoice: ProgrammeChoice = {
+      ...programmeChoice,
+      programmeId: found.id,
+      programmeTitle: found.title,
+      programmeSlug: found.slug,
+      level: found.level,
+    };
+    setProgrammeChoice(nextChoice);
+    clearRememberedProgrammeSlug();
+    // Persist immediately so the choice survives even if the applicant
+    // leaves before reaching the programme step or clicking Save.
+    void saveDraft(undefined, nextChoice);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, programmesList]);
 
   // Save Draft Helper
-  async function saveDraft(targetStep?: number): Promise<boolean> {
+  async function saveDraft(targetStep?: number, overrideProgrammeChoice?: ProgrammeChoice): Promise<boolean> {
     setSaving(true);
     setErrorMsg("");
     try {
@@ -164,7 +186,7 @@ export default function ApplicationFormPage() {
           currentStep: targetStep || currentStep,
           personalInfo,
           qualifications,
-          programmeChoice,
+          programmeChoice: overrideProgrammeChoice || programmeChoice,
         }),
       });
       const data = await res.json();
