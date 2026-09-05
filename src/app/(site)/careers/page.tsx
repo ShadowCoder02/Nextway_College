@@ -64,7 +64,7 @@ export default async function CareersPage() {
                     </ul>
                   )}
                   <Button
-                    href={`mailto:${SITE.email}?subject=Application: ${encodeURIComponent(career.title)}`}
+                    href={`mailto:${SITE.email}?subject=${encodeURIComponent(`Application: ${career.title}`)}`}
                     variant="primary"
                   >
                     Apply via Email

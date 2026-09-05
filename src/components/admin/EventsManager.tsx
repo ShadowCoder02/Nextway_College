@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { EventItem } from "@/types";
 import { Button } from "@/components/ui/Button";
+import { formatDateTime } from "@/lib/utils";
 
 const emptyEvent = (): EventItem => ({
   id: "",
@@ -149,7 +150,7 @@ export function EventsManager() {
               <tr key={e.id} className="border-b border-ice">
                 <td className="px-3 py-3 font-medium">{e.title}</td>
                 <td className="px-3 py-3 text-slate">
-                  {new Date(e.startAt).toLocaleString("en-LK")}
+                  {formatDateTime(e.startAt)}
                 </td>
                 <td className="px-3 py-3 capitalize">{e.status}</td>
                 <td className="px-3 py-3">

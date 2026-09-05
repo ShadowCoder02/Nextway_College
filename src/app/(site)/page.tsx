@@ -129,8 +129,9 @@ export default async function HomePage() {
         <section className="section-padding bg-navy text-white">
           <div className="container-nwc grid items-center gap-12 lg:grid-cols-2">
             <div className="relative aspect-4/3 overflow-hidden rounded-card shadow-premium">
-              <Image
+              <FallbackImage
                 src={flagship.imageUrl}
+                fallbackSrc={IMAGES.campus}
                 alt={flagship.title}
                 fill
                 className="object-cover"
@@ -222,33 +223,39 @@ export default async function HomePage() {
           </div>
           <div>
             <SectionHeader eyebrow="Events" title="Upcoming events" />
-            <div className="space-y-5">
-              {events.map((event) => (
-                <article key={event.id} className="premium-card p-5">
-                  <div className="-m-5 mb-4 overflow-hidden rounded-t-[var(--radius-card)]">
-                    <div className="relative aspect-16/9">
-                      <FallbackImage
-                        src={event.imageUrl}
-                        fallbackSrc={IMAGES.campus}
-                        alt={event.title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 1024px) 100vw, 50vw"
-                      />
+            {events.length === 0 ? (
+              <p className="rounded-[var(--radius-card)] bg-ice p-6 text-center text-slate">
+                No upcoming events are scheduled right now. Check back soon.
+              </p>
+            ) : (
+              <div className="space-y-5">
+                {events.map((event) => (
+                  <article key={event.id} className="premium-card p-5">
+                    <div className="-m-5 mb-4 overflow-hidden rounded-t-[var(--radius-card)]">
+                      <div className="relative aspect-16/9">
+                        <FallbackImage
+                          src={event.imageUrl}
+                          fallbackSrc={IMAGES.campus}
+                          alt={event.title}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 1024px) 100vw, 50vw"
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <p className="mb-1 text-xs font-bold uppercase tracking-wider text-deep-blue">
-                    {formatDateTime(event.startAt)}
-                  </p>
-                  <h3 className="mb-2 text-lg font-bold">
-                    <Link href={`/events/${event.slug}`} className="hover:text-brand-red">
-                      {event.title}
-                    </Link>
-                  </h3>
-                  <p className="text-sm text-slate">{event.summary}</p>
-                </article>
-              ))}
-            </div>
+                    <p className="mb-1 text-xs font-bold uppercase tracking-wider text-deep-blue">
+                      {formatDateTime(event.startAt)}
+                    </p>
+                    <h3 className="mb-2 text-lg font-bold">
+                      <Link href={`/events/${event.slug}`} className="hover:text-brand-red">
+                        {event.title}
+                      </Link>
+                    </h3>
+                    <p className="text-sm text-slate">{event.summary}</p>
+                  </article>
+                ))}
+              </div>
+            )}
             <Button href="/events" variant="ghost" className="mt-5">
               All events →
             </Button>

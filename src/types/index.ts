@@ -3,10 +3,19 @@ export type StudyMode = "Hybrid" | "Online" | "Direct" | "Flexible" | "Full-time
 export type PublishStatus = "draft" | "published" | "archived";
 export type EnquiryStatus = "new" | "contacted" | "follow_up" | "converted" | "closed";
 
+export type SchoolSlug =
+  | "computing-it"
+  | "business-management"
+  | "language-communication"
+  | "hospitality-tourism"
+  | "law"
+  | "education"
+  | "social-sciences";
+
 export interface School {
   id: string;
   name: string;
-  slug: string;
+  slug: SchoolSlug;
   description: string;
   imageUrl: string;
   sortOrder: number;
@@ -43,7 +52,7 @@ export interface ProgrammePartner {
 export interface Programme {
   id: string;
   schoolId: string;
-  schoolSlug: string;
+  schoolSlug: SchoolSlug;
   schoolName: string;
   title: string;
   slug: string;
@@ -53,6 +62,7 @@ export interface Programme {
   mode: StudyMode;
   medium: string;
   intake: string;
+  applicationDeadline?: string;
   location: string;
   overview: string;
   whyThisProgramme: string;

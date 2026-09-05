@@ -1,14 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { rememberProgrammeSlug } from "@/lib/applicant-programme";
 
 export default function ApplicantLoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // A user can reach /apply/login straight from /apply?programme=<slug> via
+  // "Sign In to Continue Application" — remember it so it still pre-selects
+  // once they're on the application form.
+  useEffect(() => {
+    const programmeSlug = searchParams.get("programme");
+    if (programmeSlug) rememberProgrammeSlug(programmeSlug);
+  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

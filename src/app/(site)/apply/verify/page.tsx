@@ -4,12 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { readRememberedProgrammeSlug } from "@/lib/applicant-programme";
 
 export default function ApplicantVerifyPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const defaultEmail = searchParams.get("email") || "";
   const defaultOtp = searchParams.get("otp") || "";
+  const programmeSlug = searchParams.get("programme");
   const [email, setEmail] = useState(defaultEmail);
   const [otp, setOtp] = useState(defaultOtp);
   const [loading, setLoading] = useState(false);
@@ -37,8 +39,12 @@ export default function ApplicantVerifyPage() {
       }
 
       setSuccess("Email verified successfully. Redirecting to your application...");
+      const rememberedSlug = programmeSlug || readRememberedProgrammeSlug();
+      const formHref = rememberedSlug
+        ? `/apply/portal/form?programme=${encodeURIComponent(rememberedSlug)}`
+        : "/apply/portal/form";
       setTimeout(() => {
-        router.push("/apply/portal/form");
+        router.push(formHref);
         router.refresh();
       }, 1000);
     } catch {

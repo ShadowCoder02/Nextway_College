@@ -60,6 +60,16 @@ export async function getSchools(): Promise<School[]> {
   return staticSchools.filter((s) => s.isActive).sort((a, b) => a.sortOrder - b.sortOrder);
 }
 
+export async function getSchoolsWithProgrammeCounts(): Promise<
+  (School & { programmeCount: number })[]
+> {
+  const [schools, programmes] = await Promise.all([getSchools(), getProgrammes()]);
+  return schools.map((school) => ({
+    ...school,
+    programmeCount: programmes.filter((p) => p.schoolSlug === school.slug).length,
+  }));
+}
+
 export async function getSchoolBySlug(slug: string): Promise<School | undefined> {
   return staticSchools.find((s) => s.slug === slug && s.isActive);
 }

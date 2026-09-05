@@ -64,7 +64,11 @@ export function organizationJsonLd() {
     },
     telephone: SITE.phoneTel,
     email: SITE.email,
-    sameAs: Object.values(SITE.social),
+    // Omit the key entirely while no real profile URLs exist, rather than
+    // publishing structured data pointing at bare domain roots.
+    ...(Object.values(SITE.social).some(Boolean)
+      ? { sameAs: Object.values(SITE.social).filter(Boolean) }
+      : {}),
   };
 }
 

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { StudentApplication } from "@/types/admissions";
 import { Button } from "@/components/ui/Button";
+import { formatDate, formatDateTime } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
 
 export default function ApplicantDashboardPage() {
@@ -135,7 +136,7 @@ export default function ApplicantDashboardPage() {
               <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-slate">
                 <span>Application ID: <strong className="text-navy font-mono">{app.applicationNumber}</strong></span>
                 <span>•</span>
-                <span>Created: {new Date(app.createdAt).toLocaleDateString()}</span>
+                <span>Created: {formatDate(app.createdAt)}</span>
               </div>
             </div>
 
@@ -205,7 +206,7 @@ export default function ApplicantDashboardPage() {
               <div>
                 <span className="text-slate block">Date & Time:</span>
                 <strong className="text-navy text-sm font-semibold">
-                  {new Date(app.interview.scheduledAt).toLocaleString()}
+                  {formatDateTime(app.interview.scheduledAt)}
                 </strong>
               </div>
               <div>
@@ -386,7 +387,7 @@ export default function ApplicantDashboardPage() {
                   <div key={ev.id} className="relative pl-4">
                     <span className="absolute -left-[9px] top-0.5 h-4 w-4 rounded-full bg-gold border-2 border-white" />
                     <div className="font-bold text-navy">{ev.action}</div>
-                    <div className="text-[10px] text-slate">{new Date(ev.timestamp).toLocaleString()}</div>
+                    <div className="text-[10px] text-slate">{formatDateTime(ev.timestamp)}</div>
                     {ev.details && <p className="text-charcoal mt-1 text-[11px] leading-relaxed">{ev.details}</p>}
                   </div>
                 ))}

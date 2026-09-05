@@ -6,6 +6,7 @@ import type {
   SiteStat,
   Testimonial,
 } from "@/types";
+import { IMAGES } from "@/constants/images";
 
 export const schools: School[] = [
   {
@@ -50,6 +51,46 @@ export const schools: School[] = [
     imageUrl:
       "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
     sortOrder: 4,
+    isActive: true,
+  },
+  // TODO(content): the college has not formally confirmed this 7-school
+  // academic structure. Law, Education and Social Sciences were split out
+  // from the previously-undifferentiated programme list; the college should
+  // review and confirm these groupings (and their descriptions/images below)
+  // before this is treated as official.
+  {
+    id: "sch-law",
+    name: "School of Law",
+    slug: "law",
+    description:
+      "Legal studies pathways from entrance preparation through to undergraduate law.",
+    // Reused local asset, not a new hotlinked stock photo: the Unsplash ID
+    // originally used here (photo-1589391887882-d48ac6a50f04) is the exact
+    // same dead ID already found and replaced for hnd-law in fix #2.
+    imageUrl: IMAGES.campus,
+    sortOrder: 5,
+    isActive: true,
+  },
+  {
+    id: "sch-education",
+    name: "School of Education",
+    slug: "education",
+    description:
+      "Teaching and early-childhood education programmes for classroom-ready graduates.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1200&q=80",
+    sortOrder: 6,
+    isActive: true,
+  },
+  {
+    id: "sch-social-sciences",
+    name: "School of Social Sciences",
+    slug: "social-sciences",
+    description:
+      "Special degree pathways examining society, governance and the physical world.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=80",
+    sortOrder: 7,
     isActive: true,
   },
 ];
@@ -403,8 +444,8 @@ export const programmes: Programme[] = [
     careerOpportunities: ["Academic progression support", "Front-office / service communication roles"],
     progression: "Supports entry into further diploma and degree pathways.",
     faqs: [],
-    imageUrl:
-      "https://images.unsplash.com/photo-1456513080800-b6bbe9059811?auto=format&fit=crop&w=1200&q=80",
+    // Was a dead Unsplash ID (same pattern as the ones fixed in fix #2).
+    imageUrl: IMAGES.campus,
     featured: false,
     status: "published",
     modules: [

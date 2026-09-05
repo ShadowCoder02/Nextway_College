@@ -5,7 +5,7 @@ import { useCallback, useRef, useTransition } from "react";
 import { PROGRAMME_LEVELS, STUDY_MODES } from "@/constants/site";
 
 type ProgrammeFiltersProps = {
-  schools: { slug: string; name: string }[];
+  schools: { slug: string; name: string; programmeCount: number }[];
 };
 
 export function ProgrammeFilters({ schools }: ProgrammeFiltersProps) {
@@ -109,11 +109,16 @@ export function ProgrammeFilters({ schools }: ProgrammeFiltersProps) {
             onChange={(e) => updateParams({ school: e.target.value })}
           >
             <option value="">All schools</option>
-            {schools.map((s) => (
-              <option key={s.slug} value={s.slug}>
-                {s.name}
-              </option>
-            ))}
+            {schools
+              // Keep the currently-selected school even at zero count, so a
+              // shared/bookmarked ?school=<zero-count-slug> URL still has a
+              // matching <option> instead of leaving the <select> orphaned.
+              .filter((s) => s.programmeCount > 0 || s.slug === school)
+              .map((s) => (
+                <option key={s.slug} value={s.slug}>
+                  {s.name} ({s.programmeCount})
+                </option>
+              ))}
           </select>
         </div>
       </div>

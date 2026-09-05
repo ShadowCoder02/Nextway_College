@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { StoredEnquiry } from "@/services/enquiries";
+import { formatDate } from "@/lib/utils";
 
 const STATUSES = ["new", "contacted", "follow_up", "converted", "closed"] as const;
 
@@ -49,7 +50,7 @@ export function EnquiriesManager() {
           {enquiries.map((e) => (
             <tr key={e.id} className="border-b border-ice align-top">
               <td className="px-3 py-3 text-slate">
-                {new Date(e.created_at).toLocaleDateString("en-LK")}
+                {formatDate(e.created_at)}
               </td>
               <td className="px-3 py-3 font-medium">{e.full_name}</td>
               <td className="px-3 py-3">{e.phone}</td>

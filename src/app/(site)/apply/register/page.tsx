@@ -1,15 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { applicantRegisterSchema, type ApplicantRegisterInput } from "@/lib/validation";
+import { rememberProgrammeSlug, readRememberedProgrammeSlug } from "@/lib/applicant-programme";
 
 export default function ApplicantRegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof ApplicantRegisterInput | "confirmPassword" | "general", string>>>({});
+
+  // Carries a programme picked on /apply?programme=<slug> through this page,
+  // since it isn't tied to the account until after verification.
+  const programmeSlug = searchParams.get("programme");
+
+  useEffect(() => {
+    if (programmeSlug) rememberProgrammeSlug(programmeSlug);
+  }, [programmeSlug]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -61,7 +71,9 @@ export default function ApplicantRegisterPage() {
       }
 
       const otpQuery = data.debugOtp ? `&otp=${encodeURIComponent(data.debugOtp)}` : "";
-      router.push(`/apply/verify?email=${encodeURIComponent(parsed.data.email)}${otpQuery}`);
+      const rememberedSlug = programmeSlug || readRememberedProgrammeSlug();
+      const programmeQuery = rememberedSlug ? `&programme=${encodeURIComponent(rememberedSlug)}` : "";
+      router.push(`/apply/verify?email=${encodeURIComponent(parsed.data.email)}${otpQuery}${programmeQuery}`);
       router.refresh();
     } catch {
       setErrors({ general: "Network error. Please check your connection and try again." });

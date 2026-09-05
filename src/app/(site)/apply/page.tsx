@@ -1,7 +1,10 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { buildMetadata } from "@/lib/seo";
 import { SITE } from "@/constants/site";
+import { getProgrammeBySlug } from "@/services/programmes";
+import { RememberProgramme } from "@/components/applicant/RememberProgramme";
 
 export const metadata = buildMetadata({
   title: "Online Student Application Portal",
@@ -10,9 +13,25 @@ export const metadata = buildMetadata({
   path: "/apply",
 });
 
-export default function ApplyLandingPage() {
+type PageProps = {
+  searchParams: Promise<{ programme?: string }>;
+};
+
+export default async function ApplyLandingPage({ searchParams }: PageProps) {
+  const { programme: requestedSlug } = await searchParams;
+  // Looking the slug up against the real catalogue is the validation: an
+  // unknown or malformed value (e.g. a reflected-XSS attempt) simply finds
+  // no programme and falls back to the unselected state below — nothing is
+  // ever rendered from the raw query param itself.
+  const programme = requestedSlug ? await getProgrammeBySlug(requestedSlug) : undefined;
+
+  const registerHref = programme ? `/apply/register?programme=${programme.slug}` : "/apply/register";
+  const loginHref = programme ? `/apply/login?programme=${programme.slug}` : "/apply/login";
+
   return (
     <>
+      {programme && <RememberProgramme slug={programme.slug} />}
+
       {/* Hero */}
       <section className="relative overflow-hidden hero-gradient py-20 text-white lg:py-28">
         <div className="mesh-overlay absolute inset-0" />
@@ -23,11 +42,21 @@ export default function ApplyLandingPage() {
             <p className="text-lead mb-8 text-white/90">
               Begin your journey towards an internationally recognised qualification. Our digital admissions portal allows you to complete your application progressively, save your progress, upload credentials, and track your admission outcome online.
             </p>
+            {programme && (
+              <div className="mb-6 inline-flex flex-wrap items-center gap-2 rounded-xl border border-gold/40 bg-white/10 px-5 py-3 text-sm text-white">
+                <span>
+                  You&apos;re applying for <strong className="text-gold">{programme.title}</strong>.
+                </span>
+                <Link href="/programmes" className="font-semibold underline underline-offset-2 hover:text-gold">
+                  Change programme
+                </Link>
+              </div>
+            )}
             <div className="flex flex-wrap gap-4">
-              <Button href="/apply/register" variant="primary" size="lg">
+              <Button href={registerHref} variant="primary" size="lg">
                 Start New Application
               </Button>
-              <Button href="/apply/login" variant="outline-light" size="lg">
+              <Button href={loginHref} variant="outline-light" size="lg">
                 Sign In to Continue Application
               </Button>
             </div>
@@ -152,10 +181,10 @@ export default function ApplyLandingPage() {
             </div>
 
             <div className="flex flex-col gap-3">
-              <Button href="/apply/register" variant="primary" className="w-full">
+              <Button href={registerHref} variant="primary" className="w-full">
                 Start Online Application
               </Button>
-              <Button href="/apply/login" variant="outline-light" className="w-full">
+              <Button href={loginHref} variant="outline-light" className="w-full">
                 Already Registered? Sign In
               </Button>
             </div>

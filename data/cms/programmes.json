@@ -1,8 +1,8 @@
 [
   {
-    "schoolId": "sch-general",
-    "schoolSlug": "general",
-    "schoolName": "Nextway College International",
+    "schoolId": "sch-computing",
+    "schoolSlug": "computing-it",
+    "schoolName": "School of Computing & IT",
     "duration": "3 years",
     "mode": "Hybrid",
     "medium": "English",
@@ -41,9 +41,9 @@
     "shortPitch": "Flagship computing degree with hybrid delivery for modern IT careers."
   },
   {
-    "schoolId": "sch-general",
-    "schoolSlug": "general",
-    "schoolName": "Nextway College International",
+    "schoolId": "sch-law",
+    "schoolSlug": "law",
+    "schoolName": "School of Law",
     "duration": "3–4 years",
     "mode": "Hybrid",
     "medium": "English & Tamil",
@@ -81,9 +81,9 @@
     "shortPitch": "Undergraduate law degree pathway for legal and professional careers."
   },
   {
-    "schoolId": "sch-general",
-    "schoolSlug": "general",
-    "schoolName": "Nextway College International",
+    "schoolId": "sch-social-sciences",
+    "schoolSlug": "social-sciences",
+    "schoolName": "School of Social Sciences",
     "duration": "As per programme structure",
     "mode": "Hybrid",
     "medium": "English & Tamil",
@@ -120,9 +120,9 @@
     "shortPitch": "Special degree in Geography with structured hybrid learning."
   },
   {
-    "schoolId": "sch-general",
-    "schoolSlug": "general",
-    "schoolName": "Nextway College International",
+    "schoolId": "sch-social-sciences",
+    "schoolSlug": "social-sciences",
+    "schoolName": "School of Social Sciences",
     "duration": "As per programme structure",
     "mode": "Hybrid",
     "medium": "English & Tamil",
@@ -147,7 +147,7 @@
     ],
     "progression": "Progression to advanced study or professional pathways subject to partner requirements.",
     "faqs": [],
-    "imageUrl": "https://images.unsplash.com/photo-1529107384806-3a0a4a0a0a0a?auto=format&fit=crop&w=1200&q=80",
+    "imageUrl": "/images/programmes/ba-political-science-sp.jpg",
     "featured": false,
     "flagship": false,
     "status": "published",
@@ -159,9 +159,9 @@
     "shortPitch": "Special degree exploring governance, policy and political systems."
   },
   {
-    "schoolId": "sch-general",
-    "schoolSlug": "general",
-    "schoolName": "Nextway College International",
+    "schoolId": "sch-education",
+    "schoolSlug": "education",
+    "schoolName": "School of Education",
     "duration": "As per programme structure",
     "mode": "Hybrid",
     "medium": "English & Tamil",
@@ -198,9 +198,9 @@
     "shortPitch": "Higher diploma preparing educators for primary teaching environments."
   },
   {
-    "schoolId": "sch-general",
-    "schoolSlug": "general",
-    "schoolName": "Nextway College International",
+    "schoolId": "sch-language",
+    "schoolSlug": "language-communication",
+    "schoolName": "School of Language & Communication",
     "duration": "As per programme structure",
     "mode": "Hybrid",
     "medium": "English",
@@ -225,7 +225,7 @@
     ],
     "progression": "Progression to advanced study or professional pathways subject to partner requirements.",
     "faqs": [],
-    "imageUrl": "https://images.unsplash.com/photo-1456513080800-b6bbe9059811?auto=format&fit=crop&w=1200&q=80",
+    "imageUrl": "/images/programmes/hnd-english.jpg",
     "featured": false,
     "flagship": false,
     "status": "published",
@@ -237,9 +237,9 @@
     "shortPitch": "Advanced English pathway for academic and professional communication."
   },
   {
-    "schoolId": "sch-general",
-    "schoolSlug": "general",
-    "schoolName": "Nextway College International",
+    "schoolId": "sch-language",
+    "schoolSlug": "language-communication",
+    "schoolName": "School of Language & Communication",
     "duration": "As per programme structure",
     "mode": "Hybrid",
     "medium": "Tamil",
@@ -264,7 +264,7 @@
     ],
     "progression": "Progression to advanced study or professional pathways subject to partner requirements.",
     "faqs": [],
-    "imageUrl": "https://images.unsplash.com/photo-1546410535-e1343712f4a0?auto=format&fit=crop&w=1200&q=80",
+    "imageUrl": "/images/programmes/ba-tamil-sp.jpg",
     "featured": false,
     "flagship": false,
     "status": "published",
@@ -276,9 +276,9 @@
     "shortPitch": "Special degree in Tamil language, literature and applied communication."
   },
   {
-    "schoolId": "sch-general",
-    "schoolSlug": "general",
-    "schoolName": "Nextway College International",
+    "schoolId": "sch-law",
+    "schoolSlug": "law",
+    "schoolName": "School of Law",
     "duration": "As per programme structure",
     "mode": "Hybrid",
     "medium": "English & Tamil",
@@ -303,7 +303,7 @@
     ],
     "progression": "Progression to advanced study or professional pathways subject to partner requirements.",
     "faqs": [],
-    "imageUrl": "https://images.unsplash.com/photo-1589391887882-d48ac6a50f04?auto=format&fit=crop&w=1200&q=80",
+    "imageUrl": "/images/programmes/hnd-law.jpg",
     "featured": false,
     "flagship": false,
     "status": "published",
@@ -315,9 +315,9 @@
     "shortPitch": "Practical legal studies foundation for degree progression or workplace roles."
   },
   {
-    "schoolId": "sch-general",
-    "schoolSlug": "general",
-    "schoolName": "Nextway College International",
+    "schoolId": "sch-education",
+    "schoolSlug": "education",
+    "schoolName": "School of Education",
     "duration": "As per programme structure",
     "mode": "Hybrid",
     "medium": "English & Tamil",
@@ -342,7 +342,7 @@
     ],
     "progression": "Progression to advanced study or professional pathways subject to partner requirements.",
     "faqs": [],
-    "imageUrl": "https://images.unsplash.com/photo-1503454537194-1dd5c0c0c0c0?auto=format&fit=crop&w=1200&q=80",
+    "imageUrl": "/images/programmes/diploma-preschool.jpg",
     "featured": false,
     "flagship": false,
     "status": "published",
@@ -354,9 +354,9 @@
     "shortPitch": "Early childhood education diploma for preschool teaching careers."
   },
   {
-    "schoolId": "sch-general",
-    "schoolSlug": "general",
-    "schoolName": "Nextway College International",
+    "schoolId": "sch-law",
+    "schoolSlug": "law",
+    "schoolName": "School of Law",
     "duration": "Flexible intake",
     "mode": "Hybrid",
     "medium": "English & Tamil",
@@ -381,7 +381,7 @@
     ],
     "progression": "Progression to advanced study or professional pathways subject to partner requirements.",
     "faqs": [],
-    "imageUrl": "https://images.unsplash.com/photo-1450101499168-0f0c0c0c0c0c?auto=format&fit=crop&w=1200&q=80",
+    "imageUrl": "/images/programmes/law-college-entrance-exam-training.jpg",
     "featured": true,
     "flagship": false,
     "status": "published",

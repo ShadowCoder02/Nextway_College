@@ -96,17 +96,19 @@ export function Footer() {
             </li>
           </ul>
           <div className="flex gap-4">
-            {Object.entries(SITE.social).map(([key, url]) => (
-              <a
-                key={key}
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs capitalize text-white/50 transition hover:text-gold"
-              >
-                {key}
-              </a>
-            ))}
+            {Object.entries(SITE.social)
+              .filter(([, url]) => Boolean(url))
+              .map(([key, url]) => (
+                <a
+                  key={key}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs capitalize text-white/50 transition hover:text-gold"
+                >
+                  {key}
+                </a>
+              ))}
           </div>
         </div>
       </div>

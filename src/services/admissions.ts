@@ -40,6 +40,7 @@ import path from "path";
 import { sendApplicantVerificationEmail, sendApplicationConfirmationEmail } from "@/lib/admissions/mailer";
 import { generateOtpCode } from "@/lib/admissions/otp";
 import { generateApplicationPdf } from "@/lib/admissions/pdf";
+import { formatDateTime } from "@/lib/utils";
 
 /* -------------------------------------------------------------------------- */
 /*                            Applicant Auth Services                         */
@@ -505,7 +506,7 @@ export async function scheduleInterviewAdmin(
     timestamp: new Date().toISOString(),
     actor: staffName,
     action: "Interview scheduled",
-    details: `Interview scheduled on ${new Date(interview.scheduledAt).toLocaleString()} (${interview.venueOrLink})`,
+    details: `Interview scheduled on ${formatDateTime(interview.scheduledAt)} (${interview.venueOrLink})`,
   });
 
   return saveStoredApplication(app);

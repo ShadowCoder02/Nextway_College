@@ -5,6 +5,7 @@ import { LeadForm } from "@/components/ui/LeadForm";
 import { Badge } from "@/components/ui/Badge";
 import { buildMetadata, courseJsonLd } from "@/lib/seo";
 import { IMAGES } from "@/constants/images";
+import { SITE } from "@/constants/site";
 import { FallbackImage } from "@/components/ui/FallbackImage";
 import { getProgrammeBySlug } from "@/services/programmes";
 
@@ -113,72 +114,80 @@ export default async function ProgrammeDetailPage({ params }: PageProps) {
               <p className="text-charcoal">{programme.whyThisProgramme}</p>
             </section>
 
-            <section>
-              <h2 className="text-section mb-4">Learning outcomes</h2>
-              <div className="gold-rule mb-4" />
-              <ul className="space-y-3">
-                {programme.learningOutcomes.map((o) => (
-                  <li key={o} className="flex gap-3">
-                    <span className="mt-1 text-gold">✓</span>
-                    <span>{o}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
+            {programme.learningOutcomes.length > 0 && (
+              <section>
+                <h2 className="text-section mb-4">Learning outcomes</h2>
+                <div className="gold-rule mb-4" />
+                <ul className="space-y-3">
+                  {programme.learningOutcomes.map((o) => (
+                    <li key={o} className="flex gap-3">
+                      <span className="mt-1 text-gold">✓</span>
+                      <span>{o}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
 
-            <section>
-              <h2 className="text-section mb-4">Curriculum</h2>
-              <div className="gold-rule mb-4" />
-              {Object.entries(modulesByYear).map(([year, mods]) => (
-                <div key={year} className="mb-8">
-                  <h3 className="mb-4 text-xl font-bold text-deep-blue">{year}</h3>
-                  <div className="overflow-hidden rounded-[var(--radius-card)] border border-ice">
-                    <table className="w-full text-left text-sm">
-                      <thead className="bg-ice">
-                        <tr>
-                          <th className="px-4 py-3 font-semibold">Code</th>
-                          <th className="px-4 py-3 font-semibold">Module</th>
-                          {mods.some((m) => m.credits) && (
-                            <th className="px-4 py-3 font-semibold">Credits</th>
-                          )}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {mods.map((mod) => (
-                          <tr key={mod.id} className="border-t border-ice">
-                            <td className="px-4 py-3 font-mono text-deep-blue">{mod.code}</td>
-                            <td className="px-4 py-3">{mod.title}</td>
+            {programme.modules.length > 0 && (
+              <section>
+                <h2 className="text-section mb-4">Curriculum</h2>
+                <div className="gold-rule mb-4" />
+                {Object.entries(modulesByYear).map(([year, mods]) => (
+                  <div key={year} className="mb-8">
+                    <h3 className="mb-4 text-xl font-bold text-deep-blue">{year}</h3>
+                    <div className="overflow-hidden rounded-[var(--radius-card)] border border-ice">
+                      <table className="w-full text-left text-sm">
+                        <thead className="bg-ice">
+                          <tr>
+                            <th className="px-4 py-3 font-semibold">Code</th>
+                            <th className="px-4 py-3 font-semibold">Module</th>
                             {mods.some((m) => m.credits) && (
-                              <td className="px-4 py-3">{mod.credits ?? "—"}</td>
+                              <th className="px-4 py-3 font-semibold">Credits</th>
                             )}
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {mods.map((mod) => (
+                            <tr key={mod.id} className="border-t border-ice">
+                              <td className="px-4 py-3 font-mono text-deep-blue">{mod.code}</td>
+                              <td className="px-4 py-3">{mod.title}</td>
+                              {mods.some((m) => m.credits) && (
+                                <td className="px-4 py-3">{mod.credits ?? "—"}</td>
+                              )}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </section>
-
-            <section>
-              <h2 className="text-section mb-4">Entry requirements</h2>
-              <div className="gold-rule mb-4" />
-              <ul className="list-disc space-y-2 pl-5">
-                {programme.entryRequirements.map((r) => (
-                  <li key={r}>{r}</li>
                 ))}
-              </ul>
-            </section>
+              </section>
+            )}
 
-            <section>
-              <h2 className="text-section mb-4">Career opportunities</h2>
-              <div className="gold-rule mb-4" />
-              <ul className="grid gap-3 sm:grid-cols-2">
-                {programme.careerOpportunities.map((c) => (
-                  <li key={c} className="rounded-lg bg-ice px-4 py-3">{c}</li>
-                ))}
-              </ul>
-            </section>
+            {programme.entryRequirements.length > 0 && (
+              <section>
+                <h2 className="text-section mb-4">Entry requirements</h2>
+                <div className="gold-rule mb-4" />
+                <ul className="list-disc space-y-2 pl-5">
+                  {programme.entryRequirements.map((r) => (
+                    <li key={r}>{r}</li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
+            {programme.careerOpportunities.length > 0 && (
+              <section>
+                <h2 className="text-section mb-4">Career opportunities</h2>
+                <div className="gold-rule mb-4" />
+                <ul className="grid gap-3 sm:grid-cols-2">
+                  {programme.careerOpportunities.map((c) => (
+                    <li key={c} className="rounded-lg bg-ice px-4 py-3">{c}</li>
+                  ))}
+                </ul>
+              </section>
+            )}
 
             {programme.faqs.length > 0 && (
               <section>
@@ -212,21 +221,30 @@ export default async function ProgrammeDetailPage({ params }: PageProps) {
                   <div><dt className="text-slate">Mode</dt><dd className="font-medium">{programme.mode}</dd></div>
                   <div><dt className="text-slate">Medium</dt><dd className="font-medium">{programme.medium}</dd></div>
                   <div><dt className="text-slate">Intake</dt><dd className="font-medium">{programme.intake}</dd></div>
+                  <div>
+                    <dt className="text-slate">Application deadline</dt>
+                    <dd className="font-medium">{programme.applicationDeadline || "To be announced — contact Admissions"}</dd>
+                  </div>
                 </dl>
               </div>
 
-              {programme.fees && (
-                <div className="rounded-[var(--radius-card)] border border-gold/30 bg-white p-6">
-                  <h3 className="mb-4 font-bold text-navy">Fees ({programme.fees.intake})</h3>
+              <div className="rounded-[var(--radius-card)] border border-gold/30 bg-white p-6">
+                <h3 className="mb-4 font-bold text-navy">Fees</h3>
+                {programme.fees ? (
                   <dl className="space-y-2 text-sm">
+                    <div><dt className="text-slate">Intake</dt><dd>{programme.fees.intake}</dd></div>
                     <div><dt className="text-slate">Registration</dt><dd>{programme.fees.registrationFee}</dd></div>
                     <div><dt className="text-slate">Course fee</dt><dd>{programme.fees.courseFee}</dd></div>
                     {programme.fees.instalmentNote && (
                       <p className="pt-2 text-slate">{programme.fees.instalmentNote}</p>
                     )}
                   </dl>
-                </div>
-              )}
+                ) : (
+                  <p className="text-sm text-slate">
+                    Available on request — contact Admissions on {SITE.phone} for the current fee structure.
+                  </p>
+                )}
+              </div>
 
               <div id="enquire" className="rounded-[var(--radius-card)] bg-white p-6 shadow-[var(--shadow-soft)]">
                 <h3 className="mb-4 font-bold text-navy">Enquire about this programme</h3>
