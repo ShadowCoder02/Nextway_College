@@ -6,6 +6,7 @@ import type {
   SiteStat,
   Testimonial,
 } from "@/types";
+import { IMAGES } from "@/constants/images";
 
 export const schools: School[] = [
   {
@@ -63,8 +64,10 @@ export const schools: School[] = [
     slug: "law",
     description:
       "Legal studies pathways from entrance preparation through to undergraduate law.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1589391887882-d48ac6a50f04?auto=format&fit=crop&w=1200&q=80",
+    // Reused local asset, not a new hotlinked stock photo: the Unsplash ID
+    // originally used here (photo-1589391887882-d48ac6a50f04) is the exact
+    // same dead ID already found and replaced for hnd-law in fix #2.
+    imageUrl: IMAGES.campus,
     sortOrder: 5,
     isActive: true,
   },
@@ -441,8 +444,8 @@ export const programmes: Programme[] = [
     careerOpportunities: ["Academic progression support", "Front-office / service communication roles"],
     progression: "Supports entry into further diploma and degree pathways.",
     faqs: [],
-    imageUrl:
-      "https://images.unsplash.com/photo-1456513080800-b6bbe9059811?auto=format&fit=crop&w=1200&q=80",
+    // Was a dead Unsplash ID (same pattern as the ones fixed in fix #2).
+    imageUrl: IMAGES.campus,
     featured: false,
     status: "published",
     modules: [

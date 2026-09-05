@@ -119,11 +119,16 @@ export function ApplicationReviewer({ initialApplication }: ApplicationReviewerP
     setSchedulingInterview(true);
 
     try {
+      // The <input type="datetime-local"> value has no timezone (e.g.
+      // "2026-09-15T14:00") — admissions staff schedule in Colombo time, so
+      // attach that offset explicitly now rather than storing an ambiguous
+      // timestamp that a later formatter would have to guess at.
+      const scheduledAt = `${interviewDate}:00+05:30`;
       const res = await fetch(`/api/portal/applications/${app.id}/interview`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          scheduledAt: interviewDate,
+          scheduledAt,
           venueOrLink: interviewVenue,
           instructions: interviewInstructions,
         }),

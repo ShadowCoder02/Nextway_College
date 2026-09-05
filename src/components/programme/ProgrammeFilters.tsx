@@ -110,7 +110,10 @@ export function ProgrammeFilters({ schools }: ProgrammeFiltersProps) {
           >
             <option value="">All schools</option>
             {schools
-              .filter((s) => s.programmeCount > 0)
+              // Keep the currently-selected school even at zero count, so a
+              // shared/bookmarked ?school=<zero-count-slug> URL still has a
+              // matching <option> instead of leaving the <select> orphaned.
+              .filter((s) => s.programmeCount > 0 || s.slug === school)
               .map((s) => (
                 <option key={s.slug} value={s.slug}>
                   {s.name} ({s.programmeCount})

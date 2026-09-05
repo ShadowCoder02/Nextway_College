@@ -27,11 +27,14 @@
 
 ## Production
 
-1. Set `NEXT_PUBLIC_SITE_URL` to production domain.
+1. Set `NEXT_PUBLIC_SITE_URL` in Vercel's **Production** environment scope.
+   Currently `https://nextway-college.vercel.app` until the real `.lk` domain
+   lands — update this value (and the sitemap submission below) when it does.
+   The build fails if this is unset in production.
 2. Add custom domain in Vercel → Domains.
 3. Update DNS (A/CNAME records as shown by Vercel).
 4. Enable HTTPS (automatic on Vercel).
-5. Submit sitemap to Google Search Console: `https://yourdomain.lk/sitemap.xml`
+5. Submit sitemap to Google Search Console: `<NEXT_PUBLIC_SITE_URL>/sitemap.xml`
 
 ## Supabase production
 

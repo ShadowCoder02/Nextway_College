@@ -136,13 +136,16 @@ export default function ApplicationFormPage() {
     init();
   }, [router, searchParams]);
 
-  // Handle a preselected programme: an explicit ?programme= query param
-  // always wins, falling back to whatever /apply, register or verify
-  // remembered in sessionStorage earlier in this flow. The remembered value
-  // only fills in a choice that hasn't been made yet, so it can't clobber an
-  // application already mid-progress with a different programme.
+  // Handle a preselected programme from an explicit ?programme= query param
+  // or whatever /apply, register or verify remembered in sessionStorage
+  // earlier in this flow. Either way, this only fills in a choice that
+  // hasn't been made yet — a stale bookmarked link (e.g. an old verify
+  // email) must never silently overwrite an application already mid-progress
+  // with a different programme. Switching programmes deliberately is Step
+  // 3's job, not a side effect of the URL.
   useEffect(() => {
     if (programmesList.length === 0) return;
+    if (programmeChoice.programmeId) return;
 
     const explicitSlug = searchParams.get("programme");
     const slug = explicitSlug || readRememberedProgrammeSlug();
@@ -150,11 +153,6 @@ export default function ApplicationFormPage() {
 
     const found = programmesList.find((p) => p.slug === slug);
     if (!found) {
-      clearRememberedProgrammeSlug();
-      return;
-    }
-
-    if (!explicitSlug && programmeChoice.programmeId) {
       clearRememberedProgrammeSlug();
       return;
     }

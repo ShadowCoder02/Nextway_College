@@ -80,11 +80,12 @@ async function main() {
     }
 
     const isRedirect = res.status >= 300 && res.status < 400;
-    if (res.status >= 400 && !(isAuthGated(path) && isRedirect)) {
+    const isExpectedAuthGate = isAuthGated(path) && (res.status === 401 || res.status === 403);
+    if (res.status >= 400 && !isExpectedAuthGate) {
       internalFailures.push({ path, status: res.status });
       continue;
     }
-    if (isRedirect) continue; // don't crawl through redirects
+    if (isRedirect || isExpectedAuthGate) continue; // don't crawl through redirects or auth gates
 
     const html = await res.text();
     for (const href of extractHrefs(html)) {

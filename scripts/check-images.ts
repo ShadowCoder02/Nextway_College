@@ -5,11 +5,16 @@
 import { promises as fs } from "fs";
 import path from "path";
 
-const DATA_FILES = [
+const JSON_DATA_FILES = [
   "data/cms/programmes.json",
   "data/cms/events.json",
   "data/cms/news.json",
 ];
+
+// Seed/registry data isn't a JSON blob, but still embeds hotlinked image
+// URLs (e.g. the schools registry) that seed the CMS or render directly —
+// a dead one here is exactly as broken as a dead one in the JSON files.
+const SOURCE_DATA_FILES = ["src/data/content.ts", "src/data/programmes-seed.ts"];
 
 type Reference = { url: string; file: string; label: string };
 
@@ -32,6 +37,19 @@ function collectImageUrls(file: string, json: unknown): Reference[] {
   return refs;
 }
 
+function collectImageUrlsFromSource(file: string, source: string): Reference[] {
+  const refs: Reference[] = [];
+  const lines = source.split("\n");
+  const urlPattern = /["'](https?:\/\/[^"']+)["']/g;
+  lines.forEach((line, i) => {
+    let match: RegExpExecArray | null;
+    while ((match = urlPattern.exec(line))) {
+      refs.push({ url: match[1], file, label: `line ${i + 1}` });
+    }
+  });
+  return refs;
+}
+
 async function checkUrl(url: string): Promise<number | "error"> {
   try {
     const res = await fetch(url, { method: "GET", redirect: "follow" });
@@ -45,7 +63,7 @@ async function main() {
   const root = process.cwd();
   const allRefs: Reference[] = [];
 
-  for (const relPath of DATA_FILES) {
+  for (const relPath of JSON_DATA_FILES) {
     const filePath = path.join(root, relPath);
     try {
       const raw = await fs.readFile(filePath, "utf-8");
@@ -55,8 +73,19 @@ async function main() {
     }
   }
 
+  for (const relPath of SOURCE_DATA_FILES) {
+    const filePath = path.join(root, relPath);
+    try {
+      const raw = await fs.readFile(filePath, "utf-8");
+      allRefs.push(...collectImageUrlsFromSource(relPath, raw));
+    } catch {
+      console.warn(`Skipping ${relPath} — could not read it.`);
+    }
+  }
+
+  const totalFiles = JSON_DATA_FILES.length + SOURCE_DATA_FILES.length;
   const uniqueUrls = [...new Set(allRefs.map((r) => r.url))];
-  console.log(`Checking ${uniqueUrls.length} unique image URL(s) across ${DATA_FILES.length} data file(s)...\n`);
+  console.log(`Checking ${uniqueUrls.length} unique image URL(s) across ${totalFiles} data file(s)...\n`);
 
   const results = await Promise.all(
     uniqueUrls.map(async (url) => ({ url, status: await checkUrl(url) })),
