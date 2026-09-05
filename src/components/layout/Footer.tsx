@@ -1,7 +1,14 @@
 import { SITE, NAV_LINKS } from "@/constants/site";
 import { whatsappUrl } from "@/lib/utils";
+import { faLocationDot, faPhone, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { Logo } from "./Logo";
+
+function IconWrap({ children }: { children: React.ReactNode }) {
+  return <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center text-gold">{children}</span>;
+}
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -28,24 +35,40 @@ export function Footer() {
                 </Link>
               </li>
             ))}
+            <li>
+              <Link href="/apply" className="font-semibold text-gold transition hover:text-white">
+                Apply Online (Portal) →
+              </Link>
+            </li>
+            <li>
+              <Link href="/apply/login" className="text-white/60 transition hover:text-white">
+                Applicant Sign In
+              </Link>
+            </li>
           </ul>
         </div>
 
         <div>
           <h4 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-gold">Contact</h4>
           <ul className="space-y-3 text-sm text-white/75">
-            <li>{SITE.address}</li>
-            <li>
+            <li className="flex items-start gap-3">
+              <IconWrap><FontAwesomeIcon icon={faLocationDot} className="h-3.5 w-3.5" /></IconWrap>
+              <span>{SITE.address}</span>
+            </li>
+            <li className="flex items-center gap-3">
+              <IconWrap><FontAwesomeIcon icon={faPhone} className="h-3.5 w-3.5" /></IconWrap>
               <a href={`tel:${SITE.phoneTel}`} className="transition hover:text-white">
                 {SITE.phone}
               </a>
             </li>
-            <li>
+            <li className="flex items-center gap-3">
+              <IconWrap><FontAwesomeIcon icon={faEnvelope} className="h-3.5 w-3.5" /></IconWrap>
               <a href={`mailto:${SITE.email}`} className="transition hover:text-white">
                 {SITE.email}
               </a>
             </li>
-            <li>
+            <li className="flex items-center gap-3">
+              <IconWrap><FontAwesomeIcon icon={faWhatsapp} className="h-3.5 w-3.5" /></IconWrap>
               <a
                 href={whatsappUrl(SITE.whatsapp)}
                 target="_blank"

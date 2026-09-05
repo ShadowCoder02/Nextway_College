@@ -13,12 +13,26 @@ export default function AdmissionsPage() {
   return (
     <>
       <section className="bg-navy py-16 text-white lg:py-24">
-        <div className="container-nwc max-w-3xl">
-          <span className="eyebrow mb-3 block">Admissions</span>
+        <div className="container-nwc max-w-4xl">
+          <span className="eyebrow mb-3 block text-gold">Admissions 2026 Intake</span>
           <h1 className="text-display text-white">Start your application</h1>
           <p className="mt-6 text-xl text-white/85">
-            Our Admissions team will guide you through programme selection, eligibility and next steps for the 2026 intake.
+            Our Admissions team will guide you through programme selection, eligibility and next steps. You can complete your official application directly online or submit a general enquiry.
           </p>
+          <div className="mt-8 flex flex-wrap gap-4">
+            <a
+              href="/apply"
+              className="inline-flex items-center justify-center rounded-full bg-gold px-8 py-3.5 text-base font-bold text-navy shadow-lg transition-all hover:bg-white hover:text-navy hover:scale-105"
+            >
+              Apply Online Now →
+            </a>
+            <a
+              href="/apply/login"
+              className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/10 px-8 py-3.5 text-base font-semibold text-white transition hover:bg-white hover:text-navy"
+            >
+              Applicant Portal Login
+            </a>
+          </div>
         </div>
       </section>
 

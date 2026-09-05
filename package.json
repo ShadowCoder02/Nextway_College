@@ -10,10 +10,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^7.3.1",
+    "@fortawesome/free-brands-svg-icons": "^7.3.1",
+    "@fortawesome/free-solid-svg-icons": "^7.3.1",
+    "@fortawesome/react-fontawesome": "^3.5.0",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.8",
     "clsx": "^2.1.1",
     "next": "^15.3.3",
+    "nodemailer": "^10.0.0",
+    "pdfkit": "^0.20.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "zod": "^3.25.42"
@@ -22,11 +28,13 @@
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4.1.8",
     "@types/node": "^22.15.29",
+    "@types/pdfkit": "^0.17.6",
     "@types/react": "^19.1.6",
     "@types/react-dom": "^19.1.5",
     "eslint": "^9.28.0",
     "eslint-config-next": "^15.3.3",
     "tailwindcss": "^4.1.8",
+    "tsx": "^4.23.13",
     "typescript": "^5.8.3"
   },
   "optionalDependencies": {

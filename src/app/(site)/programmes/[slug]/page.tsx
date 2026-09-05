@@ -88,8 +88,8 @@ export default async function ProgrammeDetailPage({ params }: PageProps) {
             <span>{programme.intake}</span>
           </div>
           <div className="mt-8 flex flex-wrap gap-4">
-            <Button href="/admissions" variant="primary">
-              Apply now
+            <Button href={`/apply?programme=${programme.slug}`} variant="primary">
+              Apply Online
             </Button>
             <Button href="#enquire" variant="outline-light">
               Request information
@@ -245,6 +245,8 @@ export default async function ProgrammeDetailPage({ params }: PageProps) {
       <CTASection
         title="Interested in applying?"
         description={`Start your application for ${programme.title} or speak with Admissions for personalised guidance.`}
+        primaryHref={`/apply?programme=${programme.slug}`}
+        primaryLabel="Apply Online"
       />
     </>
   );

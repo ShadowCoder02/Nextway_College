@@ -14,8 +14,8 @@ type CTASectionProps = {
 export function CTASection({
   title,
   description,
-  primaryHref = "/admissions",
-  primaryLabel = "Apply now",
+  primaryHref = "/apply",
+  primaryLabel = "Apply Online",
   secondaryHref = "/contact",
   secondaryLabel = "Contact Admissions",
   className,

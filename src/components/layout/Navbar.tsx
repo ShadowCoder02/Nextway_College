@@ -65,8 +65,8 @@ export function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <Button href="/admissions" variant="primary" size="sm">
-            Apply Now
+          <Button href="/apply" variant="primary" size="sm">
+            Apply Online
           </Button>
         </div>
 
@@ -100,8 +100,8 @@ export function Navbar() {
               </Link>
             ))}
             <div className="mt-3 flex flex-col gap-2 border-t border-ice pt-4">
-              <Button href="/admissions" variant="primary" className="w-full">
-                Apply Now
+              <Button href="/apply" variant="primary" className="w-full">
+                Apply Online
               </Button>
             </div>
           </nav>

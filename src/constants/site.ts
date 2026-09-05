@@ -49,6 +49,7 @@ export const STUDY_MODES = ["Hybrid", "Online", "Direct", "Flexible"] as const;
 
 export const PORTAL_NAV = [
   { href: "/portal", label: "Dashboard" },
+  { href: "/portal/applications", label: "Applications" },
   { href: "/portal/enquiries", label: "Enquiries" },
   { href: "/portal/programmes", label: "Programmes" },
   { href: "/portal/news", label: "News" },

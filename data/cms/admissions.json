@@ -1,0 +1,720 @@
+{
+  "applicants": [
+    {
+      "fullName": "Kavindu Madushanka",
+      "email": "test_applicant_1788566898745@nextway.edu.lk",
+      "phone": "+94771234567",
+      "passwordHash": "717e6b6f3cde240b59da79446966d8305908a2c0e4eb505b61e37b02b9856b6de8bbc84b346798c92e14235027a56091df06a72a12e36d925eec9de4f08e2096",
+      "passwordSalt": "3c3a53994921a1a44584171cb7dd280c",
+      "isVerified": true,
+      "id": "8d65dc7c-9571-4d96-a944-e869bc8ce578",
+      "createdAt": "2026-09-05T00:08:18.766Z",
+      "updatedAt": "2026-09-05T00:08:18.766Z"
+    },
+    {
+      "fullName": "Mohamed Rishan",
+      "email": "rishan.student@example.com",
+      "phone": "+94771234567",
+      "passwordHash": "90f54d65254464f0ddf4d9d88d0b6fae3ea68c4b50ba82eec4c45b3c71f66edf7a8beec6aa49826096d07650a4d7e167abd50c64fa43bb41b8adf0ae03cdcdba",
+      "passwordSalt": "1752745dc3eb0238099d1fa34340f605",
+      "isVerified": true,
+      "id": "472afabc-3b29-44ed-a095-fb809ed545eb",
+      "createdAt": "2026-09-05T00:15:57.235Z",
+      "updatedAt": "2026-09-05T00:15:57.235Z"
+    },
+    {
+      "fullName": "Kavindu Madushanka",
+      "email": "test_applicant_1788570530743@nextway.edu.lk",
+      "phone": "+94771234567",
+      "passwordHash": "89883e5bede1e5fe34ca12eea56292e1a1bdd1a46ea1cadf325a2529b6b5ca7eab39349c068e8fbd7dd3a285f8c878f66f06f5775192b8b7a4e251c95ecad7e4",
+      "passwordSalt": "dc5e2060e43fb97bd099d6760f9f77d6",
+      "isVerified": true,
+      "id": "bd2e5668-af08-44b5-84c3-5137124076c7",
+      "createdAt": "2026-09-05T01:08:50.764Z",
+      "updatedAt": "2026-09-05T01:08:50.764Z"
+    },
+    {
+      "fullName": "Kavindu Madushanka",
+      "email": "test_applicant_1788570709882@nextway.edu.lk",
+      "phone": "+94771234567",
+      "passwordHash": "df90a4afd1d7983535144495f29f6065b00b153b783b0747abafbabe7f1d60801d33d96b6e3267a97542aad6ee73e270a1644eefb02fd990f6e7e44061f3d91f",
+      "passwordSalt": "16e8f7f71e7058b2e2543203a29314ed",
+      "isVerified": true,
+      "id": "c286931f-5318-40c2-8f44-67585b67faf4",
+      "createdAt": "2026-09-05T01:11:49.903Z",
+      "updatedAt": "2026-09-05T01:11:49.903Z"
+    },
+    {
+      "fullName": "Kavindu Madushanka",
+      "email": "test_applicant_1788570827704@nextway.edu.lk",
+      "phone": "+94771234567",
+      "passwordHash": "69ce63449a87a7e1e5c63ba3b9cb2d6cc8927c8399adb0e541f9619b61bb814f1180d9e5d545b2e47b51f79148c7fff0a5bf637f1967ad9668f011232c616b18",
+      "passwordSalt": "12e1d1a8fc241a6267bf4c53449aefe2",
+      "isVerified": true,
+      "id": "9cb42ba0-fc6f-487d-ac87-d16d1924ffa7",
+      "createdAt": "2026-09-05T01:13:47.727Z",
+      "updatedAt": "2026-09-05T01:13:47.727Z"
+    },
+    {
+      "fullName": "kumaran",
+      "email": "kumaran@gmail.com",
+      "phone": "+1234567890",
+      "passwordHash": "37e2cb965255c347b4529d2be25e3444d82ead6fc65b1a9c35887e030c0b2d69bedfaa397d532a88f63a9858e458cf0489f6dff0024ed70a63808749cb8168b6",
+      "passwordSalt": "7eef1e2dbfd6a540dc0b606b264ddfcb",
+      "isVerified": true,
+      "id": "3a69e20c-865e-4bb9-932e-f34232d629c9",
+      "createdAt": "2026-09-05T01:16:53.481Z",
+      "updatedAt": "2026-09-05T01:16:53.481Z"
+    },
+    {
+      "fullName": "Siva Kumar",
+      "email": "sivakumar@gmail.com",
+      "phone": "0776543210",
+      "passwordHash": "85ee7f11097f3c87bc3a6967c21ccfc5beb2d1c7920ee88fed4f450342be4fa5ab50af3c9db769293f43479260b8043c708d81c3bbd0ec0d84f1494aa127ffee",
+      "passwordSalt": "8e3b7984876f6624e928e7efdec23455",
+      "isVerified": false,
+      "verificationCode": "325076",
+      "verificationCodeExpiresAt": "2026-09-05T02:46:18.291Z",
+      "id": "aa8992d5-c4d3-4f18-879a-78aa559bddaa",
+      "createdAt": "2026-09-05T02:36:18.292Z",
+      "updatedAt": "2026-09-05T02:36:18.292Z"
+    },
+    {
+      "fullName": "Siva Kumar",
+      "email": "thabuthavanesan@gmail.com",
+      "phone": "0776543210",
+      "passwordHash": "51a1023da22ce094a44d2fb90b67b877efcfc2a25b04503631ad36cf6b3d92b3156977036e7f074fa40aff367112c012a5221d09bc6cdd49514a55c7f3497cdf",
+      "passwordSalt": "2f69222cb20ed9ad8f8372912977122f",
+      "isVerified": false,
+      "verificationCode": "293259",
+      "verificationCodeExpiresAt": "2026-09-05T02:46:33.232Z",
+      "id": "6e567b25-a862-4328-9f2c-1172c301f520",
+      "createdAt": "2026-09-05T02:36:33.232Z",
+      "updatedAt": "2026-09-05T02:36:33.232Z"
+    },
+    {
+      "fullName": "Test User",
+      "email": "testuser@example.com",
+      "phone": "0771234567",
+      "passwordHash": "ea6c8c17f97aba5241bf2704da580f2cc815118cdba61f7ff0a346e51f2781e8b8e8ba944a69010819c92df37277e2bd11dba5b8b04cd57a6b9eae5cbb2e2505",
+      "passwordSalt": "ee766e886333081032ccdb8e2b971c64",
+      "isVerified": false,
+      "verificationCode": "570592",
+      "verificationCodeExpiresAt": "2026-09-05T02:47:54.252Z",
+      "id": "cabec4cc-dbe0-41de-a110-78415ca97582",
+      "createdAt": "2026-09-05T02:37:54.253Z",
+      "updatedAt": "2026-09-05T02:37:54.253Z"
+    },
+    {
+      "fullName": "Fresh Applicant",
+      "email": "freshapplicant20260905@example.com",
+      "phone": "0771234567",
+      "passwordHash": "62e7bd8a6c826f730470cd3a61f0bcff654145b98fadd52a20cb5aa2ca81944c6ae5328b86181ac4be515cf61f791e0abbb4a948f83fd69289c0e174cdac753d",
+      "passwordSalt": "365daabf8a60154c549b194c43cbcc3f",
+      "isVerified": false,
+      "verificationCode": "888959",
+      "verificationCodeExpiresAt": "2026-09-05T02:51:12.691Z",
+      "id": "391dcd0a-5e82-4e88-8a00-7097864162a4",
+      "createdAt": "2026-09-05T02:41:12.693Z",
+      "updatedAt": "2026-09-05T02:41:12.693Z"
+    },
+    {
+      "fullName": "Thavanesan Thabiseak",
+      "email": "thabilevis15@gmail.com",
+      "phone": "0776543210",
+      "passwordHash": "cc89591f283625dcdb6f06b102232ab38317d1cb5499b406b14300d1564f63fee796bb315438f982e43979c374c90eadd89e7379e11e67241a71826f25870196",
+      "passwordSalt": "b523ad92fdccbc89f55772c15e88f3c9",
+      "isVerified": true,
+      "id": "a6c97b7d-d4d5-4503-827d-0fed1f0cfcc9",
+      "createdAt": "2026-09-05T02:48:10.564Z",
+      "updatedAt": "2026-09-05T02:48:16.279Z"
+    }
+  ],
+  "applications": [
+    {
+      "id": "41d901ad-785f-4ce2-8631-d40e07bb3824",
+      "applicationNumber": "APP-2026-000007",
+      "applicantId": "a6c97b7d-d4d5-4503-827d-0fed1f0cfcc9",
+      "status": "UNDER_REVIEW",
+      "currentStep": 1,
+      "personalInfo": {
+        "fullName": "Thavanesan Thabiseak",
+        "email": "thabilevis15@gmail.com",
+        "phone": "0776543210",
+        "dateOfBirth": "",
+        "gender": "Male",
+        "nationality": "Sri Lankan",
+        "nicOrPassport": "",
+        "addressLine1": "",
+        "city": "",
+        "country": "Sri Lanka",
+        "emergencyContactName": "",
+        "emergencyContactPhone": "",
+        "emergencyContactRelationship": ""
+      },
+      "qualifications": [],
+      "programmeChoice": {
+        "programmeId": "",
+        "programmeTitle": "",
+        "programmeSlug": "",
+        "level": "Degree",
+        "intake": "2026 Intake",
+        "studyMode": "Hybrid",
+        "campus": "Kandy"
+      },
+      "documents": [],
+      "timeline": [
+        {
+          "id": "e97ff05d-40c5-4300-8773-16b09d521ac2",
+          "timestamp": "2026-09-05T03:11:42.183Z",
+          "actor": "Admissions Staff",
+          "action": "Status changed to UNDER REVIEW",
+          "details": ""
+        },
+        {
+          "id": "943e12b3-a2a6-4aec-9553-176e2e8e0a15",
+          "timestamp": "2026-09-05T02:48:17.900Z",
+          "actor": "Applicant",
+          "action": "Application started",
+          "details": "Draft application created"
+        }
+      ],
+      "notes": [],
+      "declarationConfirmed": false,
+      "createdAt": "2026-09-05T02:48:17.900Z",
+      "updatedAt": "2026-09-05T03:11:42.183Z"
+    },
+    {
+      "id": "bdebdcc9-11c1-4cb1-8147-8ddadb32aa6a",
+      "applicationNumber": "APP-2026-000006",
+      "applicantId": "3a69e20c-865e-4bb9-932e-f34232d629c9",
+      "status": "DRAFT",
+      "currentStep": 1,
+      "personalInfo": {
+        "fullName": "kumaran",
+        "email": "kumaran@gmail.com",
+        "phone": "+1234567890",
+        "dateOfBirth": "",
+        "gender": "Male",
+        "nationality": "Sri Lankan",
+        "nicOrPassport": "",
+        "addressLine1": "",
+        "city": "",
+        "country": "Sri Lanka",
+        "emergencyContactName": "",
+        "emergencyContactPhone": "",
+        "emergencyContactRelationship": ""
+      },
+      "qualifications": [],
+      "programmeChoice": {
+        "programmeId": "",
+        "programmeTitle": "",
+        "programmeSlug": "",
+        "level": "Degree",
+        "intake": "2026 Intake",
+        "studyMode": "Hybrid",
+        "campus": "Kandy"
+      },
+      "documents": [],
+      "timeline": [
+        {
+          "id": "ece9e22c-74b9-40df-bd08-0aa448ba7df7",
+          "timestamp": "2026-09-05T01:16:54.262Z",
+          "actor": "Applicant",
+          "action": "Application started",
+          "details": "Draft application created"
+        }
+      ],
+      "notes": [],
+      "declarationConfirmed": false,
+      "createdAt": "2026-09-05T01:16:54.262Z",
+      "updatedAt": "2026-09-05T01:16:54.262Z"
+    },
+    {
+      "id": "c9803165-7d5a-4e91-9d6c-e254bffb07e9",
+      "applicationNumber": "APP-2026-000005",
+      "applicantId": "9cb42ba0-fc6f-487d-ac87-d16d1924ffa7",
+      "status": "APPROVED",
+      "currentStep": 5,
+      "personalInfo": {
+        "fullName": "Kavindu Madushanka",
+        "dateOfBirth": "2002-05-15",
+        "gender": "Male",
+        "nationality": "Sri Lankan",
+        "nicOrPassport": "200213501234",
+        "email": "test_applicant_1788570827704@nextway.edu.lk",
+        "phone": "+94771234567",
+        "addressLine1": "123 Peradeniya Road",
+        "city": "Kandy",
+        "country": "Sri Lanka",
+        "emergencyContactName": "Kamal Madushanka",
+        "emergencyContactPhone": "+94779876543",
+        "emergencyContactRelationship": "Father"
+      },
+      "qualifications": [
+        {
+          "id": "qual_1",
+          "institution": "Dharmaraja College",
+          "qualificationType": "GCE A/L",
+          "yearCompleted": "2022",
+          "subjectsAndGrades": [
+            {
+              "subject": "Combined Mathematics",
+              "grade": "A"
+            },
+            {
+              "subject": "Physics",
+              "grade": "B"
+            },
+            {
+              "subject": "Chemistry",
+              "grade": "B"
+            }
+          ]
+        }
+      ],
+      "programmeChoice": {
+        "programmeId": "prog_bsc_it",
+        "programmeTitle": "BSc (Hons) in Information Technology",
+        "programmeSlug": "bsc-information-technology",
+        "level": "Degree",
+        "intake": "2026 January Intake",
+        "studyMode": "Hybrid",
+        "campus": "Kandy (Main Campus)"
+      },
+      "documents": [],
+      "timeline": [
+        {
+          "id": "1e02670c-35e3-470a-8e26-e61e502e6756",
+          "timestamp": "2026-09-05T01:13:47.781Z",
+          "actor": "Admissions Board",
+          "action": "Status changed to APPROVED",
+          "details": "Offer made for 2026 January intake"
+        },
+        {
+          "id": "8d992d8d-5cef-469c-bb48-76c8fe0f2efc",
+          "timestamp": "2026-09-05T01:13:47.773Z",
+          "actor": "Admissions Officer",
+          "action": "Interview scheduled",
+          "details": "Interview scheduled on 10/15/2026, 3:30:00 PM (https://meet.nextway.edu.lk/adm-101)"
+        },
+        {
+          "id": "5f75b349-6045-4263-92a0-9befad460078",
+          "timestamp": "2026-09-05T01:13:47.772Z",
+          "actor": "Admissions Dean",
+          "action": "Staff note added",
+          "details": "Internal staff note recorded"
+        },
+        {
+          "id": "bee35698-4530-4605-be24-2a3242993956",
+          "timestamp": "2026-09-05T01:13:47.771Z",
+          "actor": "Applicant",
+          "action": "Application submitted",
+          "details": "Application APP-2026-000005 submitted for BSc (Hons) in Information Technology"
+        },
+        {
+          "id": "893aa38a-6503-4a0c-b186-f0906ebf76f4",
+          "timestamp": "2026-09-05T01:13:47.770Z",
+          "actor": "Applicant",
+          "action": "Application started",
+          "details": "Draft application created"
+        }
+      ],
+      "notes": [
+        {
+          "authorName": "Admissions Dean",
+          "note": "Strong Mathematics background. Recommended for faculty interview.",
+          "isInternal": true,
+          "id": "66887aa8-0301-4489-839e-f9db286e44c4",
+          "createdAt": "2026-09-05T01:13:47.772Z"
+        }
+      ],
+      "declarationConfirmed": true,
+      "createdAt": "2026-09-05T01:13:47.770Z",
+      "updatedAt": "2026-09-05T01:13:47.781Z",
+      "declarationTimestamp": "2026-09-05T01:13:47.771Z",
+      "submittedAt": "2026-09-05T01:13:47.771Z",
+      "interview": {
+        "scheduledAt": "2026-10-15T10:00:00Z",
+        "venueOrLink": "https://meet.nextway.edu.lk/adm-101",
+        "instructions": "Bring original A/L certificates"
+      }
+    },
+    {
+      "id": "2c95f7c8-fdcb-4f9e-9ebf-7b0bd7fceef4",
+      "applicationNumber": "APP-2026-000004",
+      "applicantId": "c286931f-5318-40c2-8f44-67585b67faf4",
+      "status": "APPROVED",
+      "currentStep": 5,
+      "personalInfo": {
+        "fullName": "Kavindu Madushanka",
+        "dateOfBirth": "2002-05-15",
+        "gender": "Male",
+        "nationality": "Sri Lankan",
+        "nicOrPassport": "200213501234",
+        "email": "test_applicant_1788570709882@nextway.edu.lk",
+        "phone": "+94771234567",
+        "addressLine1": "123 Peradeniya Road",
+        "city": "Kandy",
+        "country": "Sri Lanka",
+        "emergencyContactName": "Kamal Madushanka",
+        "emergencyContactPhone": "+94779876543",
+        "emergencyContactRelationship": "Father"
+      },
+      "qualifications": [
+        {
+          "id": "qual_1",
+          "institution": "Dharmaraja College",
+          "qualificationType": "GCE A/L",
+          "yearCompleted": "2022",
+          "subjectsAndGrades": [
+            {
+              "subject": "Combined Mathematics",
+              "grade": "A"
+            },
+            {
+              "subject": "Physics",
+              "grade": "B"
+            },
+            {
+              "subject": "Chemistry",
+              "grade": "B"
+            }
+          ]
+        }
+      ],
+      "programmeChoice": {
+        "programmeId": "prog_bsc_it",
+        "programmeTitle": "BSc (Hons) in Information Technology",
+        "programmeSlug": "bsc-information-technology",
+        "level": "Degree",
+        "intake": "2026 January Intake",
+        "studyMode": "Hybrid",
+        "campus": "Kandy (Main Campus)"
+      },
+      "documents": [],
+      "timeline": [
+        {
+          "id": "053972d8-7d5f-452b-a611-ad1a28dcee4d",
+          "timestamp": "2026-09-05T01:11:49.957Z",
+          "actor": "Admissions Board",
+          "action": "Status changed to APPROVED",
+          "details": "Offer made for 2026 January intake"
+        },
+        {
+          "id": "a34c2647-085c-47e4-9793-7ab45fbb47ee",
+          "timestamp": "2026-09-05T01:11:49.949Z",
+          "actor": "Admissions Officer",
+          "action": "Interview scheduled",
+          "details": "Interview scheduled on 10/15/2026, 3:30:00 PM (https://meet.nextway.edu.lk/adm-101)"
+        },
+        {
+          "id": "9c88faa7-a2d5-4deb-99f7-ef6ec87fe978",
+          "timestamp": "2026-09-05T01:11:49.948Z",
+          "actor": "Admissions Dean",
+          "action": "Staff note added",
+          "details": "Internal staff note recorded"
+        },
+        {
+          "id": "6ed6ef08-8617-43ec-add7-d2fe21ff1403",
+          "timestamp": "2026-09-05T01:11:49.948Z",
+          "actor": "Applicant",
+          "action": "Application submitted",
+          "details": "Application APP-2026-000004 submitted for BSc (Hons) in Information Technology"
+        },
+        {
+          "id": "2d11bc68-4ddb-4fe5-9792-5bac4ba9cf96",
+          "timestamp": "2026-09-05T01:11:49.946Z",
+          "actor": "Applicant",
+          "action": "Application started",
+          "details": "Draft application created"
+        }
+      ],
+      "notes": [
+        {
+          "authorName": "Admissions Dean",
+          "note": "Strong Mathematics background. Recommended for faculty interview.",
+          "isInternal": true,
+          "id": "f8b39891-1ee8-4023-a2c1-58a3f296be54",
+          "createdAt": "2026-09-05T01:11:49.948Z"
+        }
+      ],
+      "declarationConfirmed": true,
+      "createdAt": "2026-09-05T01:11:49.946Z",
+      "updatedAt": "2026-09-05T01:11:49.958Z",
+      "declarationTimestamp": "2026-09-05T01:11:49.948Z",
+      "submittedAt": "2026-09-05T01:11:49.948Z",
+      "interview": {
+        "scheduledAt": "2026-10-15T10:00:00Z",
+        "venueOrLink": "https://meet.nextway.edu.lk/adm-101",
+        "instructions": "Bring original A/L certificates"
+      }
+    },
+    {
+      "id": "6606b91b-5718-4c20-bb12-7c5999de6124",
+      "applicationNumber": "APP-2026-000003",
+      "applicantId": "bd2e5668-af08-44b5-84c3-5137124076c7",
+      "status": "APPROVED",
+      "currentStep": 5,
+      "personalInfo": {
+        "fullName": "Kavindu Madushanka",
+        "dateOfBirth": "2002-05-15",
+        "gender": "Male",
+        "nationality": "Sri Lankan",
+        "nicOrPassport": "200213501234",
+        "email": "test_applicant_1788570530743@nextway.edu.lk",
+        "phone": "+94771234567",
+        "addressLine1": "123 Peradeniya Road",
+        "city": "Kandy",
+        "country": "Sri Lanka",
+        "emergencyContactName": "Kamal Madushanka",
+        "emergencyContactPhone": "+94779876543",
+        "emergencyContactRelationship": "Father"
+      },
+      "qualifications": [
+        {
+          "id": "qual_1",
+          "institution": "Dharmaraja College",
+          "qualificationType": "GCE A/L",
+          "yearCompleted": "2022",
+          "subjectsAndGrades": [
+            {
+              "subject": "Combined Mathematics",
+              "grade": "A"
+            },
+            {
+              "subject": "Physics",
+              "grade": "B"
+            },
+            {
+              "subject": "Chemistry",
+              "grade": "B"
+            }
+          ]
+        }
+      ],
+      "programmeChoice": {
+        "programmeId": "prog_bsc_it",
+        "programmeTitle": "BSc (Hons) in Information Technology",
+        "programmeSlug": "bsc-information-technology",
+        "level": "Degree",
+        "intake": "2026 January Intake",
+        "studyMode": "Hybrid",
+        "campus": "Kandy (Main Campus)"
+      },
+      "documents": [],
+      "timeline": [
+        {
+          "id": "3a898649-dc21-4f54-8427-56f2768bb66e",
+          "timestamp": "2026-09-05T01:08:50.836Z",
+          "actor": "Admissions Board",
+          "action": "Status changed to APPROVED",
+          "details": "Offer made for 2026 January intake"
+        },
+        {
+          "id": "a344c425-2827-40a5-8bb9-0bf69f077586",
+          "timestamp": "2026-09-05T01:08:50.811Z",
+          "actor": "Admissions Officer",
+          "action": "Interview scheduled",
+          "details": "Interview scheduled on 10/15/2026, 3:30:00 PM (https://meet.nextway.edu.lk/adm-101)"
+        },
+        {
+          "id": "23666f39-b341-4b5a-8eb1-0cc62cf51f1f",
+          "timestamp": "2026-09-05T01:08:50.810Z",
+          "actor": "Admissions Dean",
+          "action": "Staff note added",
+          "details": "Internal staff note recorded"
+        },
+        {
+          "id": "66003909-5840-4403-94e3-56b587cd0a0d",
+          "timestamp": "2026-09-05T01:08:50.810Z",
+          "actor": "Applicant",
+          "action": "Application submitted",
+          "details": "Application APP-2026-000003 submitted for BSc (Hons) in Information Technology"
+        },
+        {
+          "id": "005ba939-0a45-4348-8899-5a8e12d02e6b",
+          "timestamp": "2026-09-05T01:08:50.808Z",
+          "actor": "Applicant",
+          "action": "Application started",
+          "details": "Draft application created"
+        }
+      ],
+      "notes": [
+        {
+          "authorName": "Admissions Dean",
+          "note": "Strong Mathematics background. Recommended for faculty interview.",
+          "isInternal": true,
+          "id": "a878743d-c1dc-43fe-b028-c39e0315847c",
+          "createdAt": "2026-09-05T01:08:50.810Z"
+        }
+      ],
+      "declarationConfirmed": true,
+      "createdAt": "2026-09-05T01:08:50.808Z",
+      "updatedAt": "2026-09-05T01:08:50.836Z",
+      "declarationTimestamp": "2026-09-05T01:08:50.810Z",
+      "submittedAt": "2026-09-05T01:08:50.810Z",
+      "interview": {
+        "scheduledAt": "2026-10-15T10:00:00Z",
+        "venueOrLink": "https://meet.nextway.edu.lk/adm-101",
+        "instructions": "Bring original A/L certificates"
+      }
+    },
+    {
+      "id": "771f6d56-c6f1-4058-9b96-43de386559a9",
+      "applicationNumber": "APP-2026-000002",
+      "applicantId": "472afabc-3b29-44ed-a095-fb809ed545eb",
+      "status": "DRAFT",
+      "currentStep": 1,
+      "personalInfo": {
+        "fullName": "Mohamed Rishan",
+        "email": "rishan.student@example.com",
+        "phone": "+94771234567",
+        "dateOfBirth": "",
+        "gender": "Male",
+        "nationality": "Sri Lankan",
+        "nicOrPassport": "",
+        "addressLine1": "",
+        "city": "",
+        "country": "Sri Lanka",
+        "emergencyContactName": "",
+        "emergencyContactPhone": "",
+        "emergencyContactRelationship": ""
+      },
+      "qualifications": [],
+      "programmeChoice": {
+        "programmeId": "",
+        "programmeTitle": "",
+        "programmeSlug": "",
+        "level": "Degree",
+        "intake": "2026 Intake",
+        "studyMode": "Hybrid",
+        "campus": "Kandy"
+      },
+      "documents": [],
+      "timeline": [
+        {
+          "id": "a1a56713-6be5-4a12-9440-3de59b1e9f7b",
+          "timestamp": "2026-09-05T00:15:58.018Z",
+          "actor": "Applicant",
+          "action": "Application started",
+          "details": "Draft application created"
+        }
+      ],
+      "notes": [],
+      "declarationConfirmed": false,
+      "createdAt": "2026-09-05T00:15:58.018Z",
+      "updatedAt": "2026-09-05T00:15:58.018Z"
+    },
+    {
+      "id": "b20a4a0b-d943-4f2d-8531-afc701fa908d",
+      "applicationNumber": "APP-2026-000001",
+      "applicantId": "8d65dc7c-9571-4d96-a944-e869bc8ce578",
+      "status": "APPROVED",
+      "currentStep": 5,
+      "personalInfo": {
+        "fullName": "Kavindu Madushanka",
+        "dateOfBirth": "2002-05-15",
+        "gender": "Male",
+        "nationality": "Sri Lankan",
+        "nicOrPassport": "200213501234",
+        "email": "test_applicant_1788566898745@nextway.edu.lk",
+        "phone": "+94771234567",
+        "addressLine1": "123 Peradeniya Road",
+        "city": "Kandy",
+        "country": "Sri Lanka",
+        "emergencyContactName": "Kamal Madushanka",
+        "emergencyContactPhone": "+94779876543",
+        "emergencyContactRelationship": "Father"
+      },
+      "qualifications": [
+        {
+          "id": "qual_1",
+          "institution": "Dharmaraja College",
+          "qualificationType": "GCE A/L",
+          "yearCompleted": "2022",
+          "subjectsAndGrades": [
+            {
+              "subject": "Combined Mathematics",
+              "grade": "A"
+            },
+            {
+              "subject": "Physics",
+              "grade": "B"
+            },
+            {
+              "subject": "Chemistry",
+              "grade": "B"
+            }
+          ]
+        }
+      ],
+      "programmeChoice": {
+        "programmeId": "prog_bsc_it",
+        "programmeTitle": "BSc (Hons) in Information Technology",
+        "programmeSlug": "bsc-information-technology",
+        "level": "Degree",
+        "intake": "2026 January Intake",
+        "studyMode": "Hybrid",
+        "campus": "Kandy (Main Campus)"
+      },
+      "documents": [],
+      "timeline": [
+        {
+          "id": "310fa824-42cb-46d7-9442-486bc4abc703",
+          "timestamp": "2026-09-05T00:08:18.819Z",
+          "actor": "Admissions Board",
+          "action": "Status changed to APPROVED",
+          "details": "Offer made for 2026 January intake"
+        },
+        {
+          "id": "5b29a25b-b602-4e50-8eda-c406c3676652",
+          "timestamp": "2026-09-05T00:08:18.809Z",
+          "actor": "Admissions Officer",
+          "action": "Interview scheduled",
+          "details": "Interview scheduled on 10/15/2026, 3:30:00 PM (https://meet.nextway.edu.lk/adm-101)"
+        },
+        {
+          "id": "df93b31f-9dc0-47b3-bc44-54d50dcf750d",
+          "timestamp": "2026-09-05T00:08:18.808Z",
+          "actor": "Admissions Dean",
+          "action": "Staff note added",
+          "details": "Internal staff note recorded"
+        },
+        {
+          "id": "9b58ba17-5c1d-4188-a35a-ab95435925f1",
+          "timestamp": "2026-09-05T00:08:18.807Z",
+          "actor": "Applicant",
+          "action": "Application submitted",
+          "details": "Application APP-2026-000001 submitted for BSc (Hons) in Information Technology"
+        },
+        {
+          "id": "956b7a2a-326c-47ad-bfaf-c76e48001919",
+          "timestamp": "2026-09-05T00:08:18.806Z",
+          "actor": "Applicant",
+          "action": "Application started",
+          "details": "Draft application created"
+        }
+      ],
+      "notes": [
+        {
+          "authorName": "Admissions Dean",
+          "note": "Strong Mathematics background. Recommended for faculty interview.",
+          "isInternal": true,
+          "id": "62edf028-8f44-4890-ae70-ff906707b3c9",
+          "createdAt": "2026-09-05T00:08:18.808Z"
+        }
+      ],
+      "declarationConfirmed": true,
+      "createdAt": "2026-09-05T00:08:18.806Z",
+      "updatedAt": "2026-09-05T00:08:18.819Z",
+      "declarationTimestamp": "2026-09-05T00:08:18.807Z",
+      "submittedAt": "2026-09-05T00:08:18.807Z",
+      "interview": {
+        "scheduledAt": "2026-10-15T10:00:00Z",
+        "venueOrLink": "https://meet.nextway.edu.lk/adm-101",
+        "instructions": "Bring original A/L certificates"
+      }
+    }
+  ]
+}

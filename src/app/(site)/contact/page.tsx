@@ -4,6 +4,13 @@ import { LeadForm } from "@/components/ui/LeadForm";
 import { PageHero } from "@/components/ui/PageHero";
 import { SITE } from "@/constants/site";
 import { whatsappUrl } from "@/lib/utils";
+import { faLocationDot, faPhone, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+function ContactIconWrap({ children }: { children: React.ReactNode }) {
+  return <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-red/10 text-brand-red">{children}</span>;
+}
 
 export const metadata = buildMetadata({
   title: "Contact",
@@ -26,33 +33,45 @@ export default function ContactPage() {
             <SectionHeader title="Admissions Office" />
             <dl className="space-y-6">
               <div className="premium-card p-5">
-                <dt className="text-xs font-bold uppercase tracking-wider text-brand-red">Address</dt>
-                <dd className="mt-2 text-lg">{SITE.address}</dd>
+                <dt className="mb-3 flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-brand-red">
+                  <ContactIconWrap><FontAwesomeIcon icon={faLocationDot} className="h-4 w-4" /></ContactIconWrap>
+                  Address
+                </dt>
+                <dd className="text-lg">{SITE.address}</dd>
               </div>
               <div className="premium-card p-5">
-                <dt className="text-xs font-bold uppercase tracking-wider text-brand-red">Phone</dt>
-                <dd className="mt-2">
-                  <a href={`tel:${SITE.phoneTel}`} className="text-lg font-semibold text-navy hover:text-brand-red">
+                <dt className="mb-3 flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-brand-red">
+                  <ContactIconWrap><FontAwesomeIcon icon={faPhone} className="h-4 w-4" /></ContactIconWrap>
+                  Phone
+                </dt>
+                <dd>
+                  <a href={`tel:${SITE.phoneTel}`} className="text-lg font-semibold text-navy transition hover:text-brand-red">
                     {SITE.phone}
                   </a>
                 </dd>
               </div>
               <div className="premium-card p-5">
-                <dt className="text-xs font-bold uppercase tracking-wider text-brand-red">Email</dt>
-                <dd className="mt-2">
-                  <a href={`mailto:${SITE.email}`} className="text-lg font-semibold text-navy hover:text-brand-red">
+                <dt className="mb-3 flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-brand-red">
+                  <ContactIconWrap><FontAwesomeIcon icon={faEnvelope} className="h-4 w-4" /></ContactIconWrap>
+                  Email
+                </dt>
+                <dd>
+                  <a href={`mailto:${SITE.email}`} className="text-lg font-semibold text-navy transition hover:text-brand-red">
                     {SITE.email}
                   </a>
                 </dd>
               </div>
               <div className="premium-card p-5">
-                <dt className="text-xs font-bold uppercase tracking-wider text-brand-red">WhatsApp</dt>
-                <dd className="mt-2">
+                <dt className="mb-3 flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-brand-red">
+                  <ContactIconWrap><FontAwesomeIcon icon={faWhatsapp} className="h-4 w-4" /></ContactIconWrap>
+                  WhatsApp
+                </dt>
+                <dd>
                   <a
                     href={whatsappUrl(SITE.whatsapp, "Hello Nextway College, I would like to enquire.")}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-lg font-semibold text-navy hover:text-brand-red"
+                    className="text-lg font-semibold text-navy transition hover:text-brand-red"
                   >
                     {SITE.whatsappDisplay}
                   </a>
