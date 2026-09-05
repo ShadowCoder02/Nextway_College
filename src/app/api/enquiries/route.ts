@@ -1,9 +1,19 @@
 import { NextResponse } from "next/server";
 import { enquirySchema } from "@/lib/validation";
 import { submitEnquiry } from "@/services/enquiries";
+import { checkRateLimit } from "@/lib/admissions/rate-limiter";
 
 export async function POST(request: Request) {
   try {
+    const ip = request.headers.get("x-forwarded-for") || "local";
+    const limit = checkRateLimit(`enquiry_${ip}`, 10, 60 * 1000);
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { ok: false, error: `Too many submissions. Please try again in ${limit.retryAfterSeconds} seconds.` },
+        { status: 429 },
+      );
+    }
+
     const body = await request.json();
     const parsed = enquirySchema.safeParse(body);
 

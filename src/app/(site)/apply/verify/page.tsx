@@ -6,10 +6,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { readRememberedProgrammeSlug } from "@/lib/applicant-programme";
 import { apiFetch } from "@/lib/api-fetch";
+import { useOnlineStatus } from "@/lib/use-online-status";
 
 export default function ApplicantVerifyPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isOnline = useOnlineStatus();
   const defaultEmail = searchParams.get("email") || "";
   const defaultOtp = searchParams.get("otp") || "";
   const programmeSlug = searchParams.get("programme");
@@ -23,6 +25,12 @@ export default function ApplicantVerifyPage() {
     e.preventDefault();
     setError("");
     setSuccess("");
+
+    if (!isOnline) {
+      setError("You appear to be offline. Please reconnect and try again.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -49,7 +57,7 @@ export default function ApplicantVerifyPage() {
         router.refresh();
       }, 1000);
     } catch {
-      setError("Network error. Please try again.");
+      setError(isOnline ? "Network error. Please try again." : "You appear to be offline. Please reconnect and try again.");
     } finally {
       setLoading(false);
     }
@@ -90,12 +98,14 @@ export default function ApplicantVerifyPage() {
             </p>
           </div>
 
-          {error && (
-            <div className="mb-6 rounded-lg border border-error/20 bg-error/10 p-4 text-sm font-medium text-error">{error}</div>
-          )}
-          {success && (
-            <div className="mb-6 rounded-lg border border-success/20 bg-success/10 p-4 text-sm font-medium text-success">{success}</div>
-          )}
+          <div aria-live="polite">
+            {error && (
+              <div className="mb-6 rounded-lg border border-error/20 bg-error/10 p-4 text-sm font-medium text-error" role="alert">{error}</div>
+            )}
+            {success && (
+              <div className="mb-6 rounded-lg border border-success/20 bg-success/10 p-4 text-sm font-medium text-success">{success}</div>
+            )}
+          </div>
 
           <form onSubmit={handleVerify} className="space-y-4">
             <div>
