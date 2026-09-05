@@ -62,6 +62,7 @@ export interface Programme {
   mode: StudyMode;
   medium: string;
   intake: string;
+  applicationDeadline?: string;
   location: string;
   overview: string;
   whyThisProgramme: string;
