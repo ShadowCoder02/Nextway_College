@@ -42,7 +42,7 @@ export default async function NewsPage() {
                   />
                 </div>
                 <div className="p-6">
-                  <p className="mb-2 text-sm text-gold">{formatDate(article.publishedAt)} · {article.category}</p>
+                  <p className="mb-2 text-sm text-gold-text">{formatDate(article.publishedAt)} · {article.category}</p>
                   <h3 className="mb-2 text-xl font-bold">
                     <Link href={`/news/${article.slug}`} className="hover:text-deep-blue">
                       {article.title}
@@ -72,7 +72,7 @@ export default async function NewsPage() {
               ))}
             </div>
           )}
-          <Link href="/events" className="mt-6 inline-block font-semibold text-deep-blue hover:text-gold">
+          <Link href="/events" className="mt-6 inline-block font-semibold text-deep-blue hover:text-gold-text">
             View all events →
           </Link>
         </div>

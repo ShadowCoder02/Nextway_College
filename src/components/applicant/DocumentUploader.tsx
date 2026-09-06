@@ -384,7 +384,7 @@ export function DocumentUploader({
                           </span>
                         )}
                         {doc.verificationStatus === "pending" && (
-                          <span className="rounded-full bg-gold/15 px-2 py-0.5 font-bold text-gold text-[10px]">
+                          <span className="rounded-full bg-gold/15 px-2 py-0.5 font-bold text-gold-text text-[10px]">
                             ● Pending Verification
                           </span>
                         )}

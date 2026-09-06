@@ -34,7 +34,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
     <article>
       <section className="bg-navy py-16 text-white">
         <div className="container-nwc max-w-3xl">
-          <p className="mb-3 text-sm text-gold">{formatDate(article.publishedAt)} · {article.category}</p>
+          <p className="mb-3 text-sm text-gold-text">{formatDate(article.publishedAt)} · {article.category}</p>
           <h1 className="text-display text-white">{article.title}</h1>
         </div>
       </section>

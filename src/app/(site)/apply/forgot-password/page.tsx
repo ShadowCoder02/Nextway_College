@@ -63,7 +63,7 @@ export default function ForgotPasswordPage() {
       <div className="container-nwc max-w-md">
         <div className="premium-card p-8 sm:p-10">
           <div className="text-center mb-8">
-            <span className="eyebrow mb-2 block text-gold">Admissions Portal</span>
+            <span className="eyebrow mb-2 block text-gold-text">Admissions Portal</span>
             <h1 className="text-2xl sm:text-3xl font-bold text-navy">Forgot Password</h1>
             <p className="mt-2 text-sm text-slate">
               Enter your account email and we&apos;ll send you a link to reset your password.

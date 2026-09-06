@@ -39,7 +39,7 @@ export function ApplicationStepper({
           even shrunk and unlabeled. */}
       <div className="sm:hidden">
         <div className="mb-2 flex items-center justify-between">
-          <span className="text-xs font-bold uppercase tracking-wider text-gold">
+          <span className="text-xs font-bold uppercase tracking-wider text-gold-text">
             Step {currentStep} of {totalSteps}: {currentLabel}
           </span>
           <span className="text-xs font-semibold text-navy">{percent}%</span>
@@ -93,7 +93,7 @@ export function ApplicationStepper({
                 <span
                   className={cn(
                     "mt-2 text-xs font-medium tracking-tight text-center whitespace-nowrap",
-                    isCurrent ? "text-navy font-bold" : isCompleted ? "text-gold font-semibold" : "text-slate",
+                    isCurrent ? "text-navy font-bold" : isCompleted ? "text-gold-text font-semibold" : "text-slate",
                   )}
                 >
                   {s.label}

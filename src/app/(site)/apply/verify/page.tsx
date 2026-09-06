@@ -91,7 +91,7 @@ export default function ApplicantVerifyPage() {
       <div className="container-nwc max-w-lg">
         <div className="premium-card p-8 sm:p-10">
           <div className="text-center mb-8">
-            <span className="eyebrow mb-2 block text-gold">Email Verification</span>
+            <span className="eyebrow mb-2 block text-gold-text">Email Verification</span>
             <h1 className="text-2xl sm:text-3xl font-bold text-navy">Verify Your Account</h1>
             <p className="mt-2 text-sm text-slate">
               Enter the 6-digit code sent to your email to activate your application account.

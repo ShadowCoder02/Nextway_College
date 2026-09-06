@@ -11,7 +11,7 @@ export function EmptyState({ icon, heading, body, action }: EmptyStateProps) {
   return (
     <div className="rounded-[var(--radius-card)] bg-ice p-8 text-center sm:p-10">
       {icon && (
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-white text-gold" aria-hidden="true">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-white text-gold-text" aria-hidden="true">
           {icon}
         </div>
       )}

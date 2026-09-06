@@ -6,6 +6,13 @@
   --color-brand-red: #c41e3a;
   --color-brand-red-dark: #9e1830;
   --color-gold: #c9a227;
+  /* Accessible gold for text on light backgrounds — plain gold is only
+     2.4:1 on white/ice/pearl (fails WCAG's 4.5:1 for normal text). This
+     darkened variant is 5.4:1 on white. Keep using --color-gold as-is for
+     decorative use, large display text, and text on navy (6.5:1, already
+     passes) — only swap to this for small/normal-weight text on a light
+     background. */
+  --color-gold-text: #806719;
   --color-champagne: #e8dcc8;
   --color-ice: #f7f9fc;
   --color-pearl: #fafbfc;
@@ -34,6 +41,7 @@
   --color-brand-red: #c41e3a;
   --color-brand-red-dark: #9e1830;
   --color-gold: #c9a227;
+  --color-gold-text: #806719;
   --color-champagne: #e8dcc8;
   --color-ice: #f7f9fc;
   --color-pearl: #fafbfc;

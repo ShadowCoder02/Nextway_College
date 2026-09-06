@@ -138,7 +138,7 @@ export default function ApplicantRegisterPage() {
       <div className="container-nwc max-w-xl">
         <div className="premium-card p-8 sm:p-10">
           <div className="text-center mb-8">
-            <span className="eyebrow mb-2 block text-gold">Admissions Portal</span>
+            <span className="eyebrow mb-2 block text-gold-text">Admissions Portal</span>
             <h1 className="text-2xl sm:text-3xl font-bold text-navy">Create Applicant Account</h1>
             <p className="mt-2 text-sm text-slate">
               Register below to start and manage your application for the 2026 intake.
