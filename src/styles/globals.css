@@ -254,6 +254,17 @@
     box-shadow: var(--shadow-card-hover);
   }
 
+  /* Decorative opening quote mark for testimonials — a CSS pseudo-element,
+     not visible text content, so it isn't read aloud by screen readers. */
+  .quote-mark::before {
+    content: "\201C";
+    display: block;
+    margin-bottom: 1rem;
+    font-size: 1.875rem;
+    line-height: 1;
+    color: var(--color-gold);
+  }
+
   .section-padding {
     padding-block: var(--section-gap);
   }

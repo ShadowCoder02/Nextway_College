@@ -16,7 +16,7 @@ export function ProgrammeCard({ programme, featured }: ProgrammeCardProps) {
         <FallbackImage
           src={programme.imageUrl}
           fallbackSrc={IMAGES.campus}
-          alt={programme.title}
+          alt=""
           fill
           className="object-cover transition duration-700 group-hover:scale-105"
           sizes="(max-width:768px) 100vw, 33vw"

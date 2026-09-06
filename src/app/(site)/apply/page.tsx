@@ -143,7 +143,10 @@ export default async function ApplyLandingPage({ searchParams }: PageProps) {
                 },
               ].map((req, i) => (
                 <div key={i} className="flex gap-4 rounded-xl border border-slate/15 bg-pearl p-4">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold text-navy font-bold text-sm">
+                  <span
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold text-navy font-bold text-sm"
+                    aria-hidden="true"
+                  >
                     ✓
                   </span>
                   <div>

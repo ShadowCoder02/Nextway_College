@@ -2,17 +2,22 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NAV_LINKS } from "@/constants/site";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/layout/Logo";
 import { cn } from "@/lib/utils";
+
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const toggleButtonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -29,6 +34,43 @@ export function Navbar() {
     const routes = new Set([...NAV_LINKS.map((link) => link.href), "/admissions"]);
     routes.forEach((route) => router.prefetch(route));
   }, [router]);
+
+  // Focus trap + Escape-to-close while the mobile menu is open.
+  useEffect(() => {
+    if (!open) return;
+
+    const panel = panelRef.current;
+    const firstLink = panel?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
+    firstLink?.focus();
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setOpen(false);
+        toggleButtonRef.current?.focus();
+        return;
+      }
+
+      if (e.key !== "Tab" || !panel) return;
+
+      const focusable = Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+
+      if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [open]);
 
   return (
     <header
@@ -71,9 +113,11 @@ export function Navbar() {
         </div>
 
         <button
+          ref={toggleButtonRef}
           type="button"
           className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-navy/10 bg-white lg:hidden"
           aria-expanded={open}
+          aria-controls="mobile-nav-panel"
           aria-label="Toggle menu"
           onClick={() => setOpen((v) => !v)}
         >
@@ -88,7 +132,7 @@ export function Navbar() {
       </div>
 
       {open && (
-        <div className="border-t border-navy/5 bg-white lg:hidden">
+        <div id="mobile-nav-panel" ref={panelRef} className="border-t border-navy/5 bg-white lg:hidden">
           <nav className="container-nwc flex flex-col gap-1 py-4" aria-label="Mobile navigation">
             {NAV_LINKS.map((link) => (
               <Link
