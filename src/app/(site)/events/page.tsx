@@ -4,6 +4,8 @@ import { buildMetadata } from "@/lib/seo";
 import { formatDateTime } from "@/lib/utils";
 import { getUpcomingEvents, getPastEvents } from "@/services/events";
 import type { EventItem } from "@/types";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Button } from "@/components/ui/Button";
 
 export const metadata = buildMetadata({
   title: "Events",
@@ -48,9 +50,11 @@ export default async function EventsPage() {
           <div>
             <h2 className="text-section mb-8">Upcoming events</h2>
             {upcoming.length === 0 ? (
-              <p className="rounded-[var(--radius-card)] bg-ice p-8 text-center text-slate">
-                No upcoming events are scheduled right now. Check back soon.
-              </p>
+              <EmptyState
+                heading="No upcoming events are scheduled right now"
+                body="Check back soon, or browse our programmes in the meantime."
+                action={<Button href="/programmes" variant="secondary">Browse Programmes</Button>}
+              />
             ) : (
               <div className="grid gap-8 md:grid-cols-2">
                 {upcoming.map((event) => (
@@ -63,9 +67,7 @@ export default async function EventsPage() {
           <div>
             <h2 className="text-section mb-8">Past events</h2>
             {past.length === 0 ? (
-              <p className="rounded-[var(--radius-card)] bg-ice p-8 text-center text-slate">
-                No past events to show yet.
-              </p>
+              <EmptyState heading="No past events to show yet" />
             ) : (
               <div className="grid gap-8 md:grid-cols-2">
                 {past.map((event) => (

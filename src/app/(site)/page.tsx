@@ -21,6 +21,7 @@ import { formatDate, formatDateTime } from "@/lib/utils";
 import { getFeaturedProgrammes, getFlagshipProgramme } from "@/services/programmes";
 import { getLatestNews } from "@/services/news";
 import { getUpcomingEvents } from "@/services/events";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export default async function HomePage() {
   const [featured, flagship, news, events] = await Promise.all([
@@ -224,9 +225,7 @@ export default async function HomePage() {
           <div>
             <SectionHeader eyebrow="Events" title="Upcoming events" />
             {events.length === 0 ? (
-              <p className="rounded-[var(--radius-card)] bg-ice p-6 text-center text-slate">
-                No upcoming events are scheduled right now. Check back soon.
-              </p>
+              <EmptyState heading="No upcoming events are scheduled right now" body="Check back soon." />
             ) : (
               <div className="space-y-5">
                 {events.map((event) => (
