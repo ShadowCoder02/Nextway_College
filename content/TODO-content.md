@@ -41,3 +41,16 @@ structured for this data, rendering "To be confirmed" placeholders and a
       branches (add to `src/data/branches.ts`).
 - [ ] Once addresses exist, the branch finder's map placeholder can be
       replaced with a real embed/plot.
+
+## Accreditation partner descriptions (Session 3, accreditation redesign)
+
+`src/constants/approvals.ts` — all 8 partner logos (CPD, Universidad Azteca,
+IAU, UNESCO, UGC, IBDF, Accreditation Partner, Future Focus Welfare Team) show
+a neutral "Partnership details to be confirmed" placeholder rather than an
+invented relationship claim. For each:
+
+- [ ] Confirm and write a one-line description of what the relationship
+      actually is (member, accredited by, affiliate, sponsor, etc.).
+- [ ] Supply a `verifyUrl` linking to verifiable detail (the partner's own
+      accreditation/member listing page) — omitted entirely today, matching
+      the pattern used for the footer's empty social links.
