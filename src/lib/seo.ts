@@ -7,6 +7,9 @@ type SeoInput = {
   path?: string;
   image?: string;
   type?: "website" | "article";
+  /** Auth/portal/private pages: no public value in indexing, and some carry
+   * personal application data. Set true rather than omitting metadata. */
+  noindex?: boolean;
 };
 
 export function buildMetadata({
@@ -15,6 +18,7 @@ export function buildMetadata({
   path = "",
   image,
   type = "website",
+  noindex = false,
 }: SeoInput = {}): Metadata {
   const pageTitle = title ? `${title} | ${SITE.shortName}` : `${SITE.name} — ${SITE.tagline}`;
   const url = `${SITE.url}${path}`;
@@ -24,6 +28,7 @@ export function buildMetadata({
     description,
     metadataBase: new URL(SITE.url),
     alternates: { canonical: url },
+    ...(noindex ? { robots: { index: false, follow: false } } : {}),
     icons: {
       icon: SITE.logo,
       apple: SITE.logo,
