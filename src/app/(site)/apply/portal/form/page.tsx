@@ -862,7 +862,7 @@ export default function ApplicationFormPage() {
 
               {programmeChoice.programmeTitle && (
                 <div className="rounded-xl bg-ice p-5 border border-gold/30">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-gold">Selected Selection Summary</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-gold-text">Selected Selection Summary</span>
                   <h3 className="font-bold text-navy text-lg mt-0.5">{programmeChoice.programmeTitle}</h3>
                   <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate">
                     <div>Level: <strong className="text-navy">{programmeChoice.level}</strong></div>

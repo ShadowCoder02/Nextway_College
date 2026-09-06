@@ -5,6 +5,7 @@ import { buildMetadata } from "@/lib/seo";
 import { formatDate } from "@/lib/utils";
 import { getNewsArticles } from "@/services/news";
 import { getUpcomingEvents } from "@/services/events";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export const metadata = buildMetadata({
   title: "News & Events",
@@ -41,7 +42,7 @@ export default async function NewsPage() {
                   />
                 </div>
                 <div className="p-6">
-                  <p className="mb-2 text-sm text-gold">{formatDate(article.publishedAt)} · {article.category}</p>
+                  <p className="mb-2 text-sm text-gold-text">{formatDate(article.publishedAt)} · {article.category}</p>
                   <h3 className="mb-2 text-xl font-bold">
                     <Link href={`/news/${article.slug}`} className="hover:text-deep-blue">
                       {article.title}
@@ -55,9 +56,7 @@ export default async function NewsPage() {
 
           <h2 className="text-section mb-8 mt-16">Upcoming events</h2>
           {events.length === 0 ? (
-            <p className="rounded-[var(--radius-card)] bg-ice p-8 text-center text-slate">
-              No upcoming events are scheduled right now. Check back soon.
-            </p>
+            <EmptyState heading="No upcoming events are scheduled right now" body="Check back soon." />
           ) : (
             <div className="grid gap-6 md:grid-cols-2">
               {events.map((event) => (
@@ -73,7 +72,7 @@ export default async function NewsPage() {
               ))}
             </div>
           )}
-          <Link href="/events" className="mt-6 inline-block font-semibold text-deep-blue hover:text-gold">
+          <Link href="/events" className="mt-6 inline-block font-semibold text-deep-blue hover:text-gold-text">
             View all events →
           </Link>
         </div>

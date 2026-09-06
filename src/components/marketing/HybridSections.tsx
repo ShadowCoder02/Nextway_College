@@ -1,5 +1,6 @@
 import { SITE, BRANCHES } from "@/constants/site";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { Button } from "@/components/ui/Button";
 
 export function HybridLearningSection() {
   return (
@@ -20,7 +21,7 @@ export function HybridLearningSection() {
               "Personal counselling from enquiry to graduation",
             ].map((item) => (
               <li key={item} className="flex gap-3 text-white/90">
-                <span className="font-bold text-gold">✓</span>
+                <span className="font-bold text-gold" aria-hidden="true">✓</span>
                 {item}
               </li>
             ))}
@@ -51,8 +52,8 @@ export function BranchesSection() {
           description="Including Kandy, Colombo, Galle, Batticaloa, Kegalle, Kurunegala, Kalutara and more."
           align="center"
         />
-        <div className="glass-panel mx-auto max-w-4xl p-8">
-          <div className="flex flex-wrap justify-center gap-3">
+        <div className="glass-panel mx-auto max-w-4xl p-8 text-center">
+          <div className="mb-6 flex flex-wrap justify-center gap-3">
             {[...BRANCHES, "All island"].map((branch) => (
               <span
                 key={branch}
@@ -62,6 +63,9 @@ export function BranchesSection() {
               </span>
             ))}
           </div>
+          <Button href="/branches" variant="secondary">
+            Find your nearest branch
+          </Button>
         </div>
       </div>
     </section>

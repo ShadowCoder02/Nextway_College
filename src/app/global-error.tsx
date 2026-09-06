@@ -2,6 +2,14 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
+import "@/styles/globals.css";
+
+// Deliberately not importing SITE here: constants/site.ts throws at import
+// time if NEXT_PUBLIC_SITE_URL is missing in production, and this is the
+// last line of defense shown when *something else* has already thrown —
+// it must not have any import that can itself fail to render.
+const SUPPORT_PHONE = "0812 201 650";
+const SUPPORT_PHONE_TEL = "+94812201650";
 
 export default function GlobalError({
   error,
@@ -16,27 +24,35 @@ export default function GlobalError({
 
   return (
     <html lang="en">
-      <body className="flex min-h-screen items-center justify-center bg-[#f7f9fc] px-4 font-sans text-[#1e293b]">
-        <div className="max-w-md rounded-2xl border border-[#0f2340]/10 bg-white p-8 text-center shadow-lg">
-          <h1 className="mb-2 text-2xl font-bold text-[#0f2340]">Something went wrong</h1>
-          <p className="mb-6 text-sm text-[#64748b]">
-            The page could not load. This is usually fixed by refreshing or restarting the dev server.
+      <body className="flex min-h-screen items-center justify-center bg-ice px-4 font-sans text-charcoal antialiased">
+        <div className="max-w-md rounded-[var(--radius-card)] border border-navy/10 bg-white p-8 text-center shadow-[var(--shadow-soft)]">
+          <p className="eyebrow mb-3">500</p>
+          <h1 className="mb-2 text-2xl font-bold text-navy">Something went wrong on our end</h1>
+          <p className="mb-6 text-sm text-slate">
+            We&apos;re sorry for the inconvenience. Please try again — if the problem continues,
+            our Admissions team can help you directly.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
             <button
               type="button"
               onClick={() => reset()}
-              className="rounded-full bg-[#c41e3a] px-6 py-2.5 text-sm font-semibold text-white"
+              className="rounded-full bg-brand-red px-6 py-2.5 text-sm font-bold text-white transition hover:bg-brand-red/90"
             >
               Try again
             </button>
             <Link
               href="/"
-              className="rounded-full border border-[#0f2340]/20 px-6 py-2.5 text-sm font-semibold text-[#0f2340]"
+              className="rounded-full border border-navy/20 px-6 py-2.5 text-sm font-bold text-navy transition hover:border-navy/40"
             >
               Go home
             </Link>
           </div>
+          <p className="mt-6 text-sm text-slate">
+            Or call Admissions at{" "}
+            <a href={`tel:${SUPPORT_PHONE_TEL}`} className="font-semibold text-brand-red hover:underline">
+              {SUPPORT_PHONE}
+            </a>
+          </p>
         </div>
       </body>
     </html>

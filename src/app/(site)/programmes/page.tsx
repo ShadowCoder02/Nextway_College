@@ -2,10 +2,11 @@ import { Suspense } from "react";
 import { ProgrammeCard } from "@/components/ui/ProgrammeCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ProgrammeFilters } from "@/components/programme/ProgrammeFilters";
+import { ProgrammesEmptyState } from "@/components/programme/ProgrammesEmptyState";
 import { parseProgrammeFilters } from "@/lib/programmes";
 import { PageHero } from "@/components/ui/PageHero";
 import { buildMetadata } from "@/lib/seo";
-import { getProgrammes, getSchoolsWithProgrammeCounts } from "@/services/programmes";
+import { getProgrammes, getSchoolsWithProgrammeCounts, getProgrammeFacetCounts } from "@/services/programmes";
 
 export const metadata = buildMetadata({
   title: "Programmes",
@@ -15,15 +16,16 @@ export const metadata = buildMetadata({
 });
 
 type PageProps = {
-  searchParams: Promise<{ q?: string; level?: string; mode?: string; school?: string }>;
+  searchParams: Promise<{ q?: string; level?: string; mode?: string; school?: string; sort?: string }>;
 };
 
 export default async function ProgrammesPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const filters = parseProgrammeFilters(params);
-  const [programmes, schools] = await Promise.all([
+  const [programmes, schools, facets] = await Promise.all([
     getProgrammes(filters),
     getSchoolsWithProgrammeCounts(),
+    getProgrammeFacetCounts(),
   ]);
 
   return (
@@ -39,6 +41,8 @@ export default async function ProgrammesPage({ searchParams }: PageProps) {
           <Suspense fallback={<div className="h-32 animate-pulse rounded-lg bg-ice" />}>
             <ProgrammeFilters
               schools={schools.map((s) => ({ slug: s.slug, name: s.name, programmeCount: s.programmeCount }))}
+              levelCounts={facets.levels}
+              modeCounts={facets.modes}
             />
           </Suspense>
 
@@ -48,9 +52,9 @@ export default async function ProgrammesPage({ searchParams }: PageProps) {
           />
 
           {programmes.length === 0 ? (
-            <p className="rounded-[var(--radius-card)] bg-ice p-8 text-center text-slate">
-              No programmes match your filters. Try adjusting your search.
-            </p>
+            <Suspense fallback={<div className="h-40 animate-pulse rounded-lg bg-ice" />}>
+              <ProgrammesEmptyState schools={schools.map((s) => ({ slug: s.slug, name: s.name }))} />
+            </Suspense>
           ) : (
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {programmes.map((p) => (

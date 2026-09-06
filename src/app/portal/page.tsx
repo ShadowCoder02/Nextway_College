@@ -37,7 +37,7 @@ export default async function PortalDashboardPage() {
       <div className="mb-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {[
           { label: "Student Applications", value: applicationsData.total, href: "/portal/applications", accent: "text-brand-red" },
-          { label: "Pending App Reviews", value: pendingApps, href: "/portal/applications", accent: "text-gold" },
+          { label: "Pending App Reviews", value: pendingApps, href: "/portal/applications", accent: "text-gold-text" },
           { label: "New enquiries", value: newEnquiries, href: "/portal/enquiries", accent: "text-navy" },
           { label: "Programmes", value: programmes.length, href: "/portal/programmes", accent: "text-navy" },
           { label: "News articles", value: news.length, href: "/portal/news", accent: "text-navy" },

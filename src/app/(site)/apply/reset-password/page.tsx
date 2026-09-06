@@ -77,7 +77,7 @@ export default function ResetPasswordPage() {
       <div className="container-nwc max-w-md">
         <div className="premium-card p-8 sm:p-10">
           <div className="text-center mb-8">
-            <span className="eyebrow mb-2 block text-gold">Admissions Portal</span>
+            <span className="eyebrow mb-2 block text-gold-text">Admissions Portal</span>
             <h1 className="text-2xl sm:text-3xl font-bold text-navy">Reset Password</h1>
             <p className="mt-2 text-sm text-slate">Choose a new password for your applicant account.</p>
           </div>

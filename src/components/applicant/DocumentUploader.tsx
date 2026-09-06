@@ -65,6 +65,9 @@ interface DocumentUploaderProps {
   isReadOnly?: boolean;
 }
 
+const ACCEPTED_FORMATS_LABEL = "PDF, JPG, PNG, WebP or HEIC";
+const MAX_SIZE_LABEL = `${Math.round(MAX_FILE_SIZE_BYTES / (1024 * 1024))}MB`;
+
 type RetryState = { category: DocumentCategory; title: string; file: File } | null;
 
 function uploadWithProgress(
@@ -98,16 +101,17 @@ export function DocumentUploader({
 }: DocumentUploaderProps) {
   const [uploadingCategory, setUploadingCategory] = useState<DocumentCategory | null>(null);
   const [progress, setProgress] = useState(0);
-  const [converting, setConverting] = useState(false);
+  const [convertingCategory, setConvertingCategory] = useState<DocumentCategory | null>(null);
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [successMsg, setSuccessMsg] = useState<string>("");
   const [retry, setRetry] = useState<RetryState>(null);
+  const [dragOverCategory, setDragOverCategory] = useState<DocumentCategory | null>(null);
 
-  async function convertHeicIfNeeded(file: File): Promise<File> {
+  async function convertHeicIfNeeded(category: DocumentCategory, file: File): Promise<File> {
     const ext = "." + (file.name.split(".").pop()?.toLowerCase() ?? "");
     if (!HEIC_EXTENSIONS.has(ext)) return file;
 
-    setConverting(true);
+    setConvertingCategory(category);
     try {
       const heic2any = (await import("heic2any")).default;
       const converted = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.85 });
@@ -117,7 +121,7 @@ export function DocumentUploader({
     } catch {
       throw new Error("Unable to convert this HEIC photo. Please export it as JPG and try again.");
     } finally {
-      setConverting(false);
+      setConvertingCategory(null);
     }
   }
 
@@ -151,47 +155,52 @@ export function DocumentUploader({
     }
   }
 
-  async function handleFileUpload(category: DocumentCategory, title: string, e: React.ChangeEvent<HTMLInputElement>) {
-    const rawFile = e.target.files?.[0];
-    if (!rawFile) return;
-
+  async function processFile(category: DocumentCategory, title: string, rawFile: File) {
     setErrorMsg("");
     setSuccessMsg("");
     setRetry(null);
-    const resetInput = () => {
-      e.target.value = "";
-    };
 
     if (rawFile.size === 0) {
       setErrorMsg(`File "${rawFile.name}" is empty (0 bytes). Please choose a different file.`);
-      resetInput();
       return;
     }
 
     if (rawFile.size > MAX_FILE_SIZE_BYTES) {
-      setErrorMsg(`File "${rawFile.name}" exceeds the 5MB size limit.`);
-      resetInput();
+      setErrorMsg(`File "${rawFile.name}" exceeds the ${MAX_SIZE_LABEL} size limit.`);
       return;
     }
 
     const ext = "." + (rawFile.name.split(".").pop()?.toLowerCase() ?? "");
     if (!ALLOWED_EXTENSIONS.has(ext) && !HEIC_EXTENSIONS.has(ext)) {
-      setErrorMsg(`File "${rawFile.name}" is not a supported format. Please upload PDF, JPG, PNG, WebP, or HEIC.`);
-      resetInput();
+      setErrorMsg(`File "${rawFile.name}" is not a supported format. Please upload ${ACCEPTED_FORMATS_LABEL}.`);
       return;
     }
 
     let file: File;
     try {
-      file = await convertHeicIfNeeded(rawFile);
+      file = await convertHeicIfNeeded(category, rawFile);
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Unable to process this file.");
-      resetInput();
       return;
     }
 
-    resetInput();
     await doUpload(category, title, file);
+  }
+
+  async function handleFileUpload(category: DocumentCategory, title: string, e: React.ChangeEvent<HTMLInputElement>) {
+    const rawFile = e.target.files?.[0];
+    if (!rawFile) return;
+    e.target.value = "";
+    await processFile(category, title, rawFile);
+  }
+
+  function handleDrop(category: DocumentCategory, title: string, e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    setDragOverCategory(null);
+    if (isReadOnly || uploadingCategory || convertingCategory) return;
+    const rawFile = e.dataTransfer.files?.[0];
+    if (!rawFile) return;
+    void processFile(category, title, rawFile);
   }
 
   async function handleRetry() {
@@ -260,12 +269,24 @@ export function DocumentUploader({
         {DOCUMENT_SLOTS.map((slot) => {
           const matchingDocs = documents.filter((d) => d.category === slot.category);
           const isUploading = uploadingCategory === slot.category;
-          const isConverting = isUploading && converting;
+          const isConverting = convertingCategory === slot.category;
+          const isBusy = isUploading || isConverting;
+
+          const isDragOver = dragOverCategory === slot.category;
 
           return (
             <div
               key={slot.category}
-              className="rounded-xl border border-slate/20 bg-white p-5 shadow-sm transition hover:border-navy/20"
+              className={`rounded-xl border p-5 shadow-sm transition ${
+                isDragOver ? "border-gold bg-gold/5 ring-2 ring-gold/30" : "border-slate/20 bg-white hover:border-navy/20"
+              }`}
+              onDragOver={(e) => {
+                if (isReadOnly || uploadingCategory || convertingCategory) return;
+                e.preventDefault();
+                setDragOverCategory(slot.category);
+              }}
+              onDragLeave={() => setDragOverCategory((c) => (c === slot.category ? null : c))}
+              onDrop={(e) => handleDrop(slot.category, slot.title, e)}
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                 <div className="flex-1">
@@ -282,6 +303,9 @@ export function DocumentUploader({
                     )}
                   </div>
                   <p className="text-xs text-slate">{slot.description}</p>
+                  <p className="mt-1 text-[11px] text-slate/80">
+                    Accepted: {ACCEPTED_FORMATS_LABEL} · Max {MAX_SIZE_LABEL} · Drag and drop or click to upload
+                  </p>
                 </div>
 
                 {!isReadOnly && (
@@ -291,7 +315,7 @@ export function DocumentUploader({
                         type="file"
                         accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif"
                         className="sr-only"
-                        disabled={isUploading}
+                        disabled={isBusy}
                         onChange={(e) => handleFileUpload(slot.category, slot.title, e)}
                       />
                       <span className="inline-flex cursor-pointer items-center justify-center rounded-lg border border-gold bg-gold/10 px-4 py-2 text-xs font-bold text-navy transition hover:bg-gold hover:text-white disabled:opacity-50">
@@ -361,7 +385,7 @@ export function DocumentUploader({
                           </span>
                         )}
                         {doc.verificationStatus === "pending" && (
-                          <span className="rounded-full bg-gold/15 px-2 py-0.5 font-bold text-gold text-[10px]">
+                          <span className="rounded-full bg-gold/15 px-2 py-0.5 font-bold text-gold-text text-[10px]">
                             ● Pending Verification
                           </span>
                         )}

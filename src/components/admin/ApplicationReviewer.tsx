@@ -198,7 +198,7 @@ export function ApplicationReviewer({ initialApplication }: ApplicationReviewerP
       <div className="premium-card p-6 sm:p-8 bg-white">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-ice">
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gold">Applicant Dossier</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gold-text">Applicant Dossier</span>
             <h1 className="text-2xl font-bold text-navy mt-0.5">
               {app.personalInfo?.title} {app.personalInfo?.fullName || "Applicant"}
             </h1>
@@ -455,7 +455,7 @@ export function ApplicationReviewer({ initialApplication }: ApplicationReviewerP
                           </span>
                         )}
                         {doc.verificationStatus === "pending" && (
-                          <span className="rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-bold text-gold">
+                          <span className="rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-bold text-gold-text">
                             ● Pending
                           </span>
                         )}

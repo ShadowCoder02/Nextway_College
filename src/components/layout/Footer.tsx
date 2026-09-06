@@ -36,6 +36,11 @@ export function Footer() {
               </li>
             ))}
             <li>
+              <Link href="/branches" className="transition hover:text-white">
+                Find a Branch
+              </Link>
+            </li>
+            <li>
               <Link href="/apply" className="font-semibold text-gold transition hover:text-white">
                 Apply Online (Portal) →
               </Link>

@@ -52,7 +52,7 @@ export default async function SchoolsPage() {
                     <li key={p.id}>
                       <Link
                         href={`/programmes/${p.slug}`}
-                        className="font-medium text-deep-blue hover:text-gold"
+                        className="font-medium text-deep-blue hover:text-gold-text"
                       >
                         {p.title}
                       </Link>

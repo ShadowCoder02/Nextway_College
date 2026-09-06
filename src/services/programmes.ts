@@ -5,15 +5,31 @@ import {
 } from "@/lib/cms/store";
 import { schools as staticSchools } from "@/data/content";
 
+export type ProgrammeSort = "featured" | "title-asc" | "title-desc";
+
 export type ProgrammeFilters = {
   q?: string;
   level?: ProgrammeLevel;
   mode?: StudyMode;
   school?: string;
+  sort?: ProgrammeSort;
 };
 
 async function loadProgrammes(): Promise<import("@/types").Programme[]> {
   return getStoredProgrammes();
+}
+
+function sortProgrammes(programmes: Programme[], sort: ProgrammeSort): Programme[] {
+  const sorted = [...programmes];
+  if (sort === "title-asc") return sorted.sort((a, b) => a.title.localeCompare(b.title));
+  if (sort === "title-desc") return sorted.sort((a, b) => b.title.localeCompare(a.title));
+  // "featured" (default): flagship first, then featured, then alphabetical.
+  return sorted.sort((a, b) => {
+    const scoreA = (a.flagship ? 2 : 0) + (a.featured ? 1 : 0);
+    const scoreB = (b.flagship ? 2 : 0) + (b.featured ? 1 : 0);
+    if (scoreB !== scoreA) return scoreB - scoreA;
+    return a.title.localeCompare(b.title);
+  });
 }
 
 export async function getProgrammes(filters?: ProgrammeFilters): Promise<Programme[]> {
@@ -33,7 +49,24 @@ export async function getProgrammes(filters?: ProgrammeFilters): Promise<Program
   if (filters?.mode) results = results.filter((p) => p.mode === filters.mode);
   if (filters?.school) results = results.filter((p) => p.schoolSlug === filters.school);
 
-  return results;
+  return sortProgrammes(results, filters?.sort ?? "featured");
+}
+
+/** Live per-option counts for the level/mode filter dropdowns, computed
+ * against all published programmes (not cross-filtered by other active
+ * filters) — same convention as getSchoolsWithProgrammeCounts below. */
+export async function getProgrammeFacetCounts(): Promise<{
+  levels: Record<string, number>;
+  modes: Record<string, number>;
+}> {
+  const programmes = await getProgrammes();
+  const levels: Record<string, number> = {};
+  const modes: Record<string, number> = {};
+  for (const p of programmes) {
+    levels[p.level] = (levels[p.level] ?? 0) + 1;
+    modes[p.mode] = (modes[p.mode] ?? 0) + 1;
+  }
+  return { levels, modes };
 }
 
 export async function getAllProgrammesAdmin(): Promise<Programme[]> {

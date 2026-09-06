@@ -121,7 +121,7 @@ export default async function ProgrammeDetailPage({ params }: PageProps) {
                 <ul className="space-y-3">
                   {programme.learningOutcomes.map((o) => (
                     <li key={o} className="flex gap-3">
-                      <span className="mt-1 text-gold">✓</span>
+                      <span className="mt-1 text-gold" aria-hidden="true">✓</span>
                       <span>{o}</span>
                     </li>
                   ))}

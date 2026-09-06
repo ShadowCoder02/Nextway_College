@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { SITE } from "@/constants/site";
 import { getCareers } from "@/services/careers";
 import { formatDate } from "@/lib/utils";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export const metadata = buildMetadata({
   title: "Careers",
@@ -33,9 +34,7 @@ export default async function CareersPage() {
           />
 
           {careers.length === 0 ? (
-            <div className="glass-panel p-10 text-center">
-              <p className="text-lg text-slate">No vacancies at the moment. Please check back soon.</p>
-            </div>
+            <EmptyState heading="No vacancies at the moment" body="Please check back soon, or send a speculative CV to our Admissions team." />
           ) : (
             <div className="grid gap-6">
               {careers.map((career) => (

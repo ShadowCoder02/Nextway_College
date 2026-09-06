@@ -130,7 +130,7 @@ export default function ApplicantDashboardPage() {
         <div className="premium-card p-6 sm:p-8 bg-white border border-slate/15">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate/15">
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-gold">Applicant Portal</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-gold-text">Applicant Portal</span>
               <h1 className="text-2xl sm:text-3xl font-bold text-navy mt-1">
                 {app.personalInfo?.fullName || "Prospective Student"}
               </h1>
@@ -169,7 +169,7 @@ export default function ApplicantDashboardPage() {
           <div className="pt-6">
             <div className="flex justify-between items-center text-xs font-semibold mb-2">
               <span className="text-navy">Application Completion</span>
-              <span className="text-gold font-bold">{progressPercent}%</span>
+              <span className="text-gold-text font-bold">{progressPercent}%</span>
             </div>
             <div className="h-2 w-full rounded-full bg-ice overflow-hidden border border-slate/15">
               <div
@@ -339,7 +339,7 @@ export default function ApplicantDashboardPage() {
                           </span>
                         )}
                         {doc.verificationStatus === "pending" && (
-                          <span className="rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-bold text-gold">
+                          <span className="rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-bold text-gold-text">
                             ● Pending
                           </span>
                         )}

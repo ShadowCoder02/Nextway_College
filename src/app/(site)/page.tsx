@@ -21,6 +21,7 @@ import { formatDate, formatDateTime } from "@/lib/utils";
 import { getFeaturedProgrammes, getFlagshipProgramme } from "@/services/programmes";
 import { getLatestNews } from "@/services/news";
 import { getUpcomingEvents } from "@/services/events";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export default async function HomePage() {
   const [featured, flagship, news, events] = await Promise.all([
@@ -146,7 +147,7 @@ export default async function HomePage() {
               <ul className="mb-8 space-y-3">
                 {flagship.learningOutcomes.slice(0, 3).map((o) => (
                   <li key={o} className="flex gap-3 text-white/90">
-                    <span className="font-bold text-gold">✓</span> {o}
+                    <span className="font-bold text-gold" aria-hidden="true">✓</span> {o}
                   </li>
                 ))}
               </ul>
@@ -224,9 +225,7 @@ export default async function HomePage() {
           <div>
             <SectionHeader eyebrow="Events" title="Upcoming events" />
             {events.length === 0 ? (
-              <p className="rounded-[var(--radius-card)] bg-ice p-6 text-center text-slate">
-                No upcoming events are scheduled right now. Check back soon.
-              </p>
+              <EmptyState heading="No upcoming events are scheduled right now" body="Check back soon." />
             ) : (
               <div className="space-y-5">
                 {events.map((event) => (
@@ -269,8 +268,7 @@ export default async function HomePage() {
           <SectionHeader eyebrow="Student Voices" title="What learners say" align="center" />
           <div className="grid gap-6 md:grid-cols-3">
             {testimonials.map((t) => (
-              <blockquote key={t.id} className="premium-card p-7">
-                <div className="mb-4 text-3xl text-gold">&ldquo;</div>
+              <blockquote key={t.id} className="premium-card quote-mark p-7">
                 <p className="mb-5 text-charcoal leading-relaxed">{t.quote}</p>
                 <footer>
                   <cite className="not-italic font-bold text-navy">{t.studentName}</cite>
