@@ -4,7 +4,7 @@ import { CTASection } from "@/components/ui/CTASection";
 import { LeadForm } from "@/components/ui/LeadForm";
 import { Badge } from "@/components/ui/Badge";
 import { buildMetadata, courseJsonLd } from "@/lib/seo";
-import { IMAGES } from "@/constants/images";
+import { IMAGES, HERO_BLUR_PLACEHOLDER } from "@/constants/images";
 import { SITE } from "@/constants/site";
 import { FallbackImage } from "@/components/ui/FallbackImage";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -74,7 +74,7 @@ export default async function ProgrammeDetailPage({ params }: PageProps) {
             priority
             fetchPriority="high"
             placeholder="blur"
-            blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxIiBoZWlnaHQ9IjEiPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMwZjIzNDAiLz48L3N2Zz4="
+            blurDataURL={HERO_BLUR_PLACEHOLDER}
           />
         </div>
         <div className="absolute inset-0 bg-linear-to-t from-navy via-navy/80 to-navy/60" />

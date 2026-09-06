@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { buildMetadata, newsArticleJsonLd } from "@/lib/seo";
 import { formatDate } from "@/lib/utils";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { HERO_BLUR_PLACEHOLDER } from "@/constants/images";
 import { getNewsBySlug } from "@/services/news";
 
 type PageProps = { params: Promise<{ slug: string }> };
@@ -69,7 +70,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
             priority
             fetchPriority="high"
             placeholder="blur"
-            blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxIiBoZWlnaHQ9IjEiPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMwZjIzNDAiLz48L3N2Zz4="
+            blurDataURL={HERO_BLUR_PLACEHOLDER}
           />
         </div>
         <div className="prose prose-lg max-w-none text-charcoal">

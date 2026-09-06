@@ -51,6 +51,15 @@ export function buildMetadata({
   };
 }
 
+// Programme/event/news image fields can be either already-absolute
+// (Unsplash, Supabase) or a root-relative local path (/images/...) — the
+// latter must be resolved against SITE.url before going into JSON-LD, since
+// schema.org (and Google's Rich Results parser) requires an absolute URL.
+// og:image gets this for free from Next's metadataBase; JSON-LD doesn't.
+function absoluteUrl(url: string): string {
+  return url.startsWith("http") ? url : `${SITE.url}${url}`;
+}
+
 export function organizationJsonLd() {
   return {
     "@context": "https://schema.org",
@@ -127,7 +136,7 @@ export function eventJsonLd(event: {
       name: event.location,
       address: SITE.location,
     },
-    image: event.imageUrl,
+    image: absoluteUrl(event.imageUrl),
     organizer: {
       "@type": "EducationalOrganization",
       name: SITE.name,
@@ -152,7 +161,7 @@ export function newsArticleJsonLd(article: {
     description: article.excerpt,
     url: `${SITE.url}/news/${article.slug}`,
     datePublished: article.publishedAt,
-    image: article.coverImageUrl,
+    image: absoluteUrl(article.coverImageUrl),
     publisher: {
       "@type": "EducationalOrganization",
       name: SITE.name,

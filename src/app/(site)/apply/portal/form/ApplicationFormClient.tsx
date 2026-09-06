@@ -94,8 +94,14 @@ export function ApplicationFormClient() {
   useEffect(() => {
     async function init() {
       try {
-        // 1. Fetch current application
-        const appRes = await apiFetch("/api/applicant/application");
+        // The application and the programme list don't depend on each
+        // other — fetch both in parallel rather than paying two sequential
+        // round trips before the form can render on a 4G connection.
+        const [appRes, progRes] = await Promise.all([
+          apiFetch("/api/applicant/application"),
+          apiFetch("/api/portal/programmes"),
+        ]);
+
         if (appRes.status === 401) {
           router.push("/apply/login");
           return;
@@ -120,8 +126,6 @@ export function ApplicationFormClient() {
           }
         }
 
-        // 2. Fetch programmes
-        const progRes = await apiFetch("/api/portal/programmes");
         if (progRes.ok) {
           const progData = await progRes.json();
           if (Array.isArray(progData)) {

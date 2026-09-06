@@ -26,7 +26,7 @@ export function Footer() {
         </div>
 
         <div>
-          <h4 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-gold">Explore</h4>
+          <h3 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-gold">Explore</h3>
           <ul className="space-y-3 text-sm text-white/75">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
@@ -54,7 +54,7 @@ export function Footer() {
         </div>
 
         <div>
-          <h4 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-gold">Contact</h4>
+          <h3 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-gold">Contact</h3>
           <ul className="space-y-3 text-sm text-white/75">
             <li className="flex items-start gap-3">
               <IconWrap><FontAwesomeIcon icon={faLocationDot} className="h-3.5 w-3.5" /></IconWrap>
@@ -87,7 +87,7 @@ export function Footer() {
         </div>
 
         <div>
-          <h4 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-gold">Legal</h4>
+          <h3 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-gold">Legal</h3>
           <ul className="mb-6 space-y-3 text-sm text-white/75">
             <li>
               <Link href="/privacy" className="transition hover:text-white">

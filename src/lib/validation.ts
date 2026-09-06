@@ -1,8 +1,11 @@
 import { z } from "zod";
+// Not re-exported: nothing outside this file's own schemas should import
+// phoneSchema/passwordSchema via @/lib/validation — doing so would pull
+// phone-schema.ts (and libphonenumber-js) into that importer's bundle even
+// if it doesn't need a phone field. Import from @/lib/phone-schema or
+// @/lib/account-validation directly instead.
 import { phoneSchema } from "@/lib/phone-schema";
 import { passwordSchema } from "@/lib/account-validation";
-
-export { phoneSchema, passwordSchema };
 
 /** Trims before length-checking so whitespace-only input can't pass. */
 const nameSchema = z
