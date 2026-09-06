@@ -3,7 +3,13 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import "@/styles/globals.css";
-import { SITE } from "@/constants/site";
+
+// Deliberately not importing SITE here: constants/site.ts throws at import
+// time if NEXT_PUBLIC_SITE_URL is missing in production, and this is the
+// last line of defense shown when *something else* has already thrown —
+// it must not have any import that can itself fail to render.
+const SUPPORT_PHONE = "0812 201 650";
+const SUPPORT_PHONE_TEL = "+94812201650";
 
 export default function GlobalError({
   error,
@@ -43,8 +49,8 @@ export default function GlobalError({
           </div>
           <p className="mt-6 text-sm text-slate">
             Or call Admissions at{" "}
-            <a href={`tel:${SITE.phoneTel}`} className="font-semibold text-brand-red hover:underline">
-              {SITE.phone}
+            <a href={`tel:${SUPPORT_PHONE_TEL}`} className="font-semibold text-brand-red hover:underline">
+              {SUPPORT_PHONE}
             </a>
           </p>
         </div>

@@ -54,6 +54,7 @@ export function ProgrammeFilters({ schools, levelCounts, modeCounts }: Programme
   );
 
   function clearAll() {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
     if (searchInputRef.current) searchInputRef.current.value = "";
     startTransition(() => {
       router.push("/programmes");
@@ -105,7 +106,7 @@ export function ProgrammeFilters({ schools, levelCounts, modeCounts }: Programme
             {PROGRAMME_LEVELS.map((l) => {
               const count = levelCounts[l] ?? 0;
               return (
-                <option key={l} value={l} disabled={count === 0}>
+                <option key={l} value={l} disabled={count === 0 && l !== level}>
                   {l} ({count})
                 </option>
               );
@@ -126,7 +127,7 @@ export function ProgrammeFilters({ schools, levelCounts, modeCounts }: Programme
             {STUDY_MODES.map((m) => {
               const count = modeCounts[m] ?? 0;
               return (
-                <option key={m} value={m} disabled={count === 0}>
+                <option key={m} value={m} disabled={count === 0 && m !== mode}>
                   {m} ({count})
                 </option>
               );

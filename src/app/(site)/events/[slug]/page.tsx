@@ -37,7 +37,7 @@ export default async function EventDetailPage({ params }: PageProps) {
           <Image src={event.imageUrl} alt="" fill className="object-cover" />
         </div>
         <div className="container-nwc relative max-w-3xl">
-          <p className="mb-3 text-sm text-gold-text">{formatDateTime(event.startAt)} · {event.location}</p>
+          <p className="mb-3 text-sm text-gold">{formatDateTime(event.startAt)} · {event.location}</p>
           <h1 className="text-display text-white">{event.title}</h1>
         </div>
       </section>

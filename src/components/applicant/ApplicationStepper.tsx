@@ -38,12 +38,13 @@ export function ApplicationStepper({
           copy of the desktop circles — six circles at 360px is still cramped
           even shrunk and unlabeled. */}
       <div className="sm:hidden">
-        <div className="mb-2 flex items-center justify-between">
+        <div className="mb-1 flex items-center justify-between">
           <span className="text-xs font-bold uppercase tracking-wider text-gold-text">
-            Step {currentStep} of {totalSteps}: {currentLabel}
+            Step {currentStep} of {totalSteps}
           </span>
           <span className="text-xs font-semibold text-navy">{percent}%</span>
         </div>
+        <p className="mb-2 text-sm font-semibold text-navy">{currentLabel}</p>
         <div className="h-2 w-full overflow-hidden rounded-full bg-slate/20" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100} aria-label="Application progress">
           <div className="h-full rounded-full bg-gold transition-all duration-300" style={{ width: `${percent}%` }} />
         </div>

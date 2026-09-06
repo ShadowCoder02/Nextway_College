@@ -1,3 +1,5 @@
+import { BRANCHES as BRANCH_DIRECTORY } from "@/data/branches";
+
 function resolveSiteUrl(): string {
   // Vercel sets VERCEL_ENV to "production" | "preview" | "development" on
   // every deployment; NODE_ENV alone can't distinguish a production deploy
@@ -87,12 +89,7 @@ export const PORTAL_NAV = [
 /** @deprecated use PORTAL_NAV */
 export const ADMIN_NAV = PORTAL_NAV;
 
-export const BRANCHES = [
-  "Kandy",
-  "Colombo",
-  "Galle",
-  "Batticaloa",
-  "Kegalle",
-  "Kurunegala",
-  "Kalutara",
-] as const;
+// Derived from data/branches.ts's Branch[] (the richer, single source of
+// truth for branch names) so this list can't silently drift out of sync
+// with the /branches directory as the college's full branch list grows.
+export const BRANCHES = BRANCH_DIRECTORY.map((b) => b.name);

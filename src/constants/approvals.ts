@@ -24,4 +24,4 @@ export const APPROVALS: Approval[] = [
   { name: "International Business Development Forum", logo: "/partners/ibdf.png", description: TODO_DESCRIPTION },
   { name: "Accreditation Partner", logo: "/partners/app.png", description: TODO_DESCRIPTION },
   { name: "Future Focus Welfare Team", logo: "/partners/ffwt.png", description: TODO_DESCRIPTION },
-];
+] as const;

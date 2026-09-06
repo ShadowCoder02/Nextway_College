@@ -117,7 +117,7 @@ export function Navbar() {
           type="button"
           className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-navy/10 bg-white lg:hidden"
           aria-expanded={open}
-          aria-controls="mobile-nav-panel"
+          aria-controls={open ? "mobile-nav-panel" : undefined}
           aria-label="Toggle menu"
           onClick={() => setOpen((v) => !v)}
         >

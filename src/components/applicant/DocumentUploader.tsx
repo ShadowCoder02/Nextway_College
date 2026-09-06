@@ -101,17 +101,17 @@ export function DocumentUploader({
 }: DocumentUploaderProps) {
   const [uploadingCategory, setUploadingCategory] = useState<DocumentCategory | null>(null);
   const [progress, setProgress] = useState(0);
-  const [converting, setConverting] = useState(false);
+  const [convertingCategory, setConvertingCategory] = useState<DocumentCategory | null>(null);
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [successMsg, setSuccessMsg] = useState<string>("");
   const [retry, setRetry] = useState<RetryState>(null);
   const [dragOverCategory, setDragOverCategory] = useState<DocumentCategory | null>(null);
 
-  async function convertHeicIfNeeded(file: File): Promise<File> {
+  async function convertHeicIfNeeded(category: DocumentCategory, file: File): Promise<File> {
     const ext = "." + (file.name.split(".").pop()?.toLowerCase() ?? "");
     if (!HEIC_EXTENSIONS.has(ext)) return file;
 
-    setConverting(true);
+    setConvertingCategory(category);
     try {
       const heic2any = (await import("heic2any")).default;
       const converted = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.85 });
@@ -121,7 +121,7 @@ export function DocumentUploader({
     } catch {
       throw new Error("Unable to convert this HEIC photo. Please export it as JPG and try again.");
     } finally {
-      setConverting(false);
+      setConvertingCategory(null);
     }
   }
 
@@ -178,7 +178,7 @@ export function DocumentUploader({
 
     let file: File;
     try {
-      file = await convertHeicIfNeeded(rawFile);
+      file = await convertHeicIfNeeded(category, rawFile);
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Unable to process this file.");
       return;
@@ -197,7 +197,7 @@ export function DocumentUploader({
   function handleDrop(category: DocumentCategory, title: string, e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
     setDragOverCategory(null);
-    if (isReadOnly || uploadingCategory) return;
+    if (isReadOnly || uploadingCategory || convertingCategory) return;
     const rawFile = e.dataTransfer.files?.[0];
     if (!rawFile) return;
     void processFile(category, title, rawFile);
@@ -269,7 +269,8 @@ export function DocumentUploader({
         {DOCUMENT_SLOTS.map((slot) => {
           const matchingDocs = documents.filter((d) => d.category === slot.category);
           const isUploading = uploadingCategory === slot.category;
-          const isConverting = isUploading && converting;
+          const isConverting = convertingCategory === slot.category;
+          const isBusy = isUploading || isConverting;
 
           const isDragOver = dragOverCategory === slot.category;
 
@@ -280,7 +281,7 @@ export function DocumentUploader({
                 isDragOver ? "border-gold bg-gold/5 ring-2 ring-gold/30" : "border-slate/20 bg-white hover:border-navy/20"
               }`}
               onDragOver={(e) => {
-                if (isReadOnly || uploadingCategory) return;
+                if (isReadOnly || uploadingCategory || convertingCategory) return;
                 e.preventDefault();
                 setDragOverCategory(slot.category);
               }}
@@ -314,7 +315,7 @@ export function DocumentUploader({
                         type="file"
                         accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif"
                         className="sr-only"
-                        disabled={isUploading}
+                        disabled={isBusy}
                         onChange={(e) => handleFileUpload(slot.category, slot.title, e)}
                       />
                       <span className="inline-flex cursor-pointer items-center justify-center rounded-lg border border-gold bg-gold/10 px-4 py-2 text-xs font-bold text-navy transition hover:bg-gold hover:text-white disabled:opacity-50">
