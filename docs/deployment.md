@@ -43,10 +43,34 @@
 3. Configure Auth email templates if using magic links.
 4. Restrict RLS — never expose service role key in frontend.
 
-## Optional: Analytics
+## Analytics & performance monitoring
 
-- Add Google Analytics 4 script via `next/script` in root layout when ready.
-- Register property in Search Console after DNS is live.
+`@vercel/speed-insights` and `@vercel/analytics` are already wired into
+`src/app/layout.tsx` on every page. They activate automatically once
+enabled for this project under Vercel → Speed Insights / Analytics — no
+further code changes needed. (A Google Analytics 4 script can still be
+added via `next/script` alongside these if the college specifically needs
+GA4, but Vercel's first-party options cover Core Web Vitals and traffic
+without a separate script.)
+
+## Error monitoring (Sentry) — not yet installed
+
+`@sentry/nextjs` was tried and deliberately reverted: even initialized with
+no DSN (a complete no-op), it added ~73KB to every route's First Load JS and
+~57KB to the Edge Middleware bundle — for a mid-range-Android audience, that
+cost isn't justified by a feature that does nothing without a Sentry
+project, which doesn't exist yet for this app. Add it when there's an
+actual account to send errors to, not before:
+
+1. Create a project at https://sentry.io (Platform: Next.js).
+2. Run `npx @sentry/wizard@latest -i nextjs` from the project root — it
+   scaffolds `instrumentation.ts`/`instrumentation-client.ts` and the
+   server/edge config files correctly for the installed SDK version, and
+   wires source-map upload (`SENTRY_AUTH_TOKEN`, org/project) for you.
+3. Re-check First Load JS afterward (`npm run build`) — the SDK's default
+   config enables tracing and session replay, both of which add
+   meaningfully to bundle size; consider trimming `tracesSampleRate` and
+   disabling replay if the budget in this doc's Lighthouse CI job is tight.
 
 ## Rollback
 

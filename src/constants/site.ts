@@ -59,9 +59,11 @@ export const SITE = {
 export const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
+  { href: "/schools", label: "Schools" },
   { href: "/programmes", label: "Programmes" },
   { href: "/admissions", label: "Admissions" },
-  { href: "/news", label: "News & Events" },
+  { href: "/news", label: "News" },
+  { href: "/events", label: "Events" },
   { href: "/careers", label: "Careers" },
   { href: "/contact", label: "Contact" },
 ] as const;
