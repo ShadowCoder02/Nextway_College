@@ -2,6 +2,7 @@ import { buildMetadata } from "@/lib/seo";
 import { CTASection } from "@/components/ui/CTASection";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { PageHero } from "@/components/ui/PageHero";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ApprovalsStrip } from "@/components/marketing/ApprovalsStrip";
 import { BranchesSection, HybridLearningSection } from "@/components/marketing/HybridSections";
 import { IMAGES } from "@/constants/images";
@@ -17,6 +18,7 @@ export const metadata = buildMetadata({
 export default function AboutPage() {
   return (
     <>
+      <Breadcrumbs items={[{ label: "About", href: "/about" }]} />
       <PageHero
         eyebrow="About Us"
         title={SITE.name}

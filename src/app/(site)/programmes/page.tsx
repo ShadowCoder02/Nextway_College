@@ -6,6 +6,7 @@ import { ProgrammesEmptyState } from "@/components/programme/ProgrammesEmptyStat
 import { parseProgrammeFilters } from "@/lib/programmes";
 import { PageHero } from "@/components/ui/PageHero";
 import { buildMetadata } from "@/lib/seo";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { getProgrammes, getSchoolsWithProgrammeCounts, getProgrammeFacetCounts } from "@/services/programmes";
 
 export const metadata = buildMetadata({
@@ -30,6 +31,7 @@ export default async function ProgrammesPage({ searchParams }: PageProps) {
 
   return (
     <>
+      <Breadcrumbs items={[{ label: "Programmes", href: "/programmes" }]} />
       <PageHero
         eyebrow="Academic Catalogue"
         title="Programmes"

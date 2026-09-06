@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { applicantLoginSchema } from "@/lib/validation";
+import { applicantLoginSchema } from "@/lib/account-validation";
 import { authenticateApplicant } from "@/services/admissions";
 import { createApplicantSession } from "@/lib/admissions/session";
 import { checkRateLimit, resetRateLimit } from "@/lib/admissions/rate-limiter";

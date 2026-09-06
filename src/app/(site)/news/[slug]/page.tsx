@@ -1,7 +1,8 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { buildMetadata } from "@/lib/seo";
+import { buildMetadata, newsArticleJsonLd } from "@/lib/seo";
 import { formatDate } from "@/lib/utils";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { getNewsBySlug } from "@/services/news";
 
 type PageProps = { params: Promise<{ slug: string }> };
@@ -32,6 +33,20 @@ export default async function NewsDetailPage({ params }: PageProps) {
 
   return (
     <article>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            newsArticleJsonLd({
+              title: article.title,
+              excerpt: article.excerpt,
+              slug: article.slug,
+              publishedAt: article.publishedAt,
+              coverImageUrl: article.coverImageUrl,
+            }),
+          ),
+        }}
+      />
       <section className="bg-navy py-16 text-white">
         <div className="container-nwc max-w-3xl">
           <p className="mb-3 text-sm text-gold">{formatDate(article.publishedAt)} · {article.category}</p>
@@ -39,6 +54,11 @@ export default async function NewsDetailPage({ params }: PageProps) {
         </div>
       </section>
       <div className="container-nwc max-w-3xl py-12">
+        <Breadcrumbs
+          items={[{ label: "News & Events", href: "/news" }, { label: article.title, href: `/news/${article.slug}` }]}
+          visible
+          className="mb-8"
+        />
         <div className="relative mb-10 aspect-[16/9] overflow-hidden rounded-[var(--radius-card)]">
           <Image
             src={article.coverImageUrl}

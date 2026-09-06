@@ -7,6 +7,7 @@ import { buildMetadata, courseJsonLd } from "@/lib/seo";
 import { IMAGES } from "@/constants/images";
 import { SITE } from "@/constants/site";
 import { FallbackImage } from "@/components/ui/FallbackImage";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { getProgrammeBySlug } from "@/services/programmes";
 
 type PageProps = { params: Promise<{ slug: string }> };
@@ -54,6 +55,7 @@ export default async function ProgrammeDetailPage({ params }: PageProps) {
               slug: programme.slug,
               duration: programme.duration,
               level: programme.level,
+              mode: programme.mode,
             }),
           ),
         }}
@@ -77,6 +79,11 @@ export default async function ProgrammeDetailPage({ params }: PageProps) {
         </div>
         <div className="absolute inset-0 bg-linear-to-t from-navy via-navy/80 to-navy/60" />
         <div className="container-nwc relative py-16 lg:py-24">
+          <Breadcrumbs
+            items={[{ label: "Programmes", href: "/programmes" }, { label: programme.title, href: `/programmes/${programme.slug}` }]}
+            visible
+            className="mb-4 [&_ol]:text-white/70 [&_a:hover]:text-gold [&_span]:text-white"
+          />
           <div className="mb-4 flex flex-wrap gap-2">
             <Badge variant="gold">{programme.level}</Badge>
             {programme.flagship && <Badge>Flagship</Badge>}

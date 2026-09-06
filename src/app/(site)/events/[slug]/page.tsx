@@ -1,8 +1,9 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { buildMetadata } from "@/lib/seo";
+import { buildMetadata, eventJsonLd } from "@/lib/seo";
 import { formatDateTime } from "@/lib/utils";
 import { LeadForm } from "@/components/ui/LeadForm";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { getEventBySlug } from "@/services/events";
 
 type PageProps = { params: Promise<{ slug: string }> };
@@ -32,6 +33,22 @@ export default async function EventDetailPage({ params }: PageProps) {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            eventJsonLd({
+              title: event.title,
+              description: event.description,
+              slug: event.slug,
+              startAt: event.startAt,
+              location: event.location,
+              imageUrl: event.imageUrl,
+            }),
+          ),
+        }}
+      />
+      <Breadcrumbs items={[{ label: "News & Events", href: "/events" }, { label: event.title, href: `/events/${event.slug}` }]} />
       <section className="relative bg-navy py-16 text-white">
         <div className="absolute inset-0 opacity-20">
           <Image

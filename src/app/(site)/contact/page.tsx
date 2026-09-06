@@ -2,6 +2,7 @@ import { buildMetadata } from "@/lib/seo";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { LeadForm } from "@/components/ui/LeadForm";
 import { PageHero } from "@/components/ui/PageHero";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { SITE } from "@/constants/site";
 import { whatsappUrl } from "@/lib/utils";
 import { faLocationDot, faPhone, faEnvelope } from "@fortawesome/free-solid-svg-icons";
@@ -21,6 +22,7 @@ export const metadata = buildMetadata({
 export default function ContactPage() {
   return (
     <>
+      <Breadcrumbs items={[{ label: "Contact", href: "/contact" }]} />
       <PageHero
         eyebrow="Get in Touch"
         title="Contact Us"

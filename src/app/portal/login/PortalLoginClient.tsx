@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { loginSchema } from "@/lib/validation";
+import { loginSchema } from "@/lib/staff-login-validation";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/layout/Logo";
 import { apiFetch } from "@/lib/api-fetch";

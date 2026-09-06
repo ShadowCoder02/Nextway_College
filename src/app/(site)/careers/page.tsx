@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { buildMetadata } from "@/lib/seo";
+import { buildMetadata, jobPostingJsonLd } from "@/lib/seo";
 import { PageHero } from "@/components/ui/PageHero";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Button } from "@/components/ui/Button";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { SITE } from "@/constants/site";
 import { getCareers } from "@/services/careers";
 import { formatDate } from "@/lib/utils";
@@ -19,6 +20,14 @@ export default async function CareersPage() {
 
   return (
     <>
+      {careers.map((career) => (
+        <script
+          key={career.id}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jobPostingJsonLd(career)) }}
+        />
+      ))}
+      <Breadcrumbs items={[{ label: "Careers", href: "/careers" }]} />
       <PageHero
         eyebrow="Careers"
         title="Grow with Nextway College International"

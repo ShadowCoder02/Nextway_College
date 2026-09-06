@@ -83,6 +83,7 @@ export function courseJsonLd(programme: {
   slug: string;
   duration: string;
   level: string;
+  mode: string;
 }) {
   return {
     "@context": "https://schema.org",
@@ -95,7 +96,140 @@ export function courseJsonLd(programme: {
       name: SITE.name,
       url: SITE.url,
     },
-    timeRequired: programme.duration,
     educationalLevel: programme.level,
+    hasCourseInstance: {
+      "@type": "CourseInstance",
+      courseMode: programme.mode,
+      duration: programme.duration,
+    },
+  };
+}
+
+export function eventJsonLd(event: {
+  title: string;
+  description: string;
+  slug: string;
+  startAt: string;
+  location: string;
+  imageUrl: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: event.title,
+    description: event.description,
+    url: `${SITE.url}/events/${event.slug}`,
+    // Stored (and rendered) with an explicit +05:30 offset — pass it through
+    // unmodified, never reformat via a UTC-dropping date helper.
+    startDate: event.startAt,
+    location: {
+      "@type": "Place",
+      name: event.location,
+      address: SITE.location,
+    },
+    image: event.imageUrl,
+    organizer: {
+      "@type": "EducationalOrganization",
+      name: SITE.name,
+      url: SITE.url,
+    },
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    eventStatus: "https://schema.org/EventScheduled",
+  };
+}
+
+export function newsArticleJsonLd(article: {
+  title: string;
+  excerpt: string;
+  slug: string;
+  publishedAt: string;
+  coverImageUrl: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline: article.title,
+    description: article.excerpt,
+    url: `${SITE.url}/news/${article.slug}`,
+    datePublished: article.publishedAt,
+    image: article.coverImageUrl,
+    publisher: {
+      "@type": "EducationalOrganization",
+      name: SITE.name,
+      url: SITE.url,
+      logo: { "@type": "ImageObject", url: `${SITE.url}${SITE.logo}` },
+    },
+  };
+}
+
+// schema.org's employmentType enum is a fixed vocabulary; free-text vacancy
+// "type" values from the CMS are mapped to the closest match rather than
+// passed through raw, and simply omitted (not guessed) when no match fits.
+const EMPLOYMENT_TYPE_MAP: Record<string, string> = {
+  "full-time": "FULL_TIME",
+  fulltime: "FULL_TIME",
+  "part-time": "PART_TIME",
+  parttime: "PART_TIME",
+  contract: "CONTRACTOR",
+  contractor: "CONTRACTOR",
+  temporary: "TEMPORARY",
+  intern: "INTERN",
+  internship: "INTERN",
+  volunteer: "VOLUNTEER",
+};
+
+export function jobPostingJsonLd(vacancy: {
+  id: string;
+  title: string;
+  description: string;
+  requirements: string[];
+  department: string;
+  location: string;
+  type: string;
+  postedAt: string;
+}) {
+  const employmentType = EMPLOYMENT_TYPE_MAP[vacancy.type.trim().toLowerCase()];
+  const description =
+    vacancy.requirements.length > 0
+      ? `${vacancy.description} Requirements: ${vacancy.requirements.join("; ")}.`
+      : vacancy.description;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: vacancy.title,
+    description,
+    identifier: {
+      "@type": "PropertyValue",
+      name: SITE.name,
+      value: vacancy.id,
+    },
+    datePosted: vacancy.postedAt,
+    hiringOrganization: {
+      "@type": "EducationalOrganization",
+      name: SITE.name,
+      url: SITE.url,
+      logo: `${SITE.url}${SITE.logo}`,
+    },
+    jobLocation: {
+      "@type": "Place",
+      address: { "@type": "PostalAddress", addressLocality: vacancy.location, addressCountry: "LK" },
+    },
+    ...(employmentType ? { employmentType } : {}),
+  };
+}
+
+export type BreadcrumbItem = { label: string; href: string };
+
+export function breadcrumbJsonLd(items: BreadcrumbItem[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.label,
+      item: `${SITE.url}${item.href}`,
+    })),
   };
 }

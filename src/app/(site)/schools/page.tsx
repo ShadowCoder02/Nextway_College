@@ -3,6 +3,7 @@ import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Button } from "@/components/ui/Button";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { getSchools, getProgrammesBySchool } from "@/services/programmes";
 
 export const metadata = buildMetadata({
@@ -22,6 +23,7 @@ export default async function SchoolsPage() {
 
   return (
     <>
+      <Breadcrumbs items={[{ label: "Schools", href: "/schools" }]} />
       <section className="bg-navy py-16 text-white">
         <div className="container-nwc">
           <span className="eyebrow mb-3 block">Academic structure</span>
