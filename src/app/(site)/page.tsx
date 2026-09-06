@@ -42,7 +42,11 @@ export default async function HomePage() {
             alt=""
             fill
             className="object-cover"
+            sizes="100vw"
             priority
+            fetchPriority="high"
+            placeholder="blur"
+            blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxIiBoZWlnaHQ9IjEiPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMwZjIzNDAiLz48L3N2Zz4="
           />
         </div>
         <div className="absolute inset-0 bg-linear-to-r from-navy/85 via-navy/72 to-navy/55" />

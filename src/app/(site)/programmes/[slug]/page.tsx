@@ -68,7 +68,11 @@ export default async function ProgrammeDetailPage({ params }: PageProps) {
             alt=""
             fill
             className="object-cover"
+            sizes="100vw"
             priority
+            fetchPriority="high"
+            placeholder="blur"
+            blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxIiBoZWlnaHQ9IjEiPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMwZjIzNDAiLz48L3N2Zz4="
           />
         </div>
         <div className="absolute inset-0 bg-linear-to-t from-navy via-navy/80 to-navy/60" />

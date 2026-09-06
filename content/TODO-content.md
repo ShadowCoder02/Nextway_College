@@ -4,14 +4,21 @@ Items flagged during development that must never be invented by an engineer
 or an AI tool. Each entry names the exact file/field to update once the real
 material is available.
 
-## Programme photography (Session 1, fix #2)
+## Programme photography (Session 1, fix #2; consolidated in Session 4)
 
 `scripts/check-images.ts` found 6 of 10 programme images returning 404 from
-Unsplash (fabricated/dead photo IDs). They now point at a temporary local
-placeholder — a reused campus photo, not programme-specific — at
-`/public/images/programmes/<slug>.jpg`. Replace the file for each slug below
-with real photography once available; no data file changes are needed since
-`data/cms/programmes.json` already points at these paths.
+Unsplash (fabricated/dead photo IDs). Session 1 pointed all 6 at individual
+copies of the same reused campus photo, one file per slug. Session 4's
+performance pass found those 6 files were byte-for-byte identical — six
+separate downloads of the same image — and consolidated them to a single
+shared file, `/public/images/programmes/placeholder.jpg`, so the browser
+fetches it once. All 6 slugs below currently point at that one shared path
+in `data/cms/programmes.json`.
+
+When real photography arrives for a slug, save it at that slug's target path
+below **and** update that programme's `imageUrl` in `data/cms/programmes.json`
+to point at the new file (a data change is needed this time, since they no
+longer default to per-slug filenames):
 
 - [ ] `public/images/programmes/ba-political-science-sp.jpg` — BA Political Science (SP)
 - [ ] `public/images/programmes/hnd-english.jpg` — HND in English
@@ -24,6 +31,32 @@ Note: `check-images.ts` also found `data/cms/news.json`'s
 `applications-open-2026-intake` article image returning 404. That's outside
 Session 1's scope (programme images only) — flagged for whoever picks up news
 content next.
+
+## Campus showcase second image (Session 4, performance baseline)
+
+`src/components/marketing/CampusShowcase.tsx` rendered a second homepage tile
+with `alt="Students at Nextway College International"`, but its source,
+`/public/images/nextway.png`, is byte-identical (md5) to `/public/brand/
+logo.png` — it's the college's logo graphic, not a student photograph. That's
+a content-accuracy bug, not a performance one: real learners would have seen
+the logo mislabeled as a photo of themselves. Removed the tile rather than
+fabricate or substitute a stock replacement.
+
+- [ ] Supply a real campus/student photo for this homepage tile (a second
+      image beside the existing full-bleed campus photo, in the same
+      section). Until then the section shows only the "Hybrid excellence"
+      text panel.
+
+## Homepage stock photo reuse (Session 4, performance baseline)
+
+Not a bug to fix — flagging for the college. The same Unsplash BSc IT stock
+photo appears twice in one homepage scroll (the featured-programmes grid and
+the flagship spotlight section immediately below it), and `/images/hero-
+image.jpg` also appears twice (the top hero and the campus showcase). No
+extra bytes are downloaded (same cached URL each time), but a visitor sees
+the same two stock images repeated. Real photography for the BSc IT
+programme and additional campus shots would resolve this — not something to
+paper over with a different stock substitute.
 
 ## Branch directory (Session 3, "branch finder" surface)
 

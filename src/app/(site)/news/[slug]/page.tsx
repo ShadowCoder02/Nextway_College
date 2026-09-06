@@ -40,7 +40,17 @@ export default async function NewsDetailPage({ params }: PageProps) {
       </section>
       <div className="container-nwc max-w-3xl py-12">
         <div className="relative mb-10 aspect-[16/9] overflow-hidden rounded-[var(--radius-card)]">
-          <Image src={article.coverImageUrl} alt="" fill className="object-cover" priority />
+          <Image
+            src={article.coverImageUrl}
+            alt=""
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 768px"
+            priority
+            fetchPriority="high"
+            placeholder="blur"
+            blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxIiBoZWlnaHQ9IjEiPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMwZjIzNDAiLz48L3N2Zz4="
+          />
         </div>
         <div className="prose prose-lg max-w-none text-charcoal">
           <p>{article.content}</p>

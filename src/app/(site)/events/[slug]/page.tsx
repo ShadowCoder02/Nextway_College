@@ -34,7 +34,17 @@ export default async function EventDetailPage({ params }: PageProps) {
     <>
       <section className="relative bg-navy py-16 text-white">
         <div className="absolute inset-0 opacity-20">
-          <Image src={event.imageUrl} alt="" fill className="object-cover" />
+          <Image
+            src={event.imageUrl}
+            alt=""
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority
+            fetchPriority="high"
+            placeholder="blur"
+            blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxIiBoZWlnaHQ9IjEiPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMwZjIzNDAiLz48L3N2Zz4="
+          />
         </div>
         <div className="container-nwc relative max-w-3xl">
           <p className="mb-3 text-sm text-gold">{formatDateTime(event.startAt)} · {event.location}</p>
