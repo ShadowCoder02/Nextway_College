@@ -27,10 +27,15 @@ longer default to per-slug filenames):
 - [ ] `public/images/programmes/diploma-preschool.jpg` — Diploma in Preschool
 - [ ] `public/images/programmes/law-college-entrance-exam-training.jpg` — Law College Entrance Exam Training
 
-Note: `check-images.ts` also found `data/cms/news.json`'s
-`applications-open-2026-intake` article image returning 404. That's outside
-Session 1's scope (programme images only) — flagged for whoever picks up news
-content next.
+`check-images.ts` also found `data/cms/news.json`'s
+`applications-open-2026-intake` article image returning 404 (outside Session
+1's scope at the time). Session 4 pointed it at the same local campus
+placeholder used elsewhere, since `check-images` is now a blocking CI check
+(`.github/workflows/ci.yml`) and a known-dead URL would fail every PR.
+
+- [ ] `data/cms/news.json`'s `applications-open-2026-intake` article —
+      replace `/images/nextway-college.jpg` with a real photo for this
+      article once available.
 
 ## Campus showcase second image (Session 4, performance baseline)
 

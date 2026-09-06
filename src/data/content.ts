@@ -517,8 +517,10 @@ export const newsArticles: NewsArticle[] = [
       "Prospective students can now enquire for upcoming diploma and degree pathways, including the BSc in Information Technology.",
     content:
       "Nextway College International is welcoming enquiries for the 2026 intake. Students and parents can explore programmes, speak with Admissions and begin the application conversation through our website or WhatsApp.",
-    coverImageUrl:
-      "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=80",
+    // This Unsplash photo ID returns 404 (confirmed by scripts/check-images.ts)
+    // — using the same local campus placeholder as data/cms/news.json's
+    // matching entry until real photography exists for this article.
+    coverImageUrl: "/images/nextway-college.jpg",
     publishedAt: "2026-07-15",
     category: "Admissions",
     status: "published",
