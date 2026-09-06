@@ -28,6 +28,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     "/about",
 
+    "/schools",
+
     "/programmes",
 
     "/admissions",
@@ -35,6 +37,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/news",
 
     "/events",
+
+    "/branches",
 
     "/careers",
 

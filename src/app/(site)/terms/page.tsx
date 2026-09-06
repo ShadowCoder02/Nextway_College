@@ -1,5 +1,6 @@
 import { buildMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/ui/PageHero";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { SITE } from "@/constants/site";
 
 export const metadata = buildMetadata({
@@ -10,6 +11,7 @@ export const metadata = buildMetadata({
 export default function TermsPage() {
   return (
     <>
+      <Breadcrumbs items={[{ label: "Terms of Use", href: "/terms" }]} />
       <PageHero eyebrow="Legal" title="Terms of Use" description="Terms governing use of our website and enquiry services." />
       <article className="section-padding">
         <div className="container-nwc max-w-3xl legal-prose">

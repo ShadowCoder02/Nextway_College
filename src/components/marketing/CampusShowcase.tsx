@@ -30,16 +30,7 @@ export function CampusShowcase() {
             </div>
           </div>
           <div className="grid gap-6 lg:col-span-5">
-            <div className="relative min-h-[200px] overflow-hidden rounded-[var(--radius-card)] shadow-soft lg:min-h-[208px]">
-              <Image
-                src={IMAGES.brand}
-                alt="Students at Nextway College International"
-                fill
-                className="object-cover"
-                sizes="(max-width:1024px) 100vw, 42vw"
-              />
-            </div>
-            <div className="glass-panel flex flex-col justify-center p-8">
+            <div className="glass-panel flex h-full flex-col justify-center p-8">
               <p className="eyebrow mb-3">Hybrid excellence</p>
               <h3 className="mb-4 font-heading text-2xl font-semibold text-navy">
                 Learn online. Connect in person.

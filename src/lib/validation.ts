@@ -1,20 +1,11 @@
 import { z } from "zod";
-import { normalizeSriLankanPhone } from "@/lib/phone";
-import { isCommonPassword } from "@/lib/common-passwords";
-
-/**
- * Sri Lanka-only phone field, backed by libphonenumber-js (see
- * src/lib/phone.ts) — never a digit-count regex. Output is the normalized
- * E.164 string (e.g. "+94771234567"), not whatever format the user typed.
- */
-export const phoneSchema = z.string().transform((val, ctx) => {
-  const result = normalizeSriLankanPhone(val);
-  if (!result.valid) {
-    ctx.addIssue({ code: z.ZodIssueCode.custom, message: result.error });
-    return z.NEVER;
-  }
-  return result.e164;
-});
+// Not re-exported: nothing outside this file's own schemas should import
+// phoneSchema/passwordSchema via @/lib/validation — doing so would pull
+// phone-schema.ts (and libphonenumber-js) into that importer's bundle even
+// if it doesn't need a phone field. Import from @/lib/phone-schema or
+// @/lib/account-validation directly instead.
+import { phoneSchema } from "@/lib/phone-schema";
+import { passwordSchema } from "@/lib/account-validation";
 
 /** Trims before length-checking so whitespace-only input can't pass. */
 const nameSchema = z
@@ -47,32 +38,13 @@ export const enquirySchema = z.object({
 
 export type EnquiryFormData = z.infer<typeof enquirySchema>;
 
-export const loginSchema = z.object({
-  username: z.string().min(2, "Please enter your username"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-});
-
-export type LoginFormData = z.infer<typeof loginSchema>;
+// Staff/admin login (username + password, no phone field) moved to
+// src/lib/staff-login-validation.ts so it doesn't share a module — and
+// therefore a client bundle — with this file's phone-parsing dependency.
 
 /* -------------------------------------------------------------------------- */
 /*                        Admissions Portal Schemas                           */
 /* -------------------------------------------------------------------------- */
-
-/**
- * Shared password policy. Deliberately does NOT trim (leading/trailing
- * spaces are legal password characters) and caps at 128 chars purely as a
- * sanity DoS bound — scrypt has no fixed-length truncation issue the way
- * bcrypt's 72-byte cap does, so this isn't a security-driven limit.
- */
-export const passwordSchema = z
-  .string()
-  .min(8, "Password must be at least 8 characters")
-  .max(128, "Password must be under 128 characters")
-  .regex(/[A-Za-z]/, "Password must contain at least one letter")
-  .regex(/[0-9]/, "Password must contain at least one number")
-  .refine((val) => !isCommonPassword(val), {
-    message: "That password is too common — please choose a less predictable one",
-  });
 
 export const applicantRegisterSchema = z.object({
   fullName: nameSchema,
@@ -86,21 +58,10 @@ export const applicantRegisterSchema = z.object({
 
 export type ApplicantRegisterInput = z.infer<typeof applicantRegisterSchema>;
 
-export const applicantLoginSchema = z.object({
-  email: emailSchema,
-  password: z.string().min(1, "Please enter your password"),
-});
-
-export const forgotPasswordSchema = z.object({
-  email: emailSchema,
-});
-
-export const resetPasswordSchema = z.object({
-  token: z.string().min(1, "Missing reset token"),
-  password: passwordSchema,
-});
-
-export type ApplicantLoginInput = z.infer<typeof applicantLoginSchema>;
+// applicantLoginSchema, forgotPasswordSchema, resetPasswordSchema moved to
+// src/lib/account-validation.ts — none have a phone field, and keeping them
+// out of this module's graph keeps their pages' client bundles free of the
+// phoneSchema -> libphonenumber-js dependency.
 
 export const personalInfoSchema = z.object({
   title: z.string().optional(),

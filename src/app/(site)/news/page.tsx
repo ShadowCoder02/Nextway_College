@@ -2,6 +2,7 @@ import Link from "next/link";
 import { FallbackImage } from "@/components/ui/FallbackImage";
 import { IMAGES } from "@/constants/images";
 import { buildMetadata } from "@/lib/seo";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { formatDate } from "@/lib/utils";
 import { getNewsArticles } from "@/services/news";
 import { getUpcomingEvents } from "@/services/events";
@@ -18,6 +19,7 @@ export default async function NewsPage() {
 
   return (
     <>
+      <Breadcrumbs items={[{ label: "News & Events", href: "/news" }]} />
       <section className="bg-navy py-16 text-white">
         <div className="container-nwc">
           <span className="eyebrow mb-3 block">Updates</span>

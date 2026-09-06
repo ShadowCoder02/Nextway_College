@@ -1,6 +1,7 @@
 import { buildMetadata } from "@/lib/seo";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { LeadForm } from "@/components/ui/LeadForm";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { studentJourney } from "@/data/content";
 
 export const metadata = buildMetadata({
@@ -12,6 +13,7 @@ export const metadata = buildMetadata({
 export default function AdmissionsPage() {
   return (
     <>
+      <Breadcrumbs items={[{ label: "Admissions", href: "/admissions" }]} />
       <section className="bg-navy py-16 text-white lg:py-24">
         <div className="container-nwc max-w-4xl">
           <span className="eyebrow mb-3 block text-gold">Admissions 2026 Intake</span>

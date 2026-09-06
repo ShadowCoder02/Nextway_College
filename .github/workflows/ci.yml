@@ -1,0 +1,134 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Lint, typecheck, unit tests, content
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npx tsc --noEmit
+      - run: npm test
+      # Non-blocking: this currently flags 18 real gaps (empty curriculum,
+      # placeholder durations) across 6 programmes — content only the
+      # college can supply (see content/TODO-programmes.md), never
+      # something to fabricate to turn this green. Blocking on it would
+      # red-line every PR indefinitely until that content arrives. Surfaced
+      # here so it's visible on every PR without gating merges on it.
+      - name: Validate programme content (advisory)
+        run: npm run validate-content
+        continue-on-error: true
+      # Blocking: every image this currently references does resolve —
+      # unlike validate-content above, a failure here means something newly
+      # broke (a dead URL introduced in this PR), not a pre-existing content
+      # gap, so it's reasonable to fail the build on it.
+      - run: npm run check-images
+
+  build-and-bundle-budget:
+    name: Production build + bundle budget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build (production)
+        env:
+          # Every non-production Vercel env falls back to localhost, and
+          # VERCEL_ENV isn't set in GitHub Actions at all — so this build
+          # doesn't hit resolveSiteUrl()'s production-only guard.
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+        run: npm run build | tee build.log
+      - name: Check First Load JS budget (130KB/route, documented exceptions)
+        run: npm run check-bundle-budget -- build.log
+      - uses: actions/upload-artifact@v4
+        with:
+          name: next-build
+          path: |
+            .next
+            build.log
+          retention-days: 1
+          # upload-artifact excludes dotfiles/dot-directories by default —
+          # .next is one, so without this the artifact silently contained
+          # only build.log and check-links' server-start step failed with
+          # "no production build found".
+          include-hidden-files: true
+
+  check-links:
+    name: Internal + external link check
+    runs-on: ubuntu-latest
+    needs: build-and-bundle-budget
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: next-build
+          path: .
+      - name: Start server, wait for it, then check links
+        run: |
+          npm run start &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3000/ > /dev/null && break
+            sleep 1
+          done
+          curl -sf http://localhost:3000/ > /dev/null || { echo "Server did not become ready in time"; exit 1; }
+          npm run check-links
+        env:
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          BASE_URL: http://localhost:3000
+
+  lighthouse:
+    name: Lighthouse CI (mobile, Slow 4G)
+    runs-on: ubuntu-latest
+    needs: build-and-bundle-budget
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: next-build
+          path: .
+      # .lighthouserc.js starts its own server (npm run start) against this
+      # same build already produced by build-and-bundle-budget — see that
+      # file for why this targets a local production server rather than the
+      # Vercel preview deployment for this PR.
+      #
+      # Non-blocking for now: this correctly fails today on a real,
+      # unresolved gap — LCP on the homepage and /programmes runs
+      # ~3.7-4.4s against a 2.5s budget under Slow 4G simulation, traced to
+      # Render Delay (not image weight or network — the LCP image itself
+      # loads in ~6ms per the trace), most likely the cost of compositing
+      # globals.css's decorative animated/blurred background layers
+      # (body::before/::after) under 4x CPU throttling. Tracked as a
+      # follow-up rather than fixed blind here or hidden by loosening the
+      # threshold. Blocking on it would red-line every PR until that's
+      # addressed, same reasoning as validate-content above.
+      - run: npm run lighthouse
+        env:
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+        continue-on-error: true

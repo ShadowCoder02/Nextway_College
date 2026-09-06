@@ -1,4 +1,16 @@
-import { parsePhoneNumberFromString } from "libphonenumber-js";
+// Explicit `/min` rather than the bare specifier: as of the installed
+// version the default export already re-exports from `/min` (verified by
+// inspecting node_modules — this made no bundle-size difference), but that
+// has flipped between major versions of this library before. Pinning `/min`
+// documents that this app deliberately doesn't need `/max`'s per-country
+// example numbers/geocoding data, and survives a future default-flip.
+// The ~176KB this still costs every route that renders a phone field is
+// inherent to validating phone numbers for a real country with this
+// library — every calling-code/pattern table ships regardless of country
+// count, and hand-authoring a custom single-country metadata file (the only
+// way to shrink it further) was judged too risky for a validator this
+// security-sensitive without the library's own metadata-generator tooling.
+import { parsePhoneNumberFromString } from "libphonenumber-js/min";
 
 /**
  * Sri Lanka only, by policy: international applicants (a real segment — the

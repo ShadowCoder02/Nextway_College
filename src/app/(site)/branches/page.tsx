@@ -1,5 +1,6 @@
 import { PageHero } from "@/components/ui/PageHero";
 import { BranchFinder } from "@/components/branches/BranchFinder";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { buildMetadata } from "@/lib/seo";
 import { BRANCHES } from "@/data/branches";
 
@@ -12,6 +13,7 @@ export const metadata = buildMetadata({
 export default function BranchesPage() {
   return (
     <>
+      <Breadcrumbs items={[{ label: "Find a Branch", href: "/branches" }]} />
       <PageHero
         eyebrow="Island-wide presence"
         title="Find a Branch"

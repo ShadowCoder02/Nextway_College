@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { forgotPasswordSchema } from "@/lib/validation";
+import { forgotPasswordSchema } from "@/lib/account-validation";
 import { requestPasswordReset } from "@/services/admissions";
 import { checkRateLimit } from "@/lib/admissions/rate-limiter";
 

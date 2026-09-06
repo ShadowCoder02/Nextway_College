@@ -1,5 +1,6 @@
 import { buildMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/ui/PageHero";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { SITE } from "@/constants/site";
 
 export const metadata = buildMetadata({
@@ -10,6 +11,7 @@ export const metadata = buildMetadata({
 export default function PrivacyPage() {
   return (
     <>
+      <Breadcrumbs items={[{ label: "Privacy Policy", href: "/privacy" }]} />
       <PageHero eyebrow="Legal" title="Privacy Policy" description="How we protect and use your personal information." />
       <article className="section-padding">
         <div className="container-nwc max-w-3xl legal-prose">

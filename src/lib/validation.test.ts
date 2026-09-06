@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { enquirySchema, applicantRegisterSchema, passwordSchema } from "./validation";
+import { enquirySchema, applicantRegisterSchema } from "./validation";
+// Tested against the module login/forgot-password/reset-password actually
+// import in production, not validation.ts's re-export of it.
+import { passwordSchema } from "./account-validation";
 
 const validEnquiry = {
   fullName: "Nimal Perera",

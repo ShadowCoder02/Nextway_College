@@ -1,8 +1,10 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { buildMetadata } from "@/lib/seo";
+import { buildMetadata, eventJsonLd } from "@/lib/seo";
 import { formatDateTime } from "@/lib/utils";
 import { LeadForm } from "@/components/ui/LeadForm";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { HERO_BLUR_PLACEHOLDER } from "@/constants/images";
 import { getEventBySlug } from "@/services/events";
 
 type PageProps = { params: Promise<{ slug: string }> };
@@ -32,9 +34,39 @@ export default async function EventDetailPage({ params }: PageProps) {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            eventJsonLd({
+              title: event.title,
+              description: event.description,
+              slug: event.slug,
+              startAt: event.startAt,
+              location: event.location,
+              imageUrl: event.imageUrl,
+            }),
+          ),
+        }}
+      />
+      <Breadcrumbs
+        items={[{ label: "News & Events", href: "/events" }, { label: event.title, href: `/events/${event.slug}` }]}
+        visible
+        className="container-nwc py-3"
+      />
       <section className="relative bg-navy py-16 text-white">
         <div className="absolute inset-0 opacity-20">
-          <Image src={event.imageUrl} alt="" fill className="object-cover" />
+          <Image
+            src={event.imageUrl}
+            alt=""
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority
+            fetchPriority="high"
+            placeholder="blur"
+            blurDataURL={HERO_BLUR_PLACEHOLDER}
+          />
         </div>
         <div className="container-nwc relative max-w-3xl">
           <p className="mb-3 text-sm text-gold">{formatDateTime(event.startAt)} · {event.location}</p>

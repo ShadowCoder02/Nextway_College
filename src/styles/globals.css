@@ -57,6 +57,23 @@
   --shadow-premium: var(--shadow-premium);
 }
 
+/* Defined via @utility (not nested in @layer utilities) so Tailwind places
+   it correctly in the utility ordering it computes for generated classes —
+   a plain @layer utilities rule was losing to a same-specificity `text-*`
+   override about half the time depending on source order, which is why a
+   real portion of `eyebrow ... text-gold` usages across the site were
+   silently rendering brand-red (2.69:1 on navy, failing WCAG AA) instead
+   of gold. Caught by Lighthouse CI's accessibility audit. */
+@utility eyebrow {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-brand-red);
+}
+
 @layer base {
   * {
     box-sizing: border-box;
@@ -237,16 +254,6 @@
     font-size: 0.9375rem;
     line-height: 1.65;
     color: var(--color-slate);
-  }
-
-  .eyebrow {
-    display: inline-block;
-    font-family: var(--font-body);
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--color-brand-red);
   }
 
   .premium-card {

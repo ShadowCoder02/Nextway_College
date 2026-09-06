@@ -2,6 +2,7 @@ import Image from "next/image";
 import { buildMetadata } from "@/lib/seo";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { CTASection } from "@/components/ui/CTASection";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 
 export const metadata = buildMetadata({
   title: "Student Life",
@@ -30,6 +31,7 @@ const highlights = [
 export default function StudentLifePage() {
   return (
     <>
+      <Breadcrumbs items={[{ label: "Student Life", href: "/student-life" }]} />
       <section className="bg-navy py-16 text-white">
         <div className="container-nwc">
           <span className="eyebrow mb-3 block">Campus experience</span>

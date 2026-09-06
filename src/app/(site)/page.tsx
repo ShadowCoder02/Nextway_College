@@ -9,7 +9,7 @@ import { FallbackImage } from "@/components/ui/FallbackImage";
 import { ProgrammeCard } from "@/components/ui/ProgrammeCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { StatStrip } from "@/components/ui/StatStrip";
-import { IMAGES } from "@/constants/images";
+import { IMAGES, HERO_BLUR_PLACEHOLDER } from "@/constants/images";
 import { SITE } from "@/constants/site";
 import {
   studentJourney,
@@ -42,7 +42,11 @@ export default async function HomePage() {
             alt=""
             fill
             className="object-cover"
+            sizes="100vw"
             priority
+            fetchPriority="high"
+            placeholder="blur"
+            blurDataURL={HERO_BLUR_PLACEHOLDER}
           />
         </div>
         <div className="absolute inset-0 bg-linear-to-r from-navy/85 via-navy/72 to-navy/55" />
