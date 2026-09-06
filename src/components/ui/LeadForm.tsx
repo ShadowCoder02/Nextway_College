@@ -1,11 +1,13 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
+import Link from "next/link";
 import { enquirySchema, type EnquiryFormData } from "@/lib/validation";
 import { Button } from "./Button";
-import { cn } from "@/lib/utils";
+import { cn, whatsappUrl } from "@/lib/utils";
 import { apiFetch } from "@/lib/api-fetch";
 import { useOnlineStatus } from "@/lib/use-online-status";
+import { SITE } from "@/constants/site";
 
 type LeadFormProps = {
   source?: string;
@@ -30,6 +32,7 @@ export function LeadForm({
   const [errors, setErrors] = useState<Partial<Record<keyof EnquiryFormData, string>>>({});
   const [serverError, setServerError] = useState("");
   const [messageLength, setMessageLength] = useState(0);
+  const [referenceId, setReferenceId] = useState("");
 
   const fieldRefs = {
     fullName: useRef<HTMLInputElement>(null),
@@ -96,6 +99,7 @@ export function LeadForm({
         return;
       }
       setStatus("success");
+      setReferenceId(typeof json.id === "string" ? `ENQ-${json.id.slice(0, 8).toUpperCase()}` : "");
       form.reset();
       setMessageLength(0);
     } catch {
@@ -110,14 +114,48 @@ export function LeadForm({
 
   if (status === "success") {
     return (
-      <div className={cn("rounded-[var(--radius-card)] bg-success/10 p-8 text-center", className)} role="status">
+      <div
+        className={cn("rounded-[var(--radius-card)] bg-success/10 p-8 text-center", className)}
+        role="status"
+        aria-live="polite"
+      >
         <h3 className="mb-2 text-xl font-bold text-success">Thank you!</h3>
-        <p className="text-charcoal">
-          Your enquiry has been received. Our Admissions team will contact you shortly.
+        <p className="text-charcoal">Your enquiry has been received.</p>
+        {referenceId && (
+          <p className="mt-2 text-sm text-slate">
+            Reference number: <span className="font-mono font-bold text-navy">{referenceId}</span>
+          </p>
+        )}
+        <p className="mt-4 text-sm text-charcoal">
+          Our Admissions team reviews enquiries daily and will contact you within{" "}
+          <strong>1–2 business days</strong>.
         </p>
-        <Button className="mt-4" variant="secondary" onClick={() => setStatus("idle")}>
-          Submit another enquiry
-        </Button>
+
+        <div className="mt-6 rounded-lg bg-white/60 p-4 text-sm text-charcoal">
+          <p className="mb-2 font-semibold text-navy">Need a faster answer?</p>
+          <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-4">
+            <a href={`tel:${SITE.phoneTel}`} className="font-semibold text-brand-red hover:underline">
+              Call {SITE.phone}
+            </a>
+            <a
+              href={whatsappUrl(SITE.whatsapp, "Hi, I just submitted an enquiry and would like to follow up.")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-brand-red hover:underline"
+            >
+              WhatsApp {SITE.whatsappDisplay}
+            </a>
+          </div>
+        </div>
+
+        <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <Button variant="secondary" onClick={() => setStatus("idle")}>
+            Submit another enquiry
+          </Button>
+          <Link href="/programmes" className="text-sm font-semibold text-navy underline underline-offset-2 hover:text-brand-red">
+            Browse programmes
+          </Link>
+        </div>
       </div>
     );
   }
