@@ -703,9 +703,9 @@ export function ApplicationFormClient() {
 
                   <div className="grid gap-4 sm:grid-cols-3">
                     <div>
-                      <label htmlFor={`${uid}-qualificationType-${qual.id}`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Qualification Type *</label>
+                      <label htmlFor={`${uid}-qualificationType-${qIdx}`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Qualification Type *</label>
                       <select
-                        id={`${uid}-qualificationType-${qual.id}`}
+                        id={`${uid}-qualificationType-${qIdx}`}
                         className={inputClass}
                         value={qual.qualificationType}
                         onChange={(e) => updateQualificationField(qual.id, "qualificationType", e.target.value)}
@@ -720,9 +720,9 @@ export function ApplicationFormClient() {
                     </div>
 
                     <div>
-                      <label htmlFor={`${uid}-institution-${qual.id}`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">School / Institution Name *</label>
+                      <label htmlFor={`${uid}-institution-${qIdx}`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">School / Institution Name *</label>
                       <input
-                        id={`${uid}-institution-${qual.id}`}
+                        id={`${uid}-institution-${qIdx}`}
                         type="text"
                         required
                         className={inputClass}
@@ -733,9 +733,9 @@ export function ApplicationFormClient() {
                     </div>
 
                     <div>
-                      <label htmlFor={`${uid}-yearCompleted-${qual.id}`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Year Completed *</label>
+                      <label htmlFor={`${uid}-yearCompleted-${qIdx}`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Year Completed *</label>
                       <input
-                        id={`${uid}-yearCompleted-${qual.id}`}
+                        id={`${uid}-yearCompleted-${qIdx}`}
                         type="text"
                         required
                         className={inputClass}

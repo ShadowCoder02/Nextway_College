@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 import path from "path";
-import type { APIRequestContext } from "@playwright/test";
+import type { APIRequestContext, Page } from "@playwright/test";
 
 const ADMISSIONS_STORE_PATH = path.join(__dirname, "..", "data", "cms", "admissions.json");
 
@@ -74,3 +74,34 @@ export async function registerAndVerifyApplicant(
 }
 
 export { getCsrfHeaders };
+
+/** Registers and OTP-verifies a fresh applicant through the real UI (not
+ * the API, unlike registerAndVerifyApplicant above), landing on
+ * /apply/portal/form with a real browser session. Extracted from a
+ * duplicated register/verify block that had accreted across e2e/file-
+ * upload.spec.ts and e2e/accessibility.spec.ts. */
+export async function registerAndVerifyApplicantViaBrowser(
+  page: Page,
+  opts?: { fullName?: string; emailPrefix?: string },
+): Promise<{ email: string; password: string }> {
+  const email = `${opts?.emailPrefix ?? "e2e"}-${Date.now()}-${Math.random().toString(36).slice(2)}@nextway.edu.lk`;
+  const password = "Str0ngE2ETestPassw0rd!";
+  const fullName = opts?.fullName ?? "E2E Test Applicant";
+
+  await page.goto("/apply/register");
+  await page.getByLabel(/full name/i).fill(fullName);
+  await page.getByLabel(/email address/i).fill(email);
+  await page.getByLabel(/mobile phone/i).fill("0771234567");
+  await page.getByLabel(/create password/i).fill(password);
+  await page.getByLabel(/confirm password/i).fill(password);
+  await page.getByRole("checkbox").check();
+  await page.getByRole("button", { name: /create account/i }).click();
+  await page.waitForURL(/\/apply\/verify/, { timeout: 10000 });
+
+  const otp = readVerificationCodeFromStore(email);
+  await page.getByLabel(/verification code/i).fill(otp);
+  await page.getByRole("button", { name: /verify email/i }).click();
+  await page.waitForURL(/\/apply\/portal\/form/, { timeout: 10000 });
+
+  return { email, password };
+}

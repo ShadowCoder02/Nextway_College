@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { readVerificationCodeFromStore } from "./helpers";
+import { registerAndVerifyApplicantViaBrowser } from "./helpers";
 
 // Suite 9 — Accessibility (regression suite, docs/fix-prompts.md "GitHub
 // Copilot — Prompt 1"). Deliberately not duplicating the Lighthouse CI job
@@ -127,23 +127,10 @@ test("every input on the enquiry form has an associated label", async ({ page })
 // (see e2e/file-upload.spec.ts's `loginViaBrowser` for the same pattern),
 // so this logs in once and re-scans at each step.
 test("every form control on /apply/portal/form has an accessible name (all 5 steps)", async ({ page }) => {
-  const email = `e2e-a11y-form-${Date.now()}-${Math.random().toString(36).slice(2)}@nextway.edu.lk`;
-  const password = "Str0ngE2ETestPassw0rd!";
-
-  await page.goto("/apply/register");
-  await page.getByLabel(/full name/i).fill("E2E Accessibility Tester");
-  await page.getByLabel(/email address/i).fill(email);
-  await page.getByLabel(/mobile phone/i).fill("0771234567");
-  await page.getByLabel(/create password/i).fill(password);
-  await page.getByLabel(/confirm password/i).fill(password);
-  await page.getByRole("checkbox").check();
-  await page.getByRole("button", { name: /create account/i }).click();
-  await page.waitForURL(/\/apply\/verify/, { timeout: 10000 });
-
-  const otp = readVerificationCodeFromStore(email);
-  await page.getByLabel(/verification code/i).fill(otp);
-  await page.getByRole("button", { name: /verify email/i }).click();
-  await page.waitForURL(/\/apply\/portal\/form/, { timeout: 10000 });
+  await registerAndVerifyApplicantViaBrowser(page, {
+    fullName: "E2E Accessibility Tester",
+    emailPrefix: "e2e-a11y-form",
+  });
 
   for (let step = 1; step <= 5; step++) {
     await page.goto(`/apply/portal/form?step=${step}`);
