@@ -132,3 +132,38 @@ jobs:
         env:
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
         continue-on-error: true
+
+  e2e:
+    name: Playwright (E2E, security, accessibility)
+    runs-on: ubuntu-latest
+    needs: build-and-bundle-budget
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - uses: actions/download-artifact@v4
+        with:
+          name: next-build
+          path: .
+      # Runs against the same locally-served production build as
+      # check-links/lighthouse above, for the same reason (no Vercel
+      # Deployment Protection SSO wall to get through).
+      #
+      # Non-blocking for now, same reasoning as lighthouse above: most of
+      # these ~86 cases are solid regression guards, but a few are
+      # confirmed-real, currently-open findings rather than test bugs —
+      # notably a router.push() production-build-only navigation failure
+      # on /programmes' filters (docs in e2e/programmes.spec.ts) and
+      # several auth pages intermittently bailing to blank client-side-only
+      # rendering (docs in e2e/accessibility.spec.ts). Blocking on either
+      # would red-line PRs on pre-existing, not-yet-diagnosed app behavior
+      # rather than catch a new regression.
+      - run: npm run test:e2e
+        env:
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        continue-on-error: true
