@@ -102,22 +102,50 @@ for (const route of ["/schools", "/news", "/events", "/student-life"]) {
   });
 }
 
-// FIXED, was a GAP: /apply/register, /apply/login, /apply/verify and
-// /apply/reset-password used to intermittently render zero H1s under load
-// — the raw HTML bailed to `data-dgst="BAILOUT_TO_CLIENT_SIDE_RENDERING"`
-// inside an empty <main>, deferring the whole page to post-hydration
-// client rendering (a visibly blank page for however long that took, on
-// the mid-range-Android/4G audience this site targets). Confirmed same
-// root cause as the router.push bug in e2e/programmes.spec.ts: src/app/
-// (site)/loading.tsx's automatic outer Suspense boundary, nested around
-// each page's own explicit <Suspense> for useSearchParams. Removing
-// loading.tsx (the inner boundaries are still required by Next's build —
-// verified independently) eliminated this too: 23/23 routes passed
-// cleanly and consistently afterward.
+// FIXED (loading.tsx removal, see e2e/programmes.spec.ts): /apply/register,
+// /apply/login, /apply/verify and /apply/reset-password used to
+// intermittently render zero H1s under load — the raw HTML bailed to
+// `data-dgst="BAILOUT_TO_CLIENT_SIDE_RENDERING"` inside an empty <main>.
+// That was src/app/(site)/loading.tsx's automatic outer Suspense boundary
+// interfering with each page's own explicit <Suspense> for
+// useSearchParams; removing it made the bailout stop happening under
+// normal load.
+//
+// It did NOT eliminate a separate, narrower race, caught later via PR #9's
+// CI run and confirmed by reproducing locally under CPU throttling
+// (Emulation.setCPUThrottlingRate): every route below wraps its form in
+// <Suspense fallback={null}>, required unconditionally by Next's build for
+// any component calling useSearchParams(). A `fallback={null}` boundary
+// renders nothing — not even in the initial HTML — until the client
+// bundle hydrates, so there's a real (if usually short) window where the
+// DOM has zero H1s. At native speed this hit 1/8 attempts on /apply/login
+// in testing; at 4-16x CPU throttle (representative of a slower/shared CI
+// runner, or the mid-range-Android/4G audience this site targets) it hit
+// 6-8/8. /apply/forgot-password has no Suspense wrapper (its form doesn't
+// call useSearchParams()) and never showed the race — direct confirmation
+// this is that mechanism, not general hydration slowness. A hydration
+// wait before counting made it 0/8 at every throttle level tested, so
+// that's applied here rather than to every route (most have no client-only
+// gate and don't need it).
+//
+// This fixes the TEST, not the underlying UX: a real visitor on the same
+// slow connection still hits a genuinely blank page — no H1, nothing for
+// a screen reader to announce — for that same window, on exactly the
+// routes (sign-in, registration, password reset) where losing someone at
+// that moment costs the most. Tracked as an open, separate issue
+// (github.com/ShadowCoder02/Nextway_College/issues/12) — deliberately not
+// a return to the sitewide loading.tsx removed in PR #8, which caused a
+// different, worse bug; a fallback here would be scoped to just these
+// routes' own boundaries.
+const SUSPENSE_GATED_ROUTES = ["/apply/register", "/apply/login", "/apply/verify", "/apply/reset-password"];
+
 test.describe("exactly one H1 per page", () => {
   for (const route of PUBLIC_ROUTES) {
     test(`${route} has exactly one H1`, async ({ page }) => {
       await page.goto(route);
+      if (SUSPENSE_GATED_ROUTES.includes(route)) {
+        await page.locator("h1").waitFor({ state: "attached", timeout: 10000 });
+      }
       const h1Count = await page.locator("h1").count();
       expect(h1Count, `${route} should have exactly one H1`).toBe(1);
     });

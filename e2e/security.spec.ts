@@ -14,6 +14,22 @@ test("XSS: <script> and onerror payloads are stored and rendered as literal text
   page,
   request,
 }) => {
+  // Verified via the staff portal login (/admin/login redirects here — see
+  // src/middleware.ts) since the enquiry list is staff-only. ADMIN_USERNAME
+  // defaults to "nextway college" if unset; ADMIN_PASSWORD has no safe
+  // default assumption for this test — it must match whatever the running
+  // server actually accepts (locally, .env.local; in CI, the ADMIN_PASSWORD
+  // repository secret). Checked explicitly up front: filling an empty
+  // string and letting the sign-in attempt time out 10s later on the login
+  // redirect (confirmed via CI logs and a local repro forcing the same
+  // condition) reads as an unrelated hang, not "this precondition is
+  // missing" — fail immediately and say so instead.
+  if (!process.env.ADMIN_PASSWORD) {
+    throw new Error(
+      "ADMIN_PASSWORD is not set. This test signs into the staff portal to confirm the XSS payload renders escaped, and cannot pass without real admin credentials — set it in .env.local locally, or as an ADMIN_PASSWORD repository secret in GitHub Actions for CI.",
+    );
+  }
+
   const scriptPayload = "<script>alert(document.cookie)</script>";
   const imgPayload = `<img src=x onerror=alert(1)> ${Date.now()}`;
   const csrfHeaders = await getCsrfHeaders(request);
@@ -30,15 +46,9 @@ test("XSS: <script> and onerror payloads are stored and rendered as literal text
   });
   expect(res.ok()).toBe(true);
 
-  // Verified via the staff portal login (/admin/login redirects here — see
-  // src/middleware.ts) since the enquiry list is staff-only. Credentials:
-  // ADMIN_USERNAME defaults to "nextway college" if unset; ADMIN_PASSWORD
-  // has no safe default assumption — this environment's .env.local sets
-  // it explicitly, so tests read it from the environment rather than
-  // hardcoding a guess.
   await page.goto("/portal/login");
   await page.getByLabel(/username/i).fill(process.env.ADMIN_USERNAME || "nextway college");
-  await page.getByLabel(/^password$/i).fill(process.env.ADMIN_PASSWORD || "");
+  await page.getByLabel(/^password$/i).fill(process.env.ADMIN_PASSWORD);
   let dialogFired = false;
   page.on("dialog", () => {
     dialogFired = true;
