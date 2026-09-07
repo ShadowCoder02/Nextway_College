@@ -1,10 +1,8 @@
-import { promises as fs } from "fs";
-import path from "path";
 import type { CareerVacancy, EventItem, NewsArticle, Programme } from "@/types";
 import { events as seedEvents, newsArticles as seedNews } from "@/data/content";
 import { careersSeed, programmesSeed } from "@/data/programmes-seed";
+import { readJsonBlob, writeJsonBlob } from "@/lib/cms/blob-json-store";
 
-const CMS_DIR = path.join(process.cwd(), "data", "cms");
 const CMS_VERSION = "3";
 
 export type StoredEnquiry = {
@@ -23,41 +21,33 @@ export type StoredEnquiry = {
   created_at: string;
 };
 
-async function ensureDir() {
-  await fs.mkdir(CMS_DIR, { recursive: true });
-}
-
 async function readJson<T>(file: string, fallback: T): Promise<T> {
-  await ensureDir();
-  const filePath = path.join(CMS_DIR, file);
-  try {
-    const raw = await fs.readFile(filePath, "utf-8");
-    if (!raw.trim()) {
-      await writeJson(file, fallback);
-      return fallback;
-    }
-    try {
-      return JSON.parse(raw) as T;
-    } catch {
-      await writeJson(file, fallback);
-      return fallback;
-    }
-  } catch {
-    await writeJson(file, fallback);
-    return fallback;
-  }
+  return readJsonBlob(file, fallback);
 }
 
 async function writeJson<T>(file: string, data: T) {
-  await ensureDir();
-  await fs.writeFile(path.join(CMS_DIR, file), JSON.stringify(data, null, 2), "utf-8");
+  await writeJsonBlob(file, data);
 }
 
 export async function getStoredProgrammes(): Promise<Programme[]> {
   const version = await readJson<{ version: string }>("version.json", { version: "0" });
   if (version.version !== CMS_VERSION) {
-    await writeJson("programmes.json", programmesSeed);
-    await writeJson("version.json", { version: CMS_VERSION });
+    // Best-effort: this is a self-healing cache reseed, not a user-facing
+    // write. The correct data (programmesSeed) is already known and
+    // returned below regardless of whether persisting it succeeds — a
+    // transient write failure (or Blob simply not being configured, e.g.
+    // under vitest) here must not become an uncaught exception for what's
+    // otherwise a plain read call. Contrast with saveProgrammes(), an
+    // explicit admin edit, which must NOT swallow a write failure the
+    // same way.
+    try {
+      await Promise.all([
+        writeJson("programmes.json", programmesSeed),
+        writeJson("version.json", { version: CMS_VERSION }),
+      ]);
+    } catch (err) {
+      console.error("[cms] Failed to persist programmes reseed:", err);
+    }
     return programmesSeed;
   }
   return readJson<Programme[]>("programmes.json", programmesSeed);

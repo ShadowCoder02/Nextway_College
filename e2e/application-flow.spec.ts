@@ -143,7 +143,7 @@ test("GAP: session expiry mid-application shows only a generic 'Not authenticate
   await page.getByRole("checkbox").check();
   await page.getByRole("button", { name: /create account/i }).click();
   await page.waitForURL(/\/apply\/verify/, { timeout: 10000 });
-  const otp = readVerificationCodeFromStore(email);
+  const otp = await readVerificationCodeFromStore(email);
   await page.getByLabel(/verification code/i).fill(otp);
   await page.getByRole("button", { name: /verify email/i }).click();
   await page.waitForURL(/\/apply\/portal\/form/, { timeout: 10000 });
@@ -178,7 +178,7 @@ test("registering in one browser context and resuming in another restores progre
   await pageA.getByRole("checkbox").check();
   await pageA.getByRole("button", { name: /create account/i }).click();
   await pageA.waitForURL(/\/apply\/verify/, { timeout: 10000 });
-  const otp = readVerificationCodeFromStore(email);
+  const otp = await readVerificationCodeFromStore(email);
   await pageA.getByLabel(/verification code/i).fill(otp);
   await pageA.getByRole("button", { name: /verify email/i }).click();
   await pageA.waitForURL(/\/apply\/portal\/form/, { timeout: 10000 });
@@ -233,7 +233,7 @@ test("every field on the application form (/apply/portal/form) has a programmati
   await page.getByRole("checkbox").check();
   await page.getByRole("button", { name: /create account/i }).click();
   await page.waitForURL(/\/apply\/verify/, { timeout: 10000 });
-  const otp = readVerificationCodeFromStore(email);
+  const otp = await readVerificationCodeFromStore(email);
   await page.getByLabel(/verification code/i).fill(otp);
   await page.getByRole("button", { name: /verify email/i }).click();
   await page.waitForURL(/\/apply\/portal\/form/, { timeout: 10000 });
