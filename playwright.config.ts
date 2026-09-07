@@ -7,11 +7,31 @@ import path from "path";
 // Node process that doesn't — load it here too so tests that need real
 // local secrets (e.g. ADMIN_PASSWORD, overridden in .env.local) can read
 // them via process.env, same as the server does.
+//
+// Must strip matching quotes around a value the same way Next's own env
+// loader (and dotenv generally) does. Without this, a quoted value (e.g.
+// `KEY="value"`, which `vercel env pull`/`vercel blob create-store` write)
+// gets the literal quote characters included in process.env here — and
+// since the webServer child process below inherits this process's env,
+// Next's own loader then skips re-parsing that key from .env.local (dotenv
+// convention: don't override an already-set var), so the corrupted value
+// with embedded quotes silently reaches both the test runner AND the app
+// server. Confirmed as the root cause of a real failure: a quoted
+// BLOB_READ_WRITE_TOKEN passed this way was rejected by Vercel Blob as an
+// invalid token, and a quoted ADMIN_PASSWORD would have failed portal
+// login the same way.
+function stripMatchingQuotes(value: string): string {
+  if (value.length >= 2 && ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'")))) {
+    return value.slice(1, -1);
+  }
+  return value;
+}
+
 const envLocalPath = path.join(__dirname, ".env.local");
 if (existsSync(envLocalPath)) {
   for (const line of readFileSync(envLocalPath, "utf-8").split("\n")) {
     const match = /^([A-Z0-9_]+)=(.*)$/.exec(line.trim());
-    if (match && !(match[1] in process.env)) process.env[match[1]] = match[2];
+    if (match && !(match[1] in process.env)) process.env[match[1]] = stripMatchingQuotes(match[2]);
   }
 }
 

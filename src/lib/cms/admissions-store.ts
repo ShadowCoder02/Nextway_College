@@ -1,5 +1,3 @@
-import { promises as fs } from "fs";
-import path from "path";
 import type {
   ApplicantAccount,
   ApplicationNote,
@@ -9,8 +7,8 @@ import type {
   UploadedDocument,
 } from "@/types/admissions";
 import { generateApplicationNumber } from "@/lib/admissions/crypto";
+import { readJsonBlob, writeJsonBlob } from "@/lib/cms/blob-json-store";
 
-const CMS_DIR = path.join(process.cwd(), "data", "cms");
 const ADMISSIONS_FILE = "admissions.json";
 
 interface AdmissionsData {
@@ -23,39 +21,16 @@ const initialData: AdmissionsData = {
   applications: [],
 };
 
-async function ensureDir() {
-  await fs.mkdir(CMS_DIR, { recursive: true });
-}
-
 async function readAdmissionsData(): Promise<AdmissionsData> {
-  await ensureDir();
-  const filePath = path.join(CMS_DIR, ADMISSIONS_FILE);
-  try {
-    const raw = await fs.readFile(filePath, "utf-8");
-    if (!raw.trim()) {
-      await writeAdmissionsData(initialData);
-      return initialData;
-    }
-    try {
-      const data = JSON.parse(raw) as AdmissionsData;
-      return {
-        applicants: Array.isArray(data.applicants) ? data.applicants : [],
-        applications: Array.isArray(data.applications) ? data.applications : [],
-      };
-    } catch {
-      await writeAdmissionsData(initialData);
-      return initialData;
-    }
-  } catch {
-    await writeAdmissionsData(initialData);
-    return initialData;
-  }
+  const data = await readJsonBlob<AdmissionsData>(ADMISSIONS_FILE, initialData);
+  return {
+    applicants: Array.isArray(data.applicants) ? data.applicants : [],
+    applications: Array.isArray(data.applications) ? data.applications : [],
+  };
 }
 
 async function writeAdmissionsData(data: AdmissionsData): Promise<void> {
-  await ensureDir();
-  const filePath = path.join(CMS_DIR, ADMISSIONS_FILE);
-  await fs.writeFile(filePath, JSON.stringify(data, null, 2), "utf-8");
+  await writeJsonBlob(ADMISSIONS_FILE, data);
 }
 
 /* -------------------------------------------------------------------------- */

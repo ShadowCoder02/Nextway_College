@@ -1,11 +1,16 @@
-import { readFileSync } from "fs";
-import path from "path";
+import { get } from "@vercel/blob";
 import type { APIRequestContext, Page } from "@playwright/test";
 
-const ADMISSIONS_STORE_PATH = path.join(__dirname, "..", "data", "cms", "admissions.json");
+const ADMISSIONS_BLOB_PATH = "cms/admissions.json";
+
+interface StoredApplicant {
+  email: string;
+  id: string;
+  verificationCode?: string;
+}
 
 /**
- * Reads the applicant's OTP straight out of the CMS JSON store rather than
+ * Reads the applicant's OTP straight out of the CMS Blob store rather than
  * relying on the API response's `debugOtp` field — that field is only
  * present when NODE_ENV !== "production" (see src/services/admissions.ts),
  * and these tests deliberately run against a production build (matching
@@ -13,19 +18,36 @@ const ADMISSIONS_STORE_PATH = path.join(__dirname, "..", "data", "cms", "admissi
  * stored in plaintext (unlike the password-reset token, which is only
  * ever stored as a SHA-256 hash — see e2e/security.spec.ts for where that
  * distinction blocks a fully-automatable password-reset E2E test).
+ *
+ * Reads directly from Blob (not through the app) because this data lives
+ * in src/lib/cms/blob-json-store.ts's private store as of the fix for
+ * production's EROFS write failures — the store used to be a local JSON
+ * file this could readFileSync, which no longer reflects what the running
+ * app actually persists.
  */
-export function readVerificationCodeFromStore(email: string): string {
-  const store = JSON.parse(readFileSync(ADMISSIONS_STORE_PATH, "utf-8"));
-  const applicant = store.applicants.find((a: { email: string }) => a.email === email);
+async function readAdmissionsStore(): Promise<{ applicants: StoredApplicant[] }> {
+  const result = await get(ADMISSIONS_BLOB_PATH, { access: "private", useCache: false });
+  if (!result || !result.stream) {
+    throw new Error(
+      `No admissions data found in Blob storage at ${ADMISSIONS_BLOB_PATH} — is BLOB_READ_WRITE_TOKEN set for this test run?`,
+    );
+  }
+  const text = await new Response(result.stream).text();
+  return JSON.parse(text);
+}
+
+export async function readVerificationCodeFromStore(email: string): Promise<string> {
+  const store = await readAdmissionsStore();
+  const applicant = store.applicants.find((a) => a.email === email);
   if (!applicant?.verificationCode) {
     throw new Error(`No pending verificationCode found in the store for ${email}`);
   }
   return applicant.verificationCode;
 }
 
-export function readApplicantIdFromStore(email: string): string {
-  const store = JSON.parse(readFileSync(ADMISSIONS_STORE_PATH, "utf-8"));
-  const applicant = store.applicants.find((a: { email: string }) => a.email === email);
+export async function readApplicantIdFromStore(email: string): Promise<string> {
+  const store = await readAdmissionsStore();
+  const applicant = store.applicants.find((a) => a.email === email);
   if (!applicant?.id) throw new Error(`No applicant found in the store for ${email}`);
   return applicant.id;
 }
@@ -60,7 +82,7 @@ export async function registerAndVerifyApplicant(
     throw new Error(`register failed: ${registerRes.status()} ${await registerRes.text()}`);
   }
 
-  const otp = readVerificationCodeFromStore(email);
+  const otp = await readVerificationCodeFromStore(email);
   const verifyRes = await request.post("/api/applicant/auth/verify", {
     headers: csrfHeaders,
     data: { email, otp },
@@ -69,7 +91,7 @@ export async function registerAndVerifyApplicant(
     throw new Error(`verify failed: ${verifyRes.status()} ${await verifyRes.text()}`);
   }
 
-  const applicantId = readApplicantIdFromStore(email);
+  const applicantId = await readApplicantIdFromStore(email);
   return { email, password, applicantId };
 }
 
@@ -98,7 +120,7 @@ export async function registerAndVerifyApplicantViaBrowser(
   await page.getByRole("button", { name: /create account/i }).click();
   await page.waitForURL(/\/apply\/verify/, { timeout: 10000 });
 
-  const otp = readVerificationCodeFromStore(email);
+  const otp = await readVerificationCodeFromStore(email);
   await page.getByLabel(/verification code/i).fill(otp);
   await page.getByRole("button", { name: /verify email/i }).click();
   await page.waitForURL(/\/apply\/portal\/form/, { timeout: 10000 });
