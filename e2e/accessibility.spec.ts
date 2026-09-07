@@ -85,6 +85,12 @@ for (const route of PUBLIC_ROUTES) {
 for (const route of ["/schools", "/news", "/events", "/student-life"]) {
   test(`axe: ${route} hero has no color-contrast violations`, async ({ page }) => {
     await page.goto(route);
+    // Same settle delay used to confirm the careers-badge flake above is
+    // transient paint/hydration, not a real defect — applied here too so
+    // this scoped test doesn't inherit that flake class on an unrelated
+    // element (this route's own bug is static and survives the wait; see
+    // the comment above for how that distinction was established).
+    await page.waitForTimeout(1500);
     const results = await new AxeBuilder({ page }).include("body").withRules(["color-contrast"]).analyze();
 
     if (results.violations.length > 0) {
