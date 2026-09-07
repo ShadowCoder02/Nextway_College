@@ -22,10 +22,21 @@ if (existsSync(envLocalPath)) {
 // same production bundle without an extra bypass-token secret to manage.
 export default defineConfig({
   testDir: "./e2e",
-  fullyParallel: true,
+  // Serial, single-worker on purpose (code-review finding, not the
+  // Playwright default): this suite shares two pieces of real, unguarded
+  // mutable state across tests — data/cms/admissions.json (a plain
+  // fs.readFile + JSON.parse + fs.writeFile with no locking; concurrent
+  // registerAndVerifyApplicant() calls can silently drop each other's
+  // write) and the in-memory per-IP rate limiter (every local Playwright
+  // request shares the same "local" identity, since x-forwarded-for is
+  // never set) — Suite 5's rate-limit test deliberately floods
+  // /api/enquiries, which would 429 any *other* test's enquiry submission
+  // landing in the same window. Trading parallel speed for a suite that
+  // doesn't intermittently fail itself.
+  fullyParallel: false,
+  workers: 1,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
-  workers: process.env.CI ? 2 : undefined,
   reporter: process.env.CI ? "github" : "list",
   use: {
     baseURL: "http://localhost:3000",

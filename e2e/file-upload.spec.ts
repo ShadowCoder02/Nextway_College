@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { readVerificationCodeFromStore } from "./helpers";
-import { writeFileSync, mkdtempSync } from "fs";
+import { writeFileSync, mkdtempSync, rmSync } from "fs";
 import { tmpdir } from "os";
 import path from "path";
 
@@ -52,13 +52,17 @@ test("50MB file is rejected client-side before any upload request is sent", asyn
   // file rather than shrinking the case to fit the API.
   const tmpDir = mkdtempSync(path.join(tmpdir(), "e2e-upload-"));
   const hugeFilePath = path.join(tmpDir, "huge.pdf");
-  writeFileSync(hugeFilePath, Buffer.alloc(50 * 1024 * 1024, 1));
+  try {
+    writeFileSync(hugeFilePath, Buffer.alloc(50 * 1024 * 1024, 1));
 
-  const fileInput = page.locator('input[type="file"]').first();
-  await fileInput.setInputFiles(hugeFilePath);
+    const fileInput = page.locator('input[type="file"]').first();
+    await fileInput.setInputFiles(hugeFilePath);
 
-  await expect(page.getByText(/exceeds the 5MB size limit/i)).toBeVisible();
-  expect(uploadRequestFired, "a 50MB file should never reach the server").toBe(false);
+    await expect(page.getByText(/exceeds the 5MB size limit/i)).toBeVisible();
+    expect(uploadRequestFired, "a 50MB file should never reach the server").toBe(false);
+  } finally {
+    rmSync(tmpDir, { recursive: true, force: true });
+  }
 });
 
 test("a 0-byte file is rejected client-side", async ({ page }) => {

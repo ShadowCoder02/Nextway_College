@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { registerAndVerifyApplicant, getCsrfHeaders } from "./helpers";
+import { getCsrfHeaders } from "./helpers";
 
 // Suite 5 — Security (regression suite, docs/fix-prompts.md "GitHub
 // Copilot — Prompt 1"). The spec labels this "integration, staging only" —

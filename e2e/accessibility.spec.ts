@@ -120,17 +120,26 @@ test("every input on the enquiry form has an associated label", async ({ page })
 
 test("a validation error is linked via aria-describedby and announced via aria-live", async ({ page }) => {
   await page.goto("/contact");
-  // Submit with required fields empty to trigger inline validation errors.
+  // The form has noValidate (LeadForm.tsx) — submitting empty required
+  // fields goes through zod, not native HTML5 validation, and
+  // focusFirstInvalid checks fields in the order [fullName, phone, email],
+  // so fullName is deterministically the one that gets focused/erred here.
+  const fullNameInput = page.getByLabel(/full name/i);
   await page.getByRole("button", { name: /submit enquiry/i }).click();
-  const phoneInput = page.locator("#\\:r0\\:-phone, input[name=phone]").first();
-  const describedBy = await phoneInput.getAttribute("aria-describedby");
-  // Not every field is guaranteed to fail first — assert the general
-  // pattern holds for whichever field actually shows an error.
-  const errorEls = page.locator('[role="alert"]');
-  await expect(errorEls.first()).toBeVisible({ timeout: 5000 }).catch(() => {});
-  const liveRegion = page.locator('[aria-live="polite"]').first();
-  expect(await liveRegion.count()).toBeGreaterThan(0);
-  void describedBy;
+
+  await expect(fullNameInput).toHaveAttribute("aria-invalid", "true");
+  const describedBy = await fullNameInput.getAttribute("aria-describedby");
+  expect(describedBy, "fullName has no aria-describedby once invalid").toBeTruthy();
+
+  const linkedError = page.locator(`#${describedBy}`);
+  await expect(linkedError).toBeVisible();
+  // role="alert" is itself an implicit assertive live region per the ARIA
+  // spec — LeadForm.tsx doesn't additionally wrap field-level errors in an
+  // explicit aria-live (that's reserved for the separate offline-status
+  // banner elsewhere in the same form), so this is the actual announcement
+  // mechanism to check, not a nearby aria-live attribute.
+  await expect(linkedError).toHaveAttribute("role", "alert");
+  await expect(linkedError).not.toBeEmpty();
 });
 
 test("mobile menu: opens by keyboard, traps focus, closes on Escape", async ({ page }) => {

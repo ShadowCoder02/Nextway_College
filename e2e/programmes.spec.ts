@@ -34,26 +34,45 @@ import { test, expect } from "@playwright/test";
 // papered over with a single tidy explanation neither observation fully
 // supports.
 
-// Deliberately not test.fail(): unlike the two "Clear all" cases below,
-// this one didn't reproduce every run (see the file-level comment) — a
-// hard expected-fail flip would itself go red on the runs where the bug
-// doesn't show, for the wrong reason. Logging the outcome instead of
-// asserting a fixed pass/fail so CI reports what actually happened rather
-// than forcing a binary verdict this bug doesn't consistently earn either
-// way.
-test("selecting a school filter (e.g. Computing & IT) — logs whether the production-build router.push bug reproduced this run", async ({
+// Deliberately not a single test.fail() attempt: measured at ~40-60%
+// failure rate per attempt across repeated isolated runs on a fresh
+// server (not caused by this suite's own parallelism — confirmed with
+// workers:1 too), so one hard expected-fail flip would itself go red on
+// whichever runs the bug doesn't show, for the wrong reason. Retrying
+// gives this test actual regression value despite the intermittency:
+// treated as P0, it should fail loudly if the bug ever becomes
+// consistent (or a different regression breaks this filter a new way),
+// while tolerating the documented flakiness rather than being unable to
+// fail at all (the code-review finding this replaced).
+test("selecting a school filter (e.g. Computing & IT) navigates within a few attempts (router.push bug is P0-tracked, ~40-60% intermittent — see file comment)", async ({
   page,
 }) => {
-  await page.goto("/programmes");
-  await page.getByLabel(/school/i).selectOption({ label: "School of Computing & IT (1)" });
-  try {
-    await expect(page).toHaveURL(/school=computing-it/, { timeout: 4000 });
-  } catch {
-    test.info().annotations.push({
-      type: "known-intermittent-bug",
-      description: "router.push did not navigate this run — see file-level comment",
-    });
+  const ATTEMPTS = 6;
+  let navigated = false;
+  let successfulAttempt = -1;
+
+  for (let attempt = 0; attempt < ATTEMPTS && !navigated; attempt++) {
+    await page.goto("/programmes");
+    await page.getByLabel(/school/i).selectOption({ label: "School of Computing & IT (1)" });
+    try {
+      await expect(page).toHaveURL(/school=computing-it/, { timeout: 4000 });
+      navigated = true;
+      successfulAttempt = attempt;
+    } catch {
+      // Expected on a real portion of attempts — try again.
+    }
   }
+
+  test.info().annotations.push({
+    type: "router-push-bug-attempts",
+    description: `navigated on attempt ${successfulAttempt + 1}/${ATTEMPTS}` + (navigated ? "" : " (never navigated — bug may have worsened)"),
+  });
+
+  expect(
+    navigated,
+    `school filter never navigated across ${ATTEMPTS} attempts — was intermittent, may now be fully broken`,
+  ).toBe(true);
+  await expect(page.getByText("BSc Information Technology", { exact: false })).toBeVisible();
 });
 
 test("a filter combination with no matches renders the empty state", async ({ page }) => {
