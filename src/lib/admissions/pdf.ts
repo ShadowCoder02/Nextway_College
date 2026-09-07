@@ -1,6 +1,7 @@
 import PDFDocument from "pdfkit";
 import path from "path";
 import { promises as fs } from "fs";
+import sharp from "sharp";
 import type { StudentApplication } from "@/types/admissions";
 import { formatDate } from "@/lib/utils";
 import { readStoredFile } from "@/lib/admissions/file-security";
@@ -27,7 +28,6 @@ const CONTENT_WIDTH = PAGE_WIDTH - PAGE_MARGIN * 2;
 
 const LOGO_PATH = path.join(process.cwd(), "public", "brand", "logo.png");
 const TAMIL_REGULAR_PATH = path.join(process.cwd(), "public", "fonts", "NotoSansTamil-Regular.woff");
-const TAMIL_BOLD_PATH = path.join(process.cwd(), "public", "fonts", "NotoSansTamil-Bold.woff");
 
 async function readFileIfExists(filePath: string): Promise<Buffer | null> {
   try {
@@ -35,6 +35,15 @@ async function readFileIfExists(filePath: string): Promise<Buffer | null> {
   } catch {
     return null;
   }
+}
+
+/** PDFKit's .image() only understands JPEG and PNG — the upload pipeline's
+ * ALLOWED_MIME_TYPES also permits WebP for the same "photograph" document
+ * category (file-policy.ts), so a WebP photo needs converting first rather
+ * than silently falling back to the empty placeholder box. */
+async function loadPhotoAsPngOrJpeg(mimeType: string, buffer: Buffer): Promise<Buffer> {
+  if (mimeType === "image/jpeg" || mimeType === "image/png") return buffer;
+  return sharp(buffer).png().toBuffer();
 }
 
 /** A field with an English label and (if the source form showed one for
@@ -112,18 +121,24 @@ function drawTable(
   return rowY;
 }
 
+async function loadPhotoBuffer(app: StudentApplication): Promise<Buffer | null> {
+  const photoDoc = app.documents.find((d) => d.category === "photograph");
+  if (!photoDoc) return null;
+  const raw = await readStoredFile(photoDoc.filePath);
+  if (!raw) return null;
+  try {
+    return await loadPhotoAsPngOrJpeg(photoDoc.mimeType, raw);
+  } catch {
+    return null;
+  }
+}
+
 export async function generateApplicationPdf(app: StudentApplication): Promise<Buffer> {
-  const [logoBuffer, tamilRegular, tamilBold] = await Promise.all([
+  const [logoBuffer, tamilRegular, photoBuffer] = await Promise.all([
     readFileIfExists(LOGO_PATH),
     readFileIfExists(TAMIL_REGULAR_PATH),
-    readFileIfExists(TAMIL_BOLD_PATH),
+    loadPhotoBuffer(app),
   ]);
-
-  const photoDoc = app.documents.find((d) => d.category === "photograph");
-  let photoBuffer: Buffer | null = null;
-  if (photoDoc && (photoDoc.mimeType === "image/jpeg" || photoDoc.mimeType === "image/png")) {
-    photoBuffer = await readStoredFile(photoDoc.filePath);
-  }
 
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ size: "A4", margin: PAGE_MARGIN });
@@ -133,7 +148,6 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
     doc.on("error", reject);
 
     if (tamilRegular) doc.registerFont("TamilRegular", tamilRegular);
-    if (tamilBold) doc.registerFont("TamilBold", tamilBold);
     // Falls back to the Helvetica-only labels below if the font failed to
     // load (e.g. local dev missing public/fonts) rather than throwing —
     // this PDF must still generate even without Tamil rendering available.
@@ -180,15 +194,33 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
 
     let cursorY = headerTop + 145;
 
-    // COURSE APPLIED FOR
-    doc.lineWidth(1).strokeColor("#000").rect(PAGE_MARGIN, cursorY, CONTENT_WIDTH, 46).stroke();
+    // COURSE APPLIED FOR — includes intake/campus/study mode, which the
+    // paper form has no field for but the previous (pre-redesign) PDF
+    // always showed; dropping them here would be a real loss of
+    // previously-available, still-collected data, not a faithful match to
+    // a form that predates online applications having intakes/campuses at
+    // all. Box height is measured from the actual wrapped text rather than
+    // a fixed value — a long programme title/intake string must not
+    // overflow into the section below it.
+    const courseValueWidth = CONTENT_WIDTH - 236;
+    const courseValue = [
+      programmeChoice.programmeTitle,
+      programmeChoice.intake,
+      programmeChoice.campus ? `${programmeChoice.campus} Campus` : null,
+      programmeChoice.studyMode,
+    ]
+      .filter(Boolean)
+      .join("  •  ");
+    doc.font("Helvetica").fontSize(11);
+    const courseValueHeight = doc.heightOfString(courseValue, { width: courseValueWidth });
+    const courseBoxHeight = Math.max(46, courseValueHeight + 26);
+
+    doc.lineWidth(1).strokeColor("#000").rect(PAGE_MARGIN, cursorY, CONTENT_WIDTH, courseBoxHeight).stroke();
     doc.font("Helvetica-Bold").fontSize(10).text("COURSE APPLIED FOR:", PAGE_MARGIN + 6, cursorY + 5, { width: 220 });
     const courseLabel = tamil("தெரிவு செய்யும் பாடநெறி");
     if (courseLabel) doc.font("TamilRegular").fontSize(9).text(courseLabel, PAGE_MARGIN + 6, doc.y, { width: 220 });
-    doc.font("Helvetica").fontSize(11).text(programmeChoice.programmeTitle || "", PAGE_MARGIN + 230, cursorY + 16, {
-      width: CONTENT_WIDTH - 236,
-    });
-    cursorY += 46 + 14;
+    doc.font("Helvetica").fontSize(11).text(courseValue, PAGE_MARGIN + 230, cursorY + 16, { width: courseValueWidth });
+    cursorY += courseBoxHeight + 14;
 
     const halfWidth = (CONTENT_WIDTH - 20) / 2;
 
@@ -253,6 +285,14 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
     doc.moveTo(mobileX + 105, cursorY + 12).lineTo(PAGE_MARGIN + CONTENT_WIDTH, cursorY + 12).lineWidth(0.75).stroke();
     cursorY += 26;
 
+    // Not on the paper form (predates online applications having an email
+    // field), but the previous PDF always included it — dropping a field
+    // that's both collected and previously shown would lose data, not
+    // improve fidelity to the paper form.
+    doc.font("Helvetica-Bold").fontSize(9).text("Email: ", PAGE_MARGIN, cursorY, { continued: true });
+    doc.font("Helvetica").text(personalInfo.email || "");
+    cursorY = doc.y + 6;
+
     // 03. NIC
     cursorY = bilingualField(doc, PAGE_MARGIN, cursorY, CONTENT_WIDTH, "03. National Identity Card No.", tamil("தேசிய அடையாள அட்டை இலக்கம்"), personalInfo.nicOrPassport);
 
@@ -265,6 +305,14 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
     cursorY = Math.max(afterDob, afterCivil);
 
     /* ---------------------------- Page 2: qualifications, occupation, declaration ---------------------------- */
+    // Known limitation, not fixed here: page 1's layout is hand-positioned
+    // with manually tracked cursorY offsets and assumes everything above
+    // fits on one A4 page. An unusually long address/value could make
+    // pdfkit auto-paginate mid-section before this explicit addPage(),
+    // producing an extra, misaligned page. Not addressed given realistic
+    // Sri Lankan name/address/NIC lengths (tested well within margin —
+    // see the PR description) against the effort of fully robust,
+    // measure-before-you-draw pagination for a hand-laid-out form.
     doc.addPage();
     cursorY = PAGE_MARGIN;
 
@@ -359,6 +407,19 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
       [["", "", "", "", "", ""]],
     );
     cursorY += 24;
+
+    // Not on the paper form, but the previous PDF always included it and
+    // it's still collected — same reasoning as Email on page 1.
+    const emergencyContact = [
+      personalInfo.emergencyContactName,
+      personalInfo.emergencyContactRelationship ? `(${personalInfo.emergencyContactRelationship})` : null,
+      personalInfo.emergencyContactPhone,
+    ]
+      .filter(Boolean)
+      .join(" ");
+    doc.font("Helvetica-Bold").fontSize(9).text("Emergency / Guardian Contact: ", PAGE_MARGIN, cursorY, { continued: true });
+    doc.font("Helvetica").text(emergencyContact);
+    cursorY = doc.y + 16;
 
     doc
       .font("Helvetica-Bold")

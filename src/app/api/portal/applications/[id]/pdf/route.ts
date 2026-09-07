@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin/auth";
 import { getApplicationByIdAdmin } from "@/services/admissions";
-import { generateApplicationPdf } from "@/lib/admissions/pdf";
+import { buildApplicationPdfResponse } from "@/lib/admissions/pdf-response";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -17,13 +17,5 @@ export async function GET(_request: Request, { params }: Props) {
     return NextResponse.json({ ok: false, error: "Application not found" }, { status: 404 });
   }
 
-  const pdfBuffer = await generateApplicationPdf(application);
-
-  return new NextResponse(new Uint8Array(pdfBuffer), {
-    status: 200,
-    headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="${application.applicationNumber}.pdf"`,
-    },
-  });
+  return buildApplicationPdfResponse(application);
 }

@@ -45,18 +45,22 @@ export function ApplicationReviewer({ initialApplication }: ApplicationReviewerP
   }
 
   async function handleDownloadPdf() {
-    const res = await apiFetch(`/api/portal/applications/${app.id}/pdf`);
-    if (!res.ok) {
+    try {
+      const res = await apiFetch(`/api/portal/applications/${app.id}/pdf`);
+      if (!res.ok) {
+        showToast("Unable to download this application's PDF right now.");
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${app.applicationNumber}.pdf`;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch {
       showToast("Unable to download this application's PDF right now.");
-      return;
     }
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${app.applicationNumber}.pdf`;
-    link.click();
-    URL.revokeObjectURL(url);
   }
 
   // Update Status
