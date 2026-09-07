@@ -100,7 +100,7 @@ export function ApplicationFormClient() {
         // round trips before the form can render on a 4G connection.
         const [appRes, progRes] = await Promise.all([
           apiFetch("/api/applicant/application"),
-          apiFetch("/api/portal/programmes"),
+          apiFetch("/api/programmes"),
         ]);
 
         if (appRes.status === 401) {
@@ -129,8 +129,9 @@ export function ApplicationFormClient() {
 
         if (progRes.ok) {
           const progData = await progRes.json();
+          // /api/programmes already only returns published programmes.
           if (Array.isArray(progData)) {
-            setProgrammesList(progData.filter((p: Programme) => p.status === "published"));
+            setProgrammesList(progData);
           }
         }
       } catch (err) {
