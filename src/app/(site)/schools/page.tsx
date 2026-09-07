@@ -4,6 +4,7 @@ import { buildMetadata } from "@/lib/seo";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Button } from "@/components/ui/Button";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { PageHero } from "@/components/ui/PageHero";
 import { getSchools, getProgrammesBySchool } from "@/services/programmes";
 
 export const metadata = buildMetadata({
@@ -24,15 +25,11 @@ export default async function SchoolsPage() {
   return (
     <>
       <Breadcrumbs items={[{ label: "Schools", href: "/schools" }]} />
-      <section className="bg-navy py-16 text-white">
-        <div className="container-nwc">
-          <span className="eyebrow mb-3 block">Academic structure</span>
-          <h1 className="text-display text-white">Our Schools</h1>
-          <p className="mt-4 max-w-2xl text-lg text-white/80">
-            Programmes are organised across specialist schools to help you find the right field of study.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Academic structure"
+        title="Our Schools"
+        description="Programmes are organised across specialist schools to help you find the right field of study."
+      />
 
       <section className="py-16 lg:py-24">
         <div className="container-nwc space-y-16">

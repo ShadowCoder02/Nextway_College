@@ -3,6 +3,7 @@ import { FallbackImage } from "@/components/ui/FallbackImage";
 import { IMAGES } from "@/constants/images";
 import { buildMetadata } from "@/lib/seo";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { PageHero } from "@/components/ui/PageHero";
 import { formatDate } from "@/lib/utils";
 import { getNewsArticles } from "@/services/news";
 import { getUpcomingEvents } from "@/services/events";
@@ -20,12 +21,7 @@ export default async function NewsPage() {
   return (
     <>
       <Breadcrumbs items={[{ label: "News & Events", href: "/news" }]} />
-      <section className="bg-navy py-16 text-white">
-        <div className="container-nwc">
-          <span className="eyebrow mb-3 block">Updates</span>
-          <h1 className="text-display text-white">News & Events</h1>
-        </div>
-      </section>
+      <PageHero eyebrow="Updates" title="News & Events" />
 
       <section className="py-16 lg:py-24">
         <div className="container-nwc">

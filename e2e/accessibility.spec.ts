@@ -36,16 +36,16 @@ const PUBLIC_ROUTES = [
   "/portal/login",
 ];
 
-// Observed flaky (roughly 1 in 10-20 runs, varying route each time —
-// caught it on /schools, /news, /student-life, /careers across different
-// runs): a "serious" color-contrast violation on badge/pill elements like
-// careers' `<span class="bg-ice ... text-navy">Full-time</span>`. Captured
-// the exact node once with full detail — navy-on-ice is a ~15:1 contrast
-// pairing at rest, nowhere near a real WCAG failure, so this reads as axe
-// sampling pixel color during a transient paint/hydration race rather than
-// a genuine design defect (confirmed no CSS change fixes it: the class as
-// written is already compliant). Not chasing further or touching any
-// component for this — flagging as an observed, low-frequency, apparently
+// Observed flaky on careers' `<span class="bg-ice ... text-navy">Full-time
+// </span>` badge: navy-on-ice is a ~15:1 contrast pairing at rest, nowhere
+// near a real WCAG failure, and the violation disappears once the page is
+// given ~1.5s to settle after load — confirmed a transient paint/hydration
+// race, not a genuine design defect. (An earlier note here also attributed
+// intermittent hits on /schools, /news and /student-life to this same
+// flake; that was wrong — those were the real, deterministic `.eyebrow`
+// contrast bug below, misdiagnosed as noise because it wasn't isolated
+// from this actual flake at the time.) Not chasing the careers badge
+// further — flagging as an observed, low-frequency, apparently
 // false-positive flake rather than claiming a root cause without evidence.
 for (const route of PUBLIC_ROUTES) {
   test(`axe: ${route} has no serious/critical violations`, async ({ page }) => {
@@ -62,6 +62,34 @@ for (const route of PUBLIC_ROUTES) {
     if (seriousOrCritical.length > 0) {
       const detail = seriousOrCritical
         .map((v) => `${v.id} (${v.impact}): ${v.help} — ${v.nodes.length} node(s)`)
+        .join("\n");
+      throw new Error(`${route}:\n${detail}`);
+    }
+  });
+}
+
+// FIXED, recurrence of a Session 4 finding: /schools, /news, /events and
+// /student-life each hand-rolled their own hero markup with a bare
+// `eyebrow` span instead of using the shared PageHero component, so none
+// of them picked up PageHero's `text-gold` override — rendering the
+// `eyebrow` utility's default brand-red (#c41e3a) on the hero's navy
+// background (#0f2340) at 2.69:1, needs 4.5:1. Confirmed genuine (not the
+// careers-badge flake above): fully deterministic across repeated runs
+// and persists after a settle delay. Root-caused this time, not just
+// patched: all four pages now render their hero via <PageHero>, the same
+// component /privacy, /terms, /about, /careers, /branches and /programmes
+// already use correctly — so this can't silently regress a third time on
+// these routes without also breaking every other PageHero consumer.
+// Scoped to axe's "color-contrast" rule specifically (not the general
+// serious/critical scan above) so this stays a precise, low-noise guard.
+for (const route of ["/schools", "/news", "/events", "/student-life"]) {
+  test(`axe: ${route} hero has no color-contrast violations`, async ({ page }) => {
+    await page.goto(route);
+    const results = await new AxeBuilder({ page }).include("body").withRules(["color-contrast"]).analyze();
+
+    if (results.violations.length > 0) {
+      const detail = results.violations
+        .map((v) => `${v.id}: ${v.help} — ${v.nodes.map((n) => n.html).join(", ")}`)
         .join("\n");
       throw new Error(`${route}:\n${detail}`);
     }
