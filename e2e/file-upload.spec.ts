@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { readVerificationCodeFromStore } from "./helpers";
+import { registerAndVerifyApplicantViaBrowser } from "./helpers";
 import { writeFileSync, mkdtempSync, rmSync } from "fs";
 import { tmpdir } from "os";
 import path from "path";
@@ -17,23 +17,7 @@ import path from "path";
 // src/lib/admissions/file-security.test.ts).
 
 async function loginViaBrowser(page: import("@playwright/test").Page) {
-  const email = `e2e-upload-${Date.now()}-${Math.random().toString(36).slice(2)}@nextway.edu.lk`;
-  const password = "Str0ngE2ETestPassw0rd!";
-
-  await page.goto("/apply/register");
-  await page.getByLabel(/full name/i).fill("E2E Upload Tester");
-  await page.getByLabel(/email address/i).fill(email);
-  await page.getByLabel(/mobile phone/i).fill("0771234567");
-  await page.getByLabel(/create password/i).fill(password);
-  await page.getByLabel(/confirm password/i).fill(password);
-  await page.getByRole("checkbox").check();
-  await page.getByRole("button", { name: /create account/i }).click();
-  await page.waitForURL(/\/apply\/verify/, { timeout: 10000 });
-
-  const otp = readVerificationCodeFromStore(email);
-  await page.getByLabel(/verification code/i).fill(otp);
-  await page.getByRole("button", { name: /verify email/i }).click();
-  await page.waitForURL(/\/apply\/portal\/form/, { timeout: 10000 });
+  await registerAndVerifyApplicantViaBrowser(page, { fullName: "E2E Upload Tester", emailPrefix: "e2e-upload" });
 }
 
 test("50MB file is rejected client-side before any upload request is sent", async ({ page }) => {

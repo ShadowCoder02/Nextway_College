@@ -148,11 +148,7 @@ test("GAP: session expiry mid-application shows only a generic 'Not authenticate
   await page.getByRole("button", { name: /verify email/i }).click();
   await page.waitForURL(/\/apply\/portal\/form/, { timeout: 10000 });
 
-  // Not getByLabel: see the GAP noted in the "registering in one browser
-  // context" test below — ApplicationFormClient's 22 <label> elements have
-  // zero htmlFor associations, so getByLabel can't find any field on this
-  // page at all. Using the placeholder as a workaround for this test only.
-  await page.getByPlaceholder(/johnathan alexander perera/i).fill("Data Entered Before Expiry");
+  await page.getByLabel(/full name/i).fill("Data Entered Before Expiry");
 
   // Simulate session expiry mid-application by dropping the session cookie
   // (src/lib/admissions/session.ts's sessionVersion-mismatch invalidation
@@ -187,7 +183,7 @@ test("registering in one browser context and resuming in another restores progre
   await pageA.getByRole("button", { name: /verify email/i }).click();
   await pageA.waitForURL(/\/apply\/portal\/form/, { timeout: 10000 });
 
-  await pageA.getByPlaceholder(/johnathan alexander perera/i).fill("Resume Test User Full Name");
+  await pageA.getByLabel(/full name/i).fill("Resume Test User Full Name");
   await pageA.getByRole("button", { name: /save|next/i }).first().click();
   await pageA.waitForTimeout(1000);
   await contextA.close();
@@ -203,30 +199,29 @@ test("registering in one browser context and resuming in another restores progre
   await pageB.waitForURL(/\/apply\/portal/, { timeout: 10000 });
   await pageB.goto("/apply/portal/form");
 
-  await expect(pageB.getByPlaceholder(/johnathan alexander perera/i)).toHaveValue(
+  await expect(pageB.getByLabel(/full name/i)).toHaveValue(
     "Resume Test User Full Name",
     { timeout: 10000 },
   );
   await contextB.close();
 });
 
-// GAP, newly found while writing the tests above (not from the original
-// audit list) — every field on the multi-step application form fails the
-// exact "every input has an associated label" property Suite 9 checks on
-// /contact. Confirmed by source count: ApplicationFormClient.tsx has 22
-// <label> elements and htmlFor=0 across all of them — none are wrapped
-// around their input either, so there is zero programmatic label
-// association anywhere on this form. This is why the tests above had to
-// fall back to a placeholder-text locator instead of getByLabel, which
-// only works because Playwright's accessible-name computation has the
-// same blind spot a real screen reader would. This is the most
-// data-sensitive form on the site (personal details, qualifications, NIC/
-// passport uploads) and the largest-scale accessibility gap found in this
-// whole regression suite.
-test("GAP: every field on the application form (/apply/portal/form) has zero programmatic label association", async ({
+// FIXED, was a GAP (found while writing the tests above, not from the
+// original audit list): every field on the multi-step application form
+// used to fail the exact "every input has an associated label" property
+// Suite 9 checks on /contact. ApplicationFormClient.tsx had 22 <label>
+// elements with htmlFor=0 across all of them and no wrapping either, so
+// there was zero programmatic label association anywhere on this form —
+// the most data-sensitive form on the site (personal details,
+// qualifications, NIC/passport uploads) and the largest-scale
+// accessibility gap found in this whole regression suite. Fixed via
+// useId()-generated id/htmlFor pairs on all 21 <label>-per-field cases
+// (the declaration checkbox already used valid implicit wrapping), plus
+// aria-label on the two Subjects & Grades table inputs that had no
+// <label> element at all. This is now a hard assertion guarding the fix.
+test("every field on the application form (/apply/portal/form) has a programmatic label association", async ({
   page,
 }) => {
-  test.fail();
   const email = `e2e-labels-${Date.now()}@nextway.edu.lk`;
   const password = "Str0ngE2ETestPassw0rd!";
   await page.goto("/apply/register");
@@ -242,6 +237,11 @@ test("GAP: every field on the application form (/apply/portal/form) has zero pro
   await page.getByLabel(/verification code/i).fill(otp);
   await page.getByRole("button", { name: /verify email/i }).click();
   await page.waitForURL(/\/apply\/portal\/form/, { timeout: 10000 });
+  // ApplicationFormClient shows a spinner until its own initial-load fetch
+  // resolves; unlike a locator action (.fill(), auto-waiting), .count()
+  // and evaluate() read the DOM synchronously, so wait for real content
+  // first or this races the client-side load and reads an empty page.
+  await expect(page.getByLabel(/full name/i)).toBeVisible({ timeout: 10000 });
 
   const associatedLabelCount = await page.evaluate(() => {
     const labels = Array.from(document.querySelectorAll("label"));

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useId, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ApplicationStepper } from "@/components/applicant/ApplicationStepper";
@@ -22,6 +22,7 @@ export function ApplicationFormClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
+  const uid = useId();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -467,8 +468,9 @@ export function ApplicationFormClient() {
 
               <div className="grid gap-4 sm:grid-cols-4">
                 <div className="sm:col-span-1">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Title</label>
+                  <label htmlFor={`${uid}-title`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Title</label>
                   <select
+                    id={`${uid}-title`}
                     className={inputClass}
                     value={personalInfo.title}
                     onChange={(e) => setPersonalInfo({ ...personalInfo, title: e.target.value })}
@@ -482,8 +484,9 @@ export function ApplicationFormClient() {
                   </select>
                 </div>
                 <div className="sm:col-span-3">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Full Name (as in NIC / Passport) *</label>
+                  <label htmlFor={`${uid}-fullName`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Full Name (as in NIC / Passport) *</label>
                   <input
+                    id={`${uid}-fullName`}
                     type="text"
                     required
                     className={inputClass}
@@ -496,8 +499,9 @@ export function ApplicationFormClient() {
 
               <div className="grid gap-4 sm:grid-cols-3">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Date of Birth *</label>
+                  <label htmlFor={`${uid}-dateOfBirth`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Date of Birth *</label>
                   <input
+                    id={`${uid}-dateOfBirth`}
                     type="date"
                     required
                     className={inputClass}
@@ -506,8 +510,9 @@ export function ApplicationFormClient() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Gender *</label>
+                  <label htmlFor={`${uid}-gender`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Gender *</label>
                   <select
+                    id={`${uid}-gender`}
                     className={inputClass}
                     value={personalInfo.gender}
                     onChange={(e) =>
@@ -523,8 +528,9 @@ export function ApplicationFormClient() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Nationality *</label>
+                  <label htmlFor={`${uid}-nationality`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Nationality *</label>
                   <input
+                    id={`${uid}-nationality`}
                     type="text"
                     required
                     className={inputClass}
@@ -537,8 +543,9 @@ export function ApplicationFormClient() {
 
               <div className="grid gap-4 sm:grid-cols-3">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">NIC or Passport No *</label>
+                  <label htmlFor={`${uid}-nicOrPassport`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">NIC or Passport No *</label>
                   <input
+                    id={`${uid}-nicOrPassport`}
                     type="text"
                     required
                     className={inputClass}
@@ -548,8 +555,9 @@ export function ApplicationFormClient() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Email Address *</label>
+                  <label htmlFor={`${uid}-email`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Email Address *</label>
                   <input
+                    id={`${uid}-email`}
                     type="email"
                     required
                     className={inputClass}
@@ -559,8 +567,9 @@ export function ApplicationFormClient() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Mobile Contact No *</label>
+                  <label htmlFor={`${uid}-phone`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Mobile Contact No *</label>
                   <input
+                    id={`${uid}-phone`}
                     type="tel"
                     required
                     className={inputClass}
@@ -575,8 +584,9 @@ export function ApplicationFormClient() {
                 <h3 className="font-bold text-navy text-sm">Permanent Residential Address</h3>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Address Line 1 *</label>
+                    <label htmlFor={`${uid}-addressLine1`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Address Line 1 *</label>
                     <input
+                      id={`${uid}-addressLine1`}
                       type="text"
                       required
                       className={inputClass}
@@ -586,8 +596,9 @@ export function ApplicationFormClient() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">City / Town *</label>
+                    <label htmlFor={`${uid}-city`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">City / Town *</label>
                     <input
+                      id={`${uid}-city`}
                       type="text"
                       required
                       className={inputClass}
@@ -597,8 +608,9 @@ export function ApplicationFormClient() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Postal Code</label>
+                    <label htmlFor={`${uid}-postalCode`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Postal Code</label>
                     <input
+                      id={`${uid}-postalCode`}
                       type="text"
                       className={inputClass}
                       value={personalInfo.postalCode || ""}
@@ -613,8 +625,9 @@ export function ApplicationFormClient() {
                 <h3 className="font-bold text-navy text-sm">Emergency / Guardian Contact</h3>
                 <div className="grid gap-4 sm:grid-cols-3">
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Contact Name *</label>
+                    <label htmlFor={`${uid}-emergencyContactName`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Contact Name *</label>
                     <input
+                      id={`${uid}-emergencyContactName`}
                       type="text"
                       required
                       className={inputClass}
@@ -624,8 +637,9 @@ export function ApplicationFormClient() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Contact Phone *</label>
+                    <label htmlFor={`${uid}-emergencyContactPhone`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Contact Phone *</label>
                     <input
+                      id={`${uid}-emergencyContactPhone`}
                       type="tel"
                       required
                       className={inputClass}
@@ -635,8 +649,9 @@ export function ApplicationFormClient() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Relationship *</label>
+                    <label htmlFor={`${uid}-emergencyContactRelationship`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Relationship *</label>
                     <input
+                      id={`${uid}-emergencyContactRelationship`}
                       type="text"
                       required
                       className={inputClass}
@@ -688,8 +703,9 @@ export function ApplicationFormClient() {
 
                   <div className="grid gap-4 sm:grid-cols-3">
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Qualification Type *</label>
+                      <label htmlFor={`${uid}-qualificationType-${qIdx}`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Qualification Type *</label>
                       <select
+                        id={`${uid}-qualificationType-${qIdx}`}
                         className={inputClass}
                         value={qual.qualificationType}
                         onChange={(e) => updateQualificationField(qual.id, "qualificationType", e.target.value)}
@@ -704,8 +720,9 @@ export function ApplicationFormClient() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">School / Institution Name *</label>
+                      <label htmlFor={`${uid}-institution-${qIdx}`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">School / Institution Name *</label>
                       <input
+                        id={`${uid}-institution-${qIdx}`}
                         type="text"
                         required
                         className={inputClass}
@@ -716,8 +733,9 @@ export function ApplicationFormClient() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Year Completed *</label>
+                      <label htmlFor={`${uid}-yearCompleted-${qIdx}`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Year Completed *</label>
                       <input
+                        id={`${uid}-yearCompleted-${qIdx}`}
                         type="text"
                         required
                         className={inputClass}
@@ -746,6 +764,7 @@ export function ApplicationFormClient() {
                         <div key={sIdx} className="flex items-center gap-2">
                           <input
                             type="text"
+                            aria-label={`Subject ${sIdx + 1}`}
                             className={inputClass}
                             value={sub.subject}
                             onChange={(e) => updateSubjectRow(qual.id, sIdx, "subject", e.target.value)}
@@ -753,6 +772,7 @@ export function ApplicationFormClient() {
                           />
                           <input
                             type="text"
+                            aria-label={`Grade for subject ${sIdx + 1}`}
                             className="w-24 rounded-lg border border-slate/30 bg-white px-3 py-2.5 text-center text-sm font-bold text-navy uppercase focus:border-gold focus:outline-none"
                             value={sub.grade}
                             onChange={(e) => updateSubjectRow(qual.id, sIdx, "grade", e.target.value)}
@@ -789,8 +809,9 @@ export function ApplicationFormClient() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Choose Study Programme *</label>
+                  <label htmlFor={`${uid}-programmeId`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Choose Study Programme *</label>
                   <select
+                    id={`${uid}-programmeId`}
                     className={inputClass}
                     value={programmeChoice.programmeId}
                     onChange={(e) => {
@@ -817,8 +838,9 @@ export function ApplicationFormClient() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Preferred Intake *</label>
+                  <label htmlFor={`${uid}-intake`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Preferred Intake *</label>
                   <select
+                    id={`${uid}-intake`}
                     className={inputClass}
                     value={programmeChoice.intake}
                     onChange={(e) => setProgrammeChoice({ ...programmeChoice, intake: e.target.value })}
@@ -830,8 +852,9 @@ export function ApplicationFormClient() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Study Mode *</label>
+                  <label htmlFor={`${uid}-studyMode`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Study Mode *</label>
                   <select
+                    id={`${uid}-studyMode`}
                     className={inputClass}
                     value={programmeChoice.studyMode}
                     onChange={(e) =>
@@ -849,8 +872,9 @@ export function ApplicationFormClient() {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Branch / Campus Location *</label>
+                  <label htmlFor={`${uid}-campus`} className="block text-xs font-bold uppercase tracking-wider text-navy mb-1">Branch / Campus Location *</label>
                   <select
+                    id={`${uid}-campus`}
                     className={inputClass}
                     value={programmeChoice.campus}
                     onChange={(e) => setProgrammeChoice({ ...programmeChoice, campus: e.target.value })}

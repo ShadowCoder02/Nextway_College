@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { registerAndVerifyApplicantViaBrowser } from "./helpers";
 
 // Suite 9 — Accessibility (regression suite, docs/fix-prompts.md "GitHub
 // Copilot — Prompt 1"). Deliberately not duplicating the Lighthouse CI job
@@ -67,23 +68,18 @@ for (const route of PUBLIC_ROUTES) {
   });
 }
 
-// GAP, found while running the full suite together rather than this file
-// in isolation (reproduces reliably once the server has handled
-// substantial prior traffic, not on a freshly-started one): /apply/
-// register, /apply/verify and /apply/reset-password sometimes render zero
-// H1s — the raw HTML bails to `data-dgst="BAILOUT_TO_CLIENT_SIDE_
-// RENDERING"` inside an empty `<main>`, deferring these pages' entire
-// content to post-hydration client rendering. All three are wrapped in
-// `<Suspense fallback={null}>` for useSearchParams (the Session 4 split —
-// see src/app/(site)/apply/register/page.tsx and siblings) — an empty
-// fallback means a visitor sees a genuinely blank page for however long
-// hydration takes, which on the mid-range-Android/4G audience this site
-// targets could be visibly long. This appears related to (but is a
-// distinct symptom from) the router.push production-only bug documented
-// in e2e/programmes.spec.ts — both point at the same family of Suspense-
-// boundary/hydration behavior in this production build, but neither
-// reproduces with the same reliability, so they're reported as two
-// observations rather than asserted to share one root cause.
+// FIXED, was a GAP: /apply/register, /apply/login, /apply/verify and
+// /apply/reset-password used to intermittently render zero H1s under load
+// — the raw HTML bailed to `data-dgst="BAILOUT_TO_CLIENT_SIDE_RENDERING"`
+// inside an empty <main>, deferring the whole page to post-hydration
+// client rendering (a visibly blank page for however long that took, on
+// the mid-range-Android/4G audience this site targets). Confirmed same
+// root cause as the router.push bug in e2e/programmes.spec.ts: src/app/
+// (site)/loading.tsx's automatic outer Suspense boundary, nested around
+// each page's own explicit <Suspense> for useSearchParams. Removing
+// loading.tsx (the inner boundaries are still required by Next's build —
+// verified independently) eliminated this too: 23/23 routes passed
+// cleanly and consistently afterward.
 test.describe("exactly one H1 per page", () => {
   for (const route of PUBLIC_ROUTES) {
     test(`${route} has exactly one H1`, async ({ page }) => {
@@ -115,6 +111,45 @@ test("every input on the enquiry form has an associated label", async ({ page })
     // pattern too (the consent checkbox uses this, with no id at all).
     const hasWrappingLabel = await input.evaluate((el) => el.closest("label") !== null);
     expect(hasWrappingLabel, "input has no id-linked label, aria-label/labelledby, or wrapping <label>").toBe(true);
+  }
+});
+
+// FIXED, was a GAP found in e2e/application-flow.spec.ts: every field on
+// /apply/portal/form (the form collecting NIC/passport data) had zero
+// programmatic label association — 22 <label> elements, 0 htmlFor. Fixed
+// in ApplicationFormClient.tsx via useId()-generated id/htmlFor pairs, plus
+// aria-label on the two Subjects & Grades table inputs that had no <label>
+// element at all. axe-core's "label" rule is the direct, general-purpose
+// check for "does this form control have an accessible name" — scoped here
+// rather than relying on the broader serious/critical scan above, so a
+// regression here fails on exactly the right signal. The form is gated
+// behind auth and split across 5 steps rendered by a `?step=` query param
+// (see e2e/file-upload.spec.ts's `loginViaBrowser` for the same pattern),
+// so this logs in once and re-scans at each step.
+test("every form control on /apply/portal/form has an accessible name (all 5 steps)", async ({ page }) => {
+  await registerAndVerifyApplicantViaBrowser(page, {
+    fullName: "E2E Accessibility Tester",
+    emailPrefix: "e2e-a11y-form",
+  });
+
+  for (let step = 1; step <= 5; step++) {
+    await page.goto(`/apply/portal/form?step=${step}`);
+    // ApplicationFormClient shows a spinner until its own initial-load
+    // fetch resolves — page.goto's default 'load' wait doesn't cover that,
+    // so scanning too early would see an empty <main> rather than the
+    // step's real form controls. Each step renders its own "Step N —" h2
+    // once loaded.
+    await expect(page.getByRole("heading", { name: new RegExp(`Step ${step} —`) })).toBeVisible({
+      timeout: 10000,
+    });
+    const results = await new AxeBuilder({ page }).include("body").withRules(["label"]).analyze();
+
+    if (results.violations.length > 0) {
+      const detail = results.violations
+        .map((v) => `${v.id}: ${v.help} — ${v.nodes.map((n) => n.html).join(", ")}`)
+        .join("\n");
+      throw new Error(`/apply/portal/form?step=${step}:\n${detail}`);
+    }
   }
 });
 
