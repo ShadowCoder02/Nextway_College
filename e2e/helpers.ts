@@ -1,7 +1,7 @@
-import { get } from "@vercel/blob";
 import type { APIRequestContext, Page } from "@playwright/test";
+import { isBlobConfigured, readJsonBlob } from "../src/lib/cms/blob-json-store";
 
-const ADMISSIONS_BLOB_PATH = "cms/admissions.json";
+const ADMISSIONS_FILE = "admissions.json";
 
 interface StoredApplicant {
   email: string;
@@ -23,17 +23,25 @@ interface StoredApplicant {
  * in src/lib/cms/blob-json-store.ts's private store as of the fix for
  * production's EROFS write failures — the store used to be a local JSON
  * file this could readFileSync, which no longer reflects what the running
- * app actually persists.
+ * app actually persists. Reuses that module's own readJsonBlob() rather
+ * than re-implementing the get→stream→JSON.parse sequence here, so a
+ * future change to that logic (retry policy, the SDK's 304 case, etc.)
+ * only has one place to happen.
+ *
+ * Checks isBlobConfigured() explicitly first: without it, the app's own
+ * writes throw immediately (see writeJsonBlob), but a bare readJsonBlob()
+ * call here would just return the empty fallback and only fail two lines
+ * later with a generic "no verificationCode found" — technically correct,
+ * but it reads as "this applicant doesn't exist" rather than "this test
+ * run has no Blob credentials," which is the actual, fixable problem.
  */
 async function readAdmissionsStore(): Promise<{ applicants: StoredApplicant[] }> {
-  const result = await get(ADMISSIONS_BLOB_PATH, { access: "private", useCache: false });
-  if (!result || !result.stream) {
+  if (!isBlobConfigured()) {
     throw new Error(
-      `No admissions data found in Blob storage at ${ADMISSIONS_BLOB_PATH} — is BLOB_READ_WRITE_TOKEN set for this test run?`,
+      "BLOB_READ_WRITE_TOKEN is not set for this test run. These tests read the applicant's OTP directly from Blob storage and can't find it without real credentials — set it in .env.local locally, or as a BLOB_READ_WRITE_TOKEN repository secret in GitHub Actions for CI.",
     );
   }
-  const text = await new Response(result.stream).text();
-  return JSON.parse(text);
+  return readJsonBlob<{ applicants: StoredApplicant[] }>(ADMISSIONS_FILE, { applicants: [] });
 }
 
 export async function readVerificationCodeFromStore(email: string): Promise<string> {

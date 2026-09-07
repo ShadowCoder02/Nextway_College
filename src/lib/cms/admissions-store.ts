@@ -103,22 +103,18 @@ export async function findApplicationByNumber(appNumber: string): Promise<Studen
   return apps.find((a) => a.applicationNumber === appNumber) || null;
 }
 
-export async function findApplicationsByApplicantId(
-  applicantId: string,
-): Promise<StudentApplication[]> {
-  const apps = await getStoredApplications();
-  return apps.filter((a) => a.applicantId === applicantId);
-}
-
 export async function getOrCreateApplicantDraft(
   applicantId: string,
   initialDataPartial?: Partial<StudentApplication>,
 ): Promise<StudentApplication> {
-  const existingApps = await findApplicationsByApplicantId(applicantId);
-  const draft = existingApps.find((a) => a.status === "DRAFT");
+  // Single read for both the existing-draft lookup and the count below —
+  // two separate readAdmissionsData() calls would each be their own Blob
+  // GET round trip now that this store is backed by Vercel Blob rather
+  // than a near-free local fs read.
+  const data = await readAdmissionsData();
+  const draft = data.applications.find((a) => a.applicantId === applicantId && a.status === "DRAFT");
   if (draft) return draft;
 
-  const data = await readAdmissionsData();
   const count = data.applications.length + 1;
   const appNumber = generateApplicationNumber(count);
 

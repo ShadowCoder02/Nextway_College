@@ -32,8 +32,22 @@ async function writeJson<T>(file: string, data: T) {
 export async function getStoredProgrammes(): Promise<Programme[]> {
   const version = await readJson<{ version: string }>("version.json", { version: "0" });
   if (version.version !== CMS_VERSION) {
-    await writeJson("programmes.json", programmesSeed);
-    await writeJson("version.json", { version: CMS_VERSION });
+    // Best-effort: this is a self-healing cache reseed, not a user-facing
+    // write. The correct data (programmesSeed) is already known and
+    // returned below regardless of whether persisting it succeeds — a
+    // transient write failure (or Blob simply not being configured, e.g.
+    // under vitest) here must not become an uncaught exception for what's
+    // otherwise a plain read call. Contrast with saveProgrammes(), an
+    // explicit admin edit, which must NOT swallow a write failure the
+    // same way.
+    try {
+      await Promise.all([
+        writeJson("programmes.json", programmesSeed),
+        writeJson("version.json", { version: CMS_VERSION }),
+      ]);
+    } catch (err) {
+      console.error("[cms] Failed to persist programmes reseed:", err);
+    }
     return programmesSeed;
   }
   return readJson<Programme[]>("programmes.json", programmesSeed);
