@@ -34,6 +34,18 @@ const SECURITY_HEADERS = [
 
 const nextConfig: NextConfig = {
   devIndicators: false,
+  // pdfkit resolves its built-in standard fonts (Helvetica, etc.) through a
+  // Node subpath-imports wildcard (#standard-fonts/*, mapped in pdfkit's
+  // own package.json) — a dynamic require the Vercel build's static file
+  // tracer can't follow, so the font files never made it into the
+  // deployed serverless function bundle. Worked in every local
+  // `next build && next start` test (real Node resolves node_modules
+  // directly) but failed in actual production with "Cannot find module
+  // '#standard-fonts/Helvetica'" on every PDF-generating route. Confirmed
+  // via production logs, not assumed.
+  outputFileTracingIncludes: {
+    "/api/**/*": ["node_modules/pdfkit/js/standard-fonts/**"],
+  },
   async headers() {
     return [{ source: "/:path*", headers: SECURITY_HEADERS }];
   },
