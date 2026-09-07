@@ -127,6 +127,16 @@ for (const route of ["/schools", "/news", "/events", "/student-life"]) {
 // wait before counting made it 0/8 at every throttle level tested, so
 // that's applied here rather than to every route (most have no client-only
 // gate and don't need it).
+//
+// This fixes the TEST, not the underlying UX: a real visitor on the same
+// slow connection still hits a genuinely blank page — no H1, nothing for
+// a screen reader to announce — for that same window, on exactly the
+// routes (sign-in, registration, password reset) where losing someone at
+// that moment costs the most. Tracked as an open, separate issue
+// (github.com/ShadowCoder02/Nextway_College/issues/12) — deliberately not
+// a return to the sitewide loading.tsx removed in PR #8, which caused a
+// different, worse bug; a fallback here would be scoped to just these
+// routes' own boundaries.
 const SUSPENSE_GATED_ROUTES = ["/apply/register", "/apply/login", "/apply/verify", "/apply/reset-password"];
 
 test.describe("exactly one H1 per page", () => {
