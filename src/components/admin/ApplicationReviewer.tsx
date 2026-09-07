@@ -44,6 +44,21 @@ export function ApplicationReviewer({ initialApplication }: ApplicationReviewerP
     setTimeout(() => setToastMsg(""), 4000);
   }
 
+  async function handleDownloadPdf() {
+    const res = await apiFetch(`/api/portal/applications/${app.id}/pdf`);
+    if (!res.ok) {
+      showToast("Unable to download this application's PDF right now.");
+      return;
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${app.applicationNumber}.pdf`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
   // Update Status
   async function handleStatusUpdate() {
     setSavingStatus(true);
@@ -213,6 +228,13 @@ export function ApplicationReviewer({ initialApplication }: ApplicationReviewerP
 
           {/* Quick Action Buttons */}
           <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={handleDownloadPdf}
+              className="rounded-lg border border-gold/40 bg-gold/10 px-3 py-2 text-xs font-bold text-navy hover:bg-gold hover:text-navy transition"
+            >
+              📄 Download PDF
+            </button>
             <button
               type="button"
               onClick={() => setShowInterviewForm(!showInterviewForm)}
