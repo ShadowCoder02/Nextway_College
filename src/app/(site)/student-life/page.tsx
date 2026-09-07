@@ -3,6 +3,7 @@ import { buildMetadata } from "@/lib/seo";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { CTASection } from "@/components/ui/CTASection";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { PageHero } from "@/components/ui/PageHero";
 
 export const metadata = buildMetadata({
   title: "Student Life",
@@ -32,15 +33,11 @@ export default function StudentLifePage() {
   return (
     <>
       <Breadcrumbs items={[{ label: "Student Life", href: "/student-life" }]} />
-      <section className="bg-navy py-16 text-white">
-        <div className="container-nwc">
-          <span className="eyebrow mb-3 block">Campus experience</span>
-          <h1 className="text-display text-white">Student Life</h1>
-          <p className="mt-4 max-w-2xl text-lg text-white/80">
-            More than classes — a supportive environment where you build skills, confidence and community.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Campus experience"
+        title="Student Life"
+        description="More than classes — a supportive environment where you build skills, confidence and community."
+      />
 
       <section className="py-16 lg:py-24">
         <div className="container-nwc space-y-16">

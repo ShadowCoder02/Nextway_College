@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { PageHero } from "@/components/ui/PageHero";
 import { formatDateTime } from "@/lib/utils";
 import { getUpcomingEvents, getPastEvents } from "@/services/events";
 import type { EventItem } from "@/types";
@@ -40,12 +41,7 @@ export default async function EventsPage() {
   return (
     <>
       <Breadcrumbs items={[{ label: "Events", href: "/events" }]} />
-      <section className="bg-navy py-16 text-white">
-        <div className="container-nwc">
-          <span className="eyebrow mb-3 block">Calendar</span>
-          <h1 className="text-display text-white">Events</h1>
-        </div>
-      </section>
+      <PageHero eyebrow="Calendar" title="Events" />
 
       <section className="py-16 lg:py-24">
         <div className="container-nwc space-y-16">
