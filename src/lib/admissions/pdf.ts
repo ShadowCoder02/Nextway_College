@@ -163,7 +163,21 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
   ]);
 
   return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({ size: "A4", margin: PAGE_MARGIN });
+    // font: false is the actual fix, not just the serverExternalPackages/
+    // outputFileTracingIncludes workaround in next.config.ts: pdfkit's
+    // constructor (initFonts(), called as this.initFonts(options.font))
+    // unconditionally does `if (defaultFont) this.font(defaultFont)` with
+    // defaultFont defaulting to the string "Helvetica" whenever options.font
+    // is undefined — triggering the broken #standard-fonts/* resolution
+    // before this function ever gets to register/select BodyRegular below,
+    // regardless of what font the document ends up actually using. Passing
+    // false (not undefined, so the default parameter doesn't kick in) skips
+    // that call entirely. @types/pdfkit only types this as `string |
+    // undefined`, hence the cast — the runtime accepts false (verified
+    // directly against node_modules/pdfkit's own source). Kept the
+    // next.config.ts changes too, as a fallback in case a future pdfkit
+    // version touches a standard font through some other path.
+    const doc = new PDFDocument({ size: "A4", margin: PAGE_MARGIN, font: false as unknown as string });
     const chunks: Buffer[] = [];
     doc.on("data", (chunk) => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
     doc.on("end", () => resolve(Buffer.concat(chunks)));
