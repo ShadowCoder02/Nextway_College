@@ -35,7 +35,7 @@ export async function getStoredProgrammes(): Promise<Programme[]> {
     // Best-effort: this is a self-healing cache reseed, not a user-facing
     // write. The correct data (programmesSeed) is already known and
     // returned below regardless of whether persisting it succeeds — a
-    // transient write failure (or Blob simply not being configured, e.g.
+    // transient write failure (or Supabase simply not being configured, e.g.
     // under vitest) here must not become an uncaught exception for what's
     // otherwise a plain read call. Contrast with saveProgrammes(), an
     // explicit admin edit, which must NOT swallow a write failure the

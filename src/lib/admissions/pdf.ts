@@ -144,7 +144,7 @@ function drawTable(
 async function loadPhotoBuffer(app: StudentApplication): Promise<Buffer | null> {
   const photoDoc = app.documents.find((d) => d.category === "photograph");
   if (!photoDoc) return null;
-  const raw = await readStoredFile(photoDoc.filePath);
+  const raw = await readStoredFile(photoDoc.filePath, app.id);
   if (!raw) return null;
   try {
     return await loadPhotoAsPngOrJpeg(photoDoc.mimeType, raw);

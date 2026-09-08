@@ -68,19 +68,26 @@ export function generateSafeStoredFilename(category: string, originalName: strin
   return `${sanitizedCategory}_${Date.now()}_${randomHex}${safeExt}`;
 }
 
-function buildStoragePath(applicationId: string, storedFilename: string): string {
-  const sanitizedAppId = applicationId.replace(/[^a-z0-9_-]/gi, "");
-  return `${sanitizedAppId}/${storedFilename}`;
+function sanitizeApplicationId(applicationId: string): string {
+  return applicationId.replace(/[^a-z0-9_-]/gi, "");
 }
 
-// The local-filesystem version of this file confined every read/delete to
-// UPLOADS_ROOT before touching disk. Nothing currently passes readStoredFile/
-// deleteStoredFile anything but a path this module generated itself, but
-// keep the same backstop here too: never act on a path that tries to climb
-// out of its own application's folder, in case a future caller or a
-// corrupted record ever does.
-function isConfinedPath(objectPath: string): boolean {
-  return !objectPath.startsWith("/") && !objectPath.includes("..");
+function buildStoragePath(applicationId: string, storedFilename: string): string {
+  return `${sanitizeApplicationId(applicationId)}/${storedFilename}`;
+}
+
+// Every caller reaches readStoredFile/deleteStoredFile with a document
+// record it already fetched by application ID (see the two document API
+// routes, pdf.ts's loadPhotoBuffer, and admissions.ts's
+// deleteApplicationDocument) — this re-checks that the stored path actually
+// belongs to THAT application before touching storage, so a corrupted or
+// mismatched filePath record (or a future caller that skips the ownership
+// check further up) can't read or delete a different applicant's NIC/
+// passport scan. Rejects a leading "/" and any ".." for the same reason the
+// local-filesystem version confined every read/delete to UPLOADS_ROOT.
+function isConfinedPath(objectPath: string, applicationId: string): boolean {
+  if (objectPath.startsWith("/") || objectPath.includes("..")) return false;
+  return objectPath.startsWith(`${sanitizeApplicationId(applicationId)}/`);
 }
 
 /**
@@ -110,9 +117,11 @@ export async function saveUploadedFile(
 
 /**
  * Reads a stored file back from the private "applications" bucket.
+ * applicationId must be the caller's own already-verified application ID —
+ * this rejects any objectPath that doesn't belong to it (see isConfinedPath).
  */
-export async function readStoredFile(objectPath: string): Promise<Buffer | null> {
-  if (!isConfinedPath(objectPath)) return null;
+export async function readStoredFile(objectPath: string, applicationId: string): Promise<Buffer | null> {
+  if (!isConfinedPath(objectPath, applicationId)) return null;
   try {
     const supabase = createAdminClient();
     const { data, error } = await supabase.storage.from(STORAGE_BUCKET).download(objectPath);
@@ -126,9 +135,11 @@ export async function readStoredFile(objectPath: string): Promise<Buffer | null>
 
 /**
  * Deletes a stored file from the private "applications" bucket.
+ * applicationId must be the caller's own already-verified application ID —
+ * this rejects any objectPath that doesn't belong to it (see isConfinedPath).
  */
-export async function deleteStoredFile(objectPath: string): Promise<boolean> {
-  if (!isConfinedPath(objectPath)) return false;
+export async function deleteStoredFile(objectPath: string, applicationId: string): Promise<boolean> {
+  if (!isConfinedPath(objectPath, applicationId)) return false;
   try {
     const supabase = createAdminClient();
     const { error } = await supabase.storage.from(STORAGE_BUCKET).remove([objectPath]);

@@ -108,9 +108,9 @@ export async function getOrCreateApplicantDraft(
   initialDataPartial?: Partial<StudentApplication>,
 ): Promise<StudentApplication> {
   // Single read for both the existing-draft lookup and the count below —
-  // two separate readAdmissionsData() calls would each be their own Blob
-  // GET round trip now that this store is backed by Vercel Blob rather
-  // than a near-free local fs read.
+  // two separate readAdmissionsData() calls would each be their own
+  // Supabase query round trip now that this store is backed by Supabase
+  // rather than a near-free local fs read.
   const data = await readAdmissionsData();
   const draft = data.applications.find((a) => a.applicantId === applicantId && a.status === "DRAFT");
   if (draft) return draft;
