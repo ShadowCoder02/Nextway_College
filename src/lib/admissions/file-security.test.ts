@@ -4,8 +4,8 @@ import { verifyFileMagicBytes, generateSafeStoredFilename } from "./file-securit
 // Suites 5 & 6 (regression suite, docs/fix-prompts.md "GitHub Copilot —
 // Prompt 1") — path traversal and magic-byte checks, tested at the unit
 // level against these pure functions rather than through the real upload
-// API. The full end-to-end upload flow needs BLOB_READ_WRITE_TOKEN, which
-// isn't provisioned for this project (confirmed: no Vercel Blob store
+// API. The full end-to-end upload flow needs SUPABASE_SERVICE_ROLE_KEY, which
+// isn't provisioned for this project (confirmed: no Supabase Storage bucket
 // exists yet — `vercel env pull` returns no such variable, and
 // .env.example itself says there's no local-filesystem fallback). See
 // e2e/security.spec.ts and e2e/file-upload.spec.ts for what's

@@ -1,11 +1,11 @@
 import crypto from "crypto";
 import path from "path";
-import { put, del, get } from "@vercel/blob";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { ALLOWED_EXTENSIONS } from "./file-policy";
 
 export { MAX_FILE_SIZE_BYTES, ALLOWED_EXTENSIONS, ALLOWED_MIME_TYPES } from "./file-policy";
 
-const BLOB_PATH_PREFIX = "applications";
+const STORAGE_BUCKET = "applications";
 
 /**
  * Checks magic byte signatures for uploaded buffers
@@ -68,28 +68,36 @@ export function generateSafeStoredFilename(category: string, originalName: strin
   return `${sanitizedCategory}_${Date.now()}_${randomHex}${safeExt}`;
 }
 
-function buildBlobPathname(applicationId: string, storedFilename: string): string {
-  const sanitizedAppId = applicationId.replace(/[^a-z0-9_-]/gi, "");
-  return `${BLOB_PATH_PREFIX}/${sanitizedAppId}/${storedFilename}`;
+function sanitizeApplicationId(applicationId: string): string {
+  return applicationId.replace(/[^a-z0-9_-]/gi, "");
 }
 
-// The local-filesystem version of this file confined every read/delete to
-// UPLOADS_ROOT before touching disk. Nothing currently passes readStoredFile/
-// deleteStoredFile anything but a pathname this module generated itself, but
-// keep the same backstop here too: never act on a pathname outside the
-// applications/ prefix, in case a future caller or a corrupted record ever
-// does.
-function isConfinedPathname(pathname: string): boolean {
-  return pathname === BLOB_PATH_PREFIX || pathname.startsWith(`${BLOB_PATH_PREFIX}/`);
+function buildStoragePath(applicationId: string, storedFilename: string): string {
+  return `${sanitizeApplicationId(applicationId)}/${storedFilename}`;
+}
+
+// Every caller reaches readStoredFile/deleteStoredFile with a document
+// record it already fetched by application ID (see the two document API
+// routes, pdf.ts's loadPhotoBuffer, and admissions.ts's
+// deleteApplicationDocument) — this re-checks that the stored path actually
+// belongs to THAT application before touching storage, so a corrupted or
+// mismatched filePath record (or a future caller that skips the ownership
+// check further up) can't read or delete a different applicant's NIC/
+// passport scan. Rejects a leading "/" and any ".." for the same reason the
+// local-filesystem version confined every read/delete to UPLOADS_ROOT.
+function isConfinedPath(objectPath: string, applicationId: string): boolean {
+  if (objectPath.startsWith("/") || objectPath.includes("..")) return false;
+  return objectPath.startsWith(`${sanitizeApplicationId(applicationId)}/`);
 }
 
 /**
- * Uploads a file buffer to private Vercel Blob storage. Returns the blob
- * pathname (not a public URL) — the only way to read it back is via
- * readStoredFile() below, which requires the same store credentials this
- * server process already has. Never expose this pathname to the client;
- * documents are served through an authenticated proxy route instead of a
- * direct link, so a logged-out request for a stored document always fails.
+ * Uploads a file buffer to the private "applications" Supabase Storage
+ * bucket. Returns the object path (not a public URL) — the only way to
+ * read it back is via readStoredFile() below, which requires the same
+ * service-role credentials this server process already has. Never expose
+ * this path to the client; documents are served through an authenticated
+ * proxy route instead of a direct link, so a logged-out request for a
+ * stored document always fails.
  */
 export async function saveUploadedFile(
   applicationId: string,
@@ -97,23 +105,28 @@ export async function saveUploadedFile(
   buffer: Buffer,
   mimeType: string,
 ): Promise<string> {
-  const pathname = buildBlobPathname(applicationId, storedFilename);
-  const result = await put(pathname, buffer, {
-    access: "private",
+  const objectPath = buildStoragePath(applicationId, storedFilename);
+  const supabase = createAdminClient();
+  const { error } = await supabase.storage.from(STORAGE_BUCKET).upload(objectPath, buffer, {
     contentType: mimeType,
+    upsert: true,
   });
-  return result.pathname;
+  if (error) throw new Error(`Failed to upload ${objectPath}: ${error.message}`);
+  return objectPath;
 }
 
 /**
- * Reads a stored file back from private Blob storage.
+ * Reads a stored file back from the private "applications" bucket.
+ * applicationId must be the caller's own already-verified application ID —
+ * this rejects any objectPath that doesn't belong to it (see isConfinedPath).
  */
-export async function readStoredFile(pathname: string): Promise<Buffer | null> {
-  if (!isConfinedPathname(pathname)) return null;
+export async function readStoredFile(objectPath: string, applicationId: string): Promise<Buffer | null> {
+  if (!isConfinedPath(objectPath, applicationId)) return null;
   try {
-    const result = await get(pathname, { access: "private" });
-    if (!result) return null;
-    const arrayBuffer = await new Response(result.stream).arrayBuffer();
+    const supabase = createAdminClient();
+    const { data, error } = await supabase.storage.from(STORAGE_BUCKET).download(objectPath);
+    if (error || !data) return null;
+    const arrayBuffer = await data.arrayBuffer();
     return Buffer.from(arrayBuffer);
   } catch {
     return null;
@@ -121,13 +134,16 @@ export async function readStoredFile(pathname: string): Promise<Buffer | null> {
 }
 
 /**
- * Deletes a stored file from Blob storage.
+ * Deletes a stored file from the private "applications" bucket.
+ * applicationId must be the caller's own already-verified application ID —
+ * this rejects any objectPath that doesn't belong to it (see isConfinedPath).
  */
-export async function deleteStoredFile(pathname: string): Promise<boolean> {
-  if (!isConfinedPathname(pathname)) return false;
+export async function deleteStoredFile(objectPath: string, applicationId: string): Promise<boolean> {
+  if (!isConfinedPath(objectPath, applicationId)) return false;
   try {
-    await del(pathname);
-    return true;
+    const supabase = createAdminClient();
+    const { error } = await supabase.storage.from(STORAGE_BUCKET).remove([objectPath]);
+    return !error;
   } catch {
     return false;
   }

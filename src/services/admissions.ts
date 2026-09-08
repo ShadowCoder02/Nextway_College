@@ -455,7 +455,7 @@ export async function deleteApplicationDocument(
   if (!updatedApp) return { ok: false, error: "Failed to delete document" };
 
   if (removedDoc?.filePath) {
-    await deleteStoredFile(removedDoc.filePath);
+    await deleteStoredFile(removedDoc.filePath, app.id);
   }
 
   return { ok: true, application: updatedApp };

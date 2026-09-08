@@ -54,6 +54,15 @@ jobs:
           # VERCEL_ENV isn't set in GitHub Actions at all — so this build
           # doesn't hit resolveSiteUrl()'s production-only guard.
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          # Must be set HERE, not just on the e2e job below: Next.js inlines
+          # every process.env.NEXT_PUBLIC_* reference into the compiled
+          # bundle at build time — in server-only code too, not just client
+          # code — so setting it later for `npm run start` in the e2e job
+          # has no effect on an artifact already built without it. (
+          # SUPABASE_SERVICE_ROLE_KEY has no NEXT_PUBLIC_ prefix and is read
+          # live at runtime, so it's fine to keep that one only on e2e.)
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         run: npm run build | tee build.log
       - name: Check First Load JS budget (130KB/route, documented exceptions)
         run: npm run check-bundle-budget -- build.log
@@ -166,5 +175,6 @@ jobs:
         env:
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
-          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         continue-on-error: true

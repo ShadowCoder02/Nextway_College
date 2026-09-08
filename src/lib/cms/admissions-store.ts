@@ -7,7 +7,7 @@ import type {
   UploadedDocument,
 } from "@/types/admissions";
 import { generateApplicationNumber } from "@/lib/admissions/crypto";
-import { readJsonBlob, writeJsonBlob } from "@/lib/cms/blob-json-store";
+import { readJsonRecord, writeJsonRecord } from "@/lib/cms/json-store";
 
 const ADMISSIONS_FILE = "admissions.json";
 
@@ -22,7 +22,7 @@ const initialData: AdmissionsData = {
 };
 
 async function readAdmissionsData(): Promise<AdmissionsData> {
-  const data = await readJsonBlob<AdmissionsData>(ADMISSIONS_FILE, initialData);
+  const data = await readJsonRecord<AdmissionsData>(ADMISSIONS_FILE, initialData);
   return {
     applicants: Array.isArray(data.applicants) ? data.applicants : [],
     applications: Array.isArray(data.applications) ? data.applications : [],
@@ -30,7 +30,7 @@ async function readAdmissionsData(): Promise<AdmissionsData> {
 }
 
 async function writeAdmissionsData(data: AdmissionsData): Promise<void> {
-  await writeJsonBlob(ADMISSIONS_FILE, data);
+  await writeJsonRecord(ADMISSIONS_FILE, data);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -108,9 +108,9 @@ export async function getOrCreateApplicantDraft(
   initialDataPartial?: Partial<StudentApplication>,
 ): Promise<StudentApplication> {
   // Single read for both the existing-draft lookup and the count below —
-  // two separate readAdmissionsData() calls would each be their own Blob
-  // GET round trip now that this store is backed by Vercel Blob rather
-  // than a near-free local fs read.
+  // two separate readAdmissionsData() calls would each be their own
+  // Supabase query round trip now that this store is backed by Supabase
+  // rather than a near-free local fs read.
   const data = await readAdmissionsData();
   const draft = data.applications.find((a) => a.applicantId === applicantId && a.status === "DRAFT");
   if (draft) return draft;

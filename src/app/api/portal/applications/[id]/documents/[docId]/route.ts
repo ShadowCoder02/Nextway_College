@@ -23,7 +23,7 @@ export async function GET(_request: Request, { params }: Props) {
     return new NextResponse("Document not found", { status: 404 });
   }
 
-  const buffer = await readStoredFile(doc.filePath);
+  const buffer = await readStoredFile(doc.filePath, app.id);
   if (!buffer) {
     return new NextResponse("File missing on server", { status: 404 });
   }
