@@ -1,9 +1,8 @@
 import type { EnquiryInput } from "@/types";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient, isAdminClientConfigured } from "@/lib/supabase/admin";
 import {
   addStoredEnquiry,
   getStoredEnquiries,
-  isSupabaseConfigured,
   updateStoredEnquiry,
   type StoredEnquiry,
 } from "@/lib/cms/store";
@@ -20,7 +19,7 @@ export type EnquiryResult = { ok: true; id?: string } | { ok: false; error: stri
 // src/app/api/portal/enquiries/route.ts) for the two staff-only functions,
 // and by design for submitEnquiry (any visitor may submit an enquiry).
 export async function submitEnquiry(data: EnquiryInput): Promise<EnquiryResult> {
-  if (isSupabaseConfigured()) {
+  if (isAdminClientConfigured()) {
     try {
       const supabase = createAdminClient();
       const { data: row, error } = await supabase
@@ -72,7 +71,7 @@ export async function submitEnquiry(data: EnquiryInput): Promise<EnquiryResult> 
 }
 
 export async function getEnquiries(): Promise<StoredEnquiry[]> {
-  if (isSupabaseConfigured()) {
+  if (isAdminClientConfigured()) {
     try {
       const supabase = createAdminClient();
       const { data, error } = await supabase
@@ -91,7 +90,7 @@ export async function updateEnquiryStatus(
   id: string,
   status: StoredEnquiry["status"],
 ): Promise<boolean> {
-  if (isSupabaseConfigured()) {
+  if (isAdminClientConfigured()) {
     try {
       const supabase = createAdminClient();
       const { error } = await supabase.from("enquiries").update({ status }).eq("id", id);
