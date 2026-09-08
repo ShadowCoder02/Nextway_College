@@ -1,5 +1,5 @@
 import type { EnquiryInput } from "@/types";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import {
   addStoredEnquiry,
   getStoredEnquiries,
@@ -10,10 +10,19 @@ import {
 
 export type EnquiryResult = { ok: true; id?: string } | { ok: false; error: string };
 
+// Every function here uses the service-role admin client, not a cookie-
+// bound anon-key client: this app never uses Supabase Auth (see
+// src/lib/admin/session.ts's custom cookie sessions), so auth.uid() is
+// always null and the enquiries table's auth.uid()-based RLS policies can
+// never pass for any request — staff or public. Real authorization for
+// these three functions' callers is enforced by requireAdmin() at the API
+// route layer (see src/app/api/admin/enquiries/route.ts and
+// src/app/api/portal/enquiries/route.ts) for the two staff-only functions,
+// and by design for submitEnquiry (any visitor may submit an enquiry).
 export async function submitEnquiry(data: EnquiryInput): Promise<EnquiryResult> {
   if (isSupabaseConfigured()) {
     try {
-      const supabase = await createClient();
+      const supabase = createAdminClient();
       const { data: row, error } = await supabase
         .from("enquiries")
         .insert({
@@ -65,7 +74,7 @@ export async function submitEnquiry(data: EnquiryInput): Promise<EnquiryResult> 
 export async function getEnquiries(): Promise<StoredEnquiry[]> {
   if (isSupabaseConfigured()) {
     try {
-      const supabase = await createClient();
+      const supabase = createAdminClient();
       const { data, error } = await supabase
         .from("enquiries")
         .select("*")
@@ -84,7 +93,7 @@ export async function updateEnquiryStatus(
 ): Promise<boolean> {
   if (isSupabaseConfigured()) {
     try {
-      const supabase = await createClient();
+      const supabase = createAdminClient();
       const { error } = await supabase.from("enquiries").update({ status }).eq("id", id);
       if (!error) return true;
     } catch {

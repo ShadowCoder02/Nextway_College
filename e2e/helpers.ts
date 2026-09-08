@@ -1,5 +1,5 @@
 import type { APIRequestContext, Page } from "@playwright/test";
-import { isBlobConfigured, readJsonBlob } from "../src/lib/cms/blob-json-store";
+import { isJsonStoreConfigured, readJsonRecord } from "../src/lib/cms/json-store";
 
 const ADMISSIONS_FILE = "admissions.json";
 
@@ -10,7 +10,7 @@ interface StoredApplicant {
 }
 
 /**
- * Reads the applicant's OTP straight out of the CMS Blob store rather than
+ * Reads the applicant's OTP straight out of the CMS store rather than
  * relying on the API response's `debugOtp` field — that field is only
  * present when NODE_ENV !== "production" (see src/services/admissions.ts),
  * and these tests deliberately run against a production build (matching
@@ -19,29 +19,29 @@ interface StoredApplicant {
  * ever stored as a SHA-256 hash — see e2e/security.spec.ts for where that
  * distinction blocks a fully-automatable password-reset E2E test).
  *
- * Reads directly from Blob (not through the app) because this data lives
- * in src/lib/cms/blob-json-store.ts's private store as of the fix for
- * production's EROFS write failures — the store used to be a local JSON
- * file this could readFileSync, which no longer reflects what the running
- * app actually persists. Reuses that module's own readJsonBlob() rather
- * than re-implementing the get→stream→JSON.parse sequence here, so a
- * future change to that logic (retry policy, the SDK's 304 case, etc.)
- * only has one place to happen.
+ * Reads directly from the store (not through the app) because this data
+ * lives in src/lib/cms/json-store.ts's Supabase-backed table as of the
+ * fix for production's EROFS write failures — the store used to be a
+ * local JSON file this could readFileSync, which no longer reflects what
+ * the running app actually persists. Reuses that module's own
+ * readJsonRecord() rather than re-implementing the query here, so a
+ * future change to that logic only has one place to happen.
  *
- * Checks isBlobConfigured() explicitly first: without it, the app's own
- * writes throw immediately (see writeJsonBlob), but a bare readJsonBlob()
- * call here would just return the empty fallback and only fail two lines
- * later with a generic "no verificationCode found" — technically correct,
- * but it reads as "this applicant doesn't exist" rather than "this test
- * run has no Blob credentials," which is the actual, fixable problem.
+ * Checks isJsonStoreConfigured() explicitly first: without it, the app's
+ * own writes throw immediately (see writeJsonRecord), but a bare
+ * readJsonRecord() call here would just return the empty fallback and
+ * only fail two lines later with a generic "no verificationCode found" —
+ * technically correct, but it reads as "this applicant doesn't exist"
+ * rather than "this test run has no Supabase credentials," which is the
+ * actual, fixable problem.
  */
 async function readAdmissionsStore(): Promise<{ applicants: StoredApplicant[] }> {
-  if (!isBlobConfigured()) {
+  if (!isJsonStoreConfigured()) {
     throw new Error(
-      "BLOB_READ_WRITE_TOKEN is not set for this test run. These tests read the applicant's OTP directly from Blob storage and can't find it without real credentials — set it in .env.local locally, or as a BLOB_READ_WRITE_TOKEN repository secret in GitHub Actions for CI.",
+      "NEXT_PUBLIC_SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY are not set for this test run. These tests read the applicant's OTP directly from the store and can't find it without real credentials — set them in .env.local locally, or as repository secrets in GitHub Actions for CI.",
     );
   }
-  return readJsonBlob<{ applicants: StoredApplicant[] }>(ADMISSIONS_FILE, { applicants: [] });
+  return readJsonRecord<{ applicants: StoredApplicant[] }>(ADMISSIONS_FILE, { applicants: [] });
 }
 
 export async function readVerificationCodeFromStore(email: string): Promise<string> {

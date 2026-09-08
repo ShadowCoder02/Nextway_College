@@ -89,7 +89,7 @@ test("N/A: CSV formula injection — no CSV export feature exists in this codeba
 
 // Path traversal is tested at the unit level instead — see
 // src/lib/admissions/file-security.test.ts — rather than through this real
-// endpoint, which needs BLOB_READ_WRITE_TOKEN (not provisioned for this
+// endpoint, which needs SUPABASE_SERVICE_ROLE_KEY (not provisioned for this
 // project; see the note on the two skipped tests below for how that was
 // confirmed, and why there's no local fallback to fall back to).
 
@@ -143,7 +143,7 @@ test("CSRF: register with no token at all is rejected", async ({ request }) => {
 });
 
 // SKIPPED, not silently passed: this needs a real document upload to
-// exist, which needs BLOB_READ_WRITE_TOKEN. Confirmed not provisioned for
+// exist, which needs SUPABASE_SERVICE_ROLE_KEY. Confirmed not provisioned for
 // this project — `npx vercel env pull` (this project IS linked and the
 // CLI IS authenticated) returns no such variable for any environment, and
 // .env.example's own comment says there's no local-filesystem fallback:
@@ -154,7 +154,7 @@ test("CSRF: register with no token at all is rejected", async ({ request }) => {
 // server-side (never trusting a client-supplied ID), which is exactly the
 // IDOR protection this test would otherwise be re-confirming end to end.
 test.skip(
-  "IDOR, HIGHEST SEVERITY: applicant A cannot fetch applicant B's uploaded document — needs BLOB_READ_WRITE_TOKEN (not provisioned)",
+  "IDOR, HIGHEST SEVERITY: applicant A cannot fetch applicant B's uploaded document — needs SUPABASE_SERVICE_ROLE_KEY (not provisioned)",
   async () => {},
 );
 
@@ -170,13 +170,13 @@ test("GET /apply/portal (the applicant dashboard) while logged out redirects and
   expect(bodyText).not.toMatch(/application number|nic|passport/i);
 });
 
-// SKIPPED, not silently passed: same BLOB_READ_WRITE_TOKEN gap as the IDOR
+// SKIPPED, not silently passed: same SUPABASE_SERVICE_ROLE_KEY gap as the IDOR
 // test above — needs a real uploaded document to exist first. The
 // no-session check itself (getApplicantSession() returning null -> 401)
 // is exercised without a real document by "GET /apply/portal ... while
 // logged out redirects" above and the two CSRF tests, which all hit
 // session-gated behavior on this same auth layer.
 test.skip(
-  "fetching a stored document URL with no session fails — needs BLOB_READ_WRITE_TOKEN (not provisioned)",
+  "fetching a stored document URL with no session fails — needs SUPABASE_SERVICE_ROLE_KEY (not provisioned)",
   async () => {},
 );

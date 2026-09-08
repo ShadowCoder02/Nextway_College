@@ -7,7 +7,7 @@ import type {
   UploadedDocument,
 } from "@/types/admissions";
 import { generateApplicationNumber } from "@/lib/admissions/crypto";
-import { readJsonBlob, writeJsonBlob } from "@/lib/cms/blob-json-store";
+import { readJsonRecord, writeJsonRecord } from "@/lib/cms/json-store";
 
 const ADMISSIONS_FILE = "admissions.json";
 
@@ -22,7 +22,7 @@ const initialData: AdmissionsData = {
 };
 
 async function readAdmissionsData(): Promise<AdmissionsData> {
-  const data = await readJsonBlob<AdmissionsData>(ADMISSIONS_FILE, initialData);
+  const data = await readJsonRecord<AdmissionsData>(ADMISSIONS_FILE, initialData);
   return {
     applicants: Array.isArray(data.applicants) ? data.applicants : [],
     applications: Array.isArray(data.applications) ? data.applications : [],
@@ -30,7 +30,7 @@ async function readAdmissionsData(): Promise<AdmissionsData> {
 }
 
 async function writeAdmissionsData(data: AdmissionsData): Promise<void> {
-  await writeJsonBlob(ADMISSIONS_FILE, data);
+  await writeJsonRecord(ADMISSIONS_FILE, data);
 }
 
 /* -------------------------------------------------------------------------- */

@@ -1,7 +1,7 @@
 import type { CareerVacancy, EventItem, NewsArticle, Programme } from "@/types";
 import { events as seedEvents, newsArticles as seedNews } from "@/data/content";
 import { careersSeed, programmesSeed } from "@/data/programmes-seed";
-import { readJsonBlob, writeJsonBlob } from "@/lib/cms/blob-json-store";
+import { readJsonRecord, writeJsonRecord } from "@/lib/cms/json-store";
 
 const CMS_VERSION = "3";
 
@@ -22,11 +22,11 @@ export type StoredEnquiry = {
 };
 
 async function readJson<T>(file: string, fallback: T): Promise<T> {
-  return readJsonBlob(file, fallback);
+  return readJsonRecord(file, fallback);
 }
 
 async function writeJson<T>(file: string, data: T) {
-  await writeJsonBlob(file, data);
+  await writeJsonRecord(file, data);
 }
 
 export async function getStoredProgrammes(): Promise<Programme[]> {

@@ -6,7 +6,7 @@ import path from "path";
 
 // Suite 6 — File upload (regression suite, docs/fix-prompts.md "GitHub
 // Copilot — Prompt 1"). Several items in this suite need a real, completed
-// upload to Vercel Blob storage, which needs BLOB_READ_WRITE_TOKEN — not
+// upload to Supabase Storage, which needs SUPABASE_SERVICE_ROLE_KEY — not
 // provisioned for this project (confirmed via `npx vercel env pull`
 // returning no such variable, and .env.example's own note that there's no
 // local-filesystem fallback). Those are explicitly skipped below with
@@ -106,7 +106,7 @@ test("a connection drop mid-upload shows a clear retry option, not a hang", asyn
 
 // SKIPPED, not silently passed — see the file-level comment for why.
 test.skip(
-  "2MB PDF accepted with preview — needs BLOB_READ_WRITE_TOKEN (not provisioned)",
+  "2MB PDF accepted with preview — needs SUPABASE_SERVICE_ROLE_KEY (not provisioned)",
   async () => {},
 );
 
@@ -126,7 +126,7 @@ test("GAP: a 6th document to the same category is rejected when the limit is fiv
     "No per-category document count cap exists anywhere: DocumentUploader.tsx's matchingDocs.length is only " +
       "used to change the button label, and uploadApplicationDocument() in src/services/admissions.ts has no " +
       "count check before appending. Not verified via a live 6-upload sequence (blocked by the same " +
-      "BLOB_READ_WRITE_TOKEN gap as the skipped test above) — this documents the source-level finding.",
+      "SUPABASE_SERVICE_ROLE_KEY gap as the skipped test above) — this documents the source-level finding.",
   );
 });
 
@@ -137,7 +137,7 @@ test("GAP: uploading the same filename twice replaces rather than duplicates (it
       "timestamp+random filename regardless of the original name, so the 'replace if same storedFilename' " +
       "branch in addApplicationDocument() (src/lib/cms/admissions-store.ts) can never match — every upload, " +
       "even of an identically-named file to the same category, is appended as a new separate document. Not " +
-      "verified via two live uploads (blocked by the same BLOB_READ_WRITE_TOKEN gap) — this documents the " +
+      "verified via two live uploads (blocked by the same SUPABASE_SERVICE_ROLE_KEY gap) — this documents the " +
       "source-level finding.",
   );
 });
