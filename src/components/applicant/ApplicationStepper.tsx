@@ -15,9 +15,9 @@ const CREATE_ACCOUNT_STEP = 0;
 
 const STEPS = [
   { step: CREATE_ACCOUNT_STEP, label: "Create Account", short: "Account" },
-  { step: 1, label: "Personal Details", short: "Personal" },
-  { step: 2, label: "Qualifications", short: "Academic" },
-  { step: 3, label: "Programme", short: "Programme" },
+  { step: 1, label: "Course Applied For", short: "Course" },
+  { step: 2, label: "Personal Particulars", short: "Personal" },
+  { step: 3, label: "Qualifications", short: "Academic" },
   { step: 4, label: "Upload Documents", short: "Documents" },
   { step: 5, label: "Review & Submit", short: "Review" },
 ];

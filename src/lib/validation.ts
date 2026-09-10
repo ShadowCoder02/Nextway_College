@@ -66,30 +66,29 @@ export type ApplicantRegisterInput = z.infer<typeof applicantRegisterSchema>;
 export const personalInfoSchema = z.object({
   title: z.string().optional(),
   fullName: nameSchema,
-  preferredName: z.string().optional(),
+  nameWithInitials: z.string().trim().min(2, "Name with initials is required").max(150),
   dateOfBirth: z.string().min(4, "Date of birth is required"),
-  gender: z.enum(["Male", "Female", "Other"], {
-    errorMap: () => ({ message: "Please select your gender" }),
-  }),
-  nationality: z.string().trim().min(2, "Nationality is required"),
+  civilStatus: z.string().trim().min(2, "Civil status is required"),
   nicOrPassport: z.string().trim().min(4, "NIC or Passport number is required"),
   email: emailSchema,
   phone: phoneSchema,
-  addressLine1: z.string().min(3, "Address line 1 is required"),
-  addressLine2: z.string().optional(),
+  homeTelephone: z.string().optional(),
+  addressLine1: z.string().min(3, "Permanent address is required"),
   city: z.string().min(2, "City is required"),
   postalCode: z.string().optional(),
   country: z.string().min(2, "Country is required"),
-  emergencyContactName: z.string().min(2, "Emergency contact name is required"),
-  emergencyContactPhone: z.string().min(8, "Emergency contact phone is required"),
-  emergencyContactRelationship: z.string().min(2, "Relationship is required"),
+  contactAddress: z.string().optional(),
 });
 
 export const academicQualificationItemSchema = z.object({
   id: z.string(),
-  institution: z.string().min(2, "Institution name is required"),
+  institution: z.string().optional(),
   qualificationType: z.string().min(2, "Qualification type is required"),
-  yearCompleted: z.string().min(4, "Year of completion is required"),
+  // Not required here: the A/L section (item 08) is legitimately left
+  // blank by applicants who haven't sat A/Ls. Whether O/L specifically
+  // must be filled in is enforced as a business rule in submitApplication,
+  // not as a per-item shape constraint shared by both O/L and A/L.
+  yearCompleted: z.string().optional(),
   indexOrRegNumber: z.string().optional(),
   subjectsAndGrades: z.array(
     z.object({
@@ -98,6 +97,25 @@ export const academicQualificationItemSchema = z.object({
     }),
   ),
   remarks: z.string().optional(),
+});
+
+export const professionalQualificationItemSchema = z.object({
+  id: z.string(),
+  institution: z.string().trim().min(1, "Institution is required"),
+  qualificationObtained: z.string().trim().min(1, "Qualification obtained is required"),
+  dateOfCommencement: z.string().optional(),
+  effectiveDate: z.string().optional(),
+  duration: z.string().optional(),
+});
+
+export const presentOccupationItemSchema = z.object({
+  id: z.string(),
+  occupation: z.string().trim().min(1, "Occupation is required"),
+  institute: z.string().trim().min(1, "Institute is required"),
+  from: z.string().optional(),
+  to: z.string().optional(),
+  numberOfMonths: z.string().optional(),
+  lastSalaryDrawn: z.string().optional(),
 });
 
 export const programmeChoiceSchema = z.object({
@@ -113,21 +131,18 @@ export const programmeChoiceSchema = z.object({
 const draftPersonalInfoSchema = z.object({
   title: z.string().optional(),
   fullName: z.string().optional(),
-  preferredName: z.string().optional(),
+  nameWithInitials: z.string().optional(),
   dateOfBirth: z.string().optional(),
-  gender: z.enum(["Male", "Female", "Other"]).optional(),
-  nationality: z.string().optional(),
+  civilStatus: z.string().optional(),
   nicOrPassport: z.string().optional(),
   email: z.string().optional(),
   phone: z.string().optional(),
+  homeTelephone: z.string().optional(),
   addressLine1: z.string().optional(),
-  addressLine2: z.string().optional(),
   city: z.string().optional(),
   postalCode: z.string().optional(),
   country: z.string().optional(),
-  emergencyContactName: z.string().optional(),
-  emergencyContactPhone: z.string().optional(),
-  emergencyContactRelationship: z.string().optional(),
+  contactAddress: z.string().optional(),
 });
 
 const draftAcademicQualificationItemSchema = z.object({
@@ -147,6 +162,25 @@ const draftAcademicQualificationItemSchema = z.object({
   remarks: z.string().optional(),
 });
 
+const draftProfessionalQualificationItemSchema = z.object({
+  id: z.string().optional(),
+  institution: z.string().optional(),
+  qualificationObtained: z.string().optional(),
+  dateOfCommencement: z.string().optional(),
+  effectiveDate: z.string().optional(),
+  duration: z.string().optional(),
+});
+
+const draftPresentOccupationItemSchema = z.object({
+  id: z.string().optional(),
+  occupation: z.string().optional(),
+  institute: z.string().optional(),
+  from: z.string().optional(),
+  to: z.string().optional(),
+  numberOfMonths: z.string().optional(),
+  lastSalaryDrawn: z.string().optional(),
+});
+
 const draftProgrammeChoiceSchema = z.object({
   programmeId: z.string().optional(),
   programmeTitle: z.string().optional(),
@@ -161,13 +195,21 @@ export const saveApplicationDraftSchema = z.object({
   currentStep: z.number().int().min(1).max(5).optional(),
   personalInfo: draftPersonalInfoSchema.optional(),
   qualifications: z.array(draftAcademicQualificationItemSchema).optional(),
+  professionalQualifications: z.array(draftProfessionalQualificationItemSchema).optional(),
+  presentOccupation: z.array(draftPresentOccupationItemSchema).optional(),
   programmeChoice: draftProgrammeChoiceSchema.optional(),
 });
 
 export const submitApplicationSchema = z.object({
   personalInfo: personalInfoSchema,
   qualifications: z.array(academicQualificationItemSchema).min(1, "At least one qualification is required"),
+  // Items 09 and 10(a) are explicitly marked "if applicable" on the paper
+  // form — not every applicant has professional qualifications or a
+  // present occupation, so these arrays may be empty.
+  professionalQualifications: z.array(professionalQualificationItemSchema),
+  presentOccupation: z.array(presentOccupationItemSchema),
   programmeChoice: programmeChoiceSchema,
+  signatureName: z.string().trim().min(2, "Please type your full name as your signature"),
   declarationConfirmed: z.literal(true, {
     errorMap: () => ({ message: "You must confirm the declaration to submit your application" }),
   }),

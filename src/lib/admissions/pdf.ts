@@ -9,13 +9,13 @@ import { readStoredFile } from "@/lib/admissions/file-security";
 /**
  * Renders the official Nextway College International "Form of Application"
  * layout (bilingual English/Tamil field labels) pre-filled with the
- * applicant's submitted data, rather than a plain summary. Fields the
- * online multi-step form doesn't collect at all — Civil Status, Name with
- * Initials, a separate Contact Address, a Home telephone number, and the
- * Present Occupation history section — are rendered with their labels but
- * left blank, same as an applicant would leave them blank on the paper
- * form. Not fabricated: see CLAUDE.md's rule against inventing
- * institutional content.
+ * applicant's submitted data, rather than a plain summary. The online
+ * multi-step form now collects every numbered item on the paper form
+ * (Name with Initials, Civil Status, Contact Address, Home telephone,
+ * Professional Qualifications, Present Occupation, a typed signature), so
+ * any of those left blank here reflects the applicant leaving that item
+ * blank, same as on paper. Not fabricated: see CLAUDE.md's rule against
+ * inventing institutional content.
  *
  * Tamil label text was transcribed from a photograph of the official paper
  * form, not a verified digital source — worth a native-speaker proofread
@@ -288,8 +288,7 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
     doc.font("BodyBold").fontSize(10).text("(b) Name with initials", PAGE_MARGIN, cursorY, { width: 200 });
     const initialsLabel = tamil("முதலெழுத்துடன் பெயர்");
     if (initialsLabel) doc.font("TamilRegular").fontSize(9).text(initialsLabel, PAGE_MARGIN, doc.y, { width: 200 });
-    // Not collected by the online application — left blank, matching an
-    // applicant leaving it blank on paper (see the module-level comment).
+    doc.font("BodyRegular").fontSize(10).text(personalInfo.nameWithInitials || "", PAGE_MARGIN + 220, cursorY, { width: CONTENT_WIDTH - 220 });
     doc.moveTo(PAGE_MARGIN + 210, cursorY + 10).lineTo(PAGE_MARGIN + CONTENT_WIDTH, cursorY + 10).lineWidth(0.75).stroke();
     cursorY += 30;
 
@@ -299,8 +298,6 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
       .join(", ");
     cursorY = bilingualField(doc, PAGE_MARGIN, cursorY, CONTENT_WIDTH, "02. (a) Permanent Address", tamil("நிரந்தர முகவரி"), permAddressValue);
 
-    // Not collected as a distinct field — addressLine2, if the applicant
-    // gave one, is the closest equivalent; otherwise left blank.
     cursorY = bilingualField(
       doc,
       PAGE_MARGIN,
@@ -308,7 +305,7 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
       CONTENT_WIDTH,
       "(b) Contact Address (if different from permanent address)",
       tamil("தொடர்பு முகவரி"),
-      personalInfo.addressLine2 || "",
+      personalInfo.contactAddress || "",
     );
 
     doc.font("BodyBold").fontSize(10).text("(c) Contact Telephone No.", PAGE_MARGIN, cursorY, { width: CONTENT_WIDTH });
@@ -321,6 +318,7 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
     doc.font("BodyRegular").fontSize(10).text("Home (", PAGE_MARGIN, cursorY, { continued: true });
     if (homeLabel) doc.font("TamilRegular").fontSize(9).text(homeLabel, { continued: true });
     doc.font("BodyRegular").fontSize(10).text(")");
+    doc.font("BodyRegular").fontSize(10).text(personalInfo.homeTelephone || "", PAGE_MARGIN + 90, cursorY, { width: halfWidth - 90 });
     doc.moveTo(PAGE_MARGIN + 85, cursorY + 12).lineTo(PAGE_MARGIN + halfWidth, cursorY + 12).lineWidth(0.75).stroke();
 
     const mobileX = PAGE_MARGIN + halfWidth + 20;
@@ -332,10 +330,9 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
     doc.moveTo(mobileX + 105, cursorY + 12).lineTo(PAGE_MARGIN + CONTENT_WIDTH, cursorY + 12).lineWidth(0.75).stroke();
     cursorY += 26;
 
-    // Not on the paper form (predates online applications having an email
-    // field), but the previous PDF always included it — dropping a field
-    // that's both collected and previously shown would lose data, not
-    // improve fidelity to the paper form.
+    // Not a numbered item on the paper form — carried from the applicant's
+    // account, kept here purely as an internal reference, not asked as a
+    // form question.
     doc.font("BodyBold").fontSize(9).text("Email: ", PAGE_MARGIN, cursorY, { continued: true });
     doc.font("BodyRegular").text(personalInfo.email || "");
     cursorY = doc.y + 6;
@@ -347,8 +344,7 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
     const dobValue = personalInfo.dateOfBirth ? formatDate(personalInfo.dateOfBirth) : "";
     const rowY = cursorY;
     const afterDob = bilingualField(doc, PAGE_MARGIN, rowY, halfWidth, "04. (a) Date of Birth", tamil("பிறந்த திகதி"), dobValue);
-    // Not collected — left blank (see module-level comment).
-    const afterCivil = bilingualField(doc, PAGE_MARGIN + halfWidth + 20, rowY, halfWidth, "05. Civil Status", tamil("விவாக நிலை"), "");
+    const afterCivil = bilingualField(doc, PAGE_MARGIN + halfWidth + 20, rowY, halfWidth, "05. Civil Status", tamil("விவாக நிலை"), personalInfo.civilStatus || "");
     cursorY = Math.max(afterDob, afterCivil);
 
     /* ---------------------------- Page 2: qualifications, occupation, declaration ---------------------------- */
@@ -365,7 +361,6 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
 
     const olQual = qualifications.find((q) => q.qualificationType === "GCE O/L");
     const alQual = qualifications.find((q) => q.qualificationType === "GCE A/L");
-    const otherQuals = qualifications.filter((q) => q.qualificationType !== "GCE O/L" && q.qualificationType !== "GCE A/L");
 
     doc.font("BodyBold").fontSize(11).text("07. Qualifications — (Certified copies of the certificates should be attached)", PAGE_MARGIN, cursorY, { width: CONTENT_WIDTH });
     cursorY = doc.y + 6;
@@ -413,12 +408,14 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
 
     doc.font("BodyBold").fontSize(10).text("09. Professional Qualifications:", PAGE_MARGIN, cursorY, { width: CONTENT_WIDTH });
     cursorY = doc.y + 8;
-    // Only Institution and Qualifications Obtained have a real source field
-    // (yearCompleted doesn't cleanly correspond to any of Date of
-    // Commencement/Effective Date/Duration, so it's not forced into one —
-    // that would misrepresent what "year completed" actually means).
-    const profRows = otherQuals.length
-      ? otherQuals.map((q) => [q.institution, q.qualificationType, "", "", ""])
+    const profRows = app.professionalQualifications?.length
+      ? app.professionalQualifications.map((p) => [
+          p.institution,
+          p.qualificationObtained,
+          p.dateOfCommencement || "",
+          p.effectiveDate || "",
+          p.duration || "",
+        ])
       : [["", "", "", "", ""]];
     cursorY = drawTable(
       doc,
@@ -435,10 +432,18 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
     );
     cursorY += 16;
 
-    // Not collected by the online application — table rendered with
-    // headers only, matching an applicant leaving it blank on paper.
     doc.font("BodyBold").fontSize(10).text("10. (a) Present Occupation", PAGE_MARGIN, cursorY, { width: CONTENT_WIDTH });
     cursorY = doc.y + 8;
+    const occRows = app.presentOccupation?.length
+      ? app.presentOccupation.map((o) => [
+          o.occupation,
+          o.institute,
+          o.from || "",
+          o.to || "",
+          o.numberOfMonths || "",
+          o.lastSalaryDrawn || "",
+        ])
+      : [["", "", "", "", "", ""]];
     cursorY = drawTable(
       doc,
       PAGE_MARGIN,
@@ -451,22 +456,9 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
         { header: "No. of months", width: 90 },
         { header: "Last salary drawn", width: CONTENT_WIDTH - 90 - 110 - 60 - 60 - 90 },
       ],
-      [["", "", "", "", "", ""]],
+      occRows,
     );
     cursorY += 24;
-
-    // Not on the paper form, but the previous PDF always included it and
-    // it's still collected — same reasoning as Email on page 1.
-    const emergencyContact = [
-      personalInfo.emergencyContactName,
-      personalInfo.emergencyContactRelationship ? `(${personalInfo.emergencyContactRelationship})` : null,
-      personalInfo.emergencyContactPhone,
-    ]
-      .filter(Boolean)
-      .join(" ");
-    doc.font("BodyBold").fontSize(9).text("Emergency / Guardian Contact: ", PAGE_MARGIN, cursorY, { continued: true });
-    doc.font("BodyRegular").text(emergencyContact);
-    cursorY = doc.y + 16;
 
     doc
       .font("BodyBold")
@@ -479,6 +471,14 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
       );
     cursorY = doc.y + 40;
 
+    // The applicant's typed signature name stands in for a physical
+    // signature — rendered above the "Signature of Applicant" line rather
+    // than leaving the line blank when one was actually captured at
+    // submission.
+    doc
+      .font("BodyRegular")
+      .fontSize(11)
+      .text(app.signatureName || "", PAGE_MARGIN + CONTENT_WIDTH - 220, cursorY - 14, { width: 220, align: "center" });
     doc.font("BodyRegular").fontSize(10).text("......................................................", PAGE_MARGIN + CONTENT_WIDTH - 220, cursorY, { width: 220, align: "center" });
     doc.text("Signature of Applicant", PAGE_MARGIN + CONTENT_WIDTH - 220, doc.y, { width: 220, align: "center" });
 

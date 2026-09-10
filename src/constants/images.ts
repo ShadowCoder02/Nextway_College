@@ -4,6 +4,7 @@ export const IMAGES = {
   brand: "/images/nextway.png",
   logo: "/brand/logo.png",
   logoIcon: "/brand/logo-icon.png",
+  branchMap: "/images/sri-lanka-branch-map.jpeg",
 } as const;
 
 // Shared blur placeholder for the site's hero-style images (a 1x1 navy SVG)

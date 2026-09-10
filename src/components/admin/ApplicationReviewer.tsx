@@ -399,45 +399,94 @@ export function ApplicationReviewer({ initialApplication }: ApplicationReviewerP
 
           {/* Section 2: Personal Details */}
           <div className="premium-card p-6">
-            <h3 className="font-bold text-navy text-base mb-4 pb-2 border-b border-ice">Personal & Address Details</h3>
+            <h3 className="font-bold text-navy text-base mb-4 pb-2 border-b border-ice">Personal Particulars</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs">
               <div>
-                <span className="text-slate block">Date of Birth:</span>
-                <strong className="text-navy">{app.personalInfo?.dateOfBirth} ({app.personalInfo?.gender})</strong>
+                <span className="text-slate block">01(b) Name with Initials:</span>
+                <strong className="text-navy">{app.personalInfo?.nameWithInitials || "—"}</strong>
               </div>
               <div>
-                <span className="text-slate block">Nationality:</span>
-                <strong className="text-navy">{app.personalInfo?.nationality}</strong>
+                <span className="text-slate block">04(a) Date of Birth:</span>
+                <strong className="text-navy">{app.personalInfo?.dateOfBirth}</strong>
               </div>
               <div>
-                <span className="text-slate block">Residential Address:</span>
+                <span className="text-slate block">05. Civil Status:</span>
+                <strong className="text-navy">{app.personalInfo?.civilStatus || "—"}</strong>
+              </div>
+              <div>
+                <span className="text-slate block">02(a) Permanent Address:</span>
                 <strong className="text-navy">{app.personalInfo?.addressLine1}, {app.personalInfo?.city} ({app.personalInfo?.country})</strong>
               </div>
               <div>
-                <span className="text-slate block">Emergency Contact:</span>
-                <strong className="text-navy">{app.personalInfo?.emergencyContactName}</strong>
+                <span className="text-slate block">02(b) Contact Address:</span>
+                <strong className="text-navy">{app.personalInfo?.contactAddress || "—"}</strong>
               </div>
               <div>
-                <span className="text-slate block">Emergency Phone:</span>
-                <strong className="text-navy">{app.personalInfo?.emergencyContactPhone} ({app.personalInfo?.emergencyContactRelationship})</strong>
+                <span className="text-slate block">02(c) Telephone:</span>
+                <strong className="text-navy">Home {app.personalInfo?.homeTelephone || "—"} · Mobile {app.personalInfo?.phone}</strong>
               </div>
             </div>
           </div>
 
+          {/* Section 2b: Professional Qualifications & Present Occupation */}
+          {(app.professionalQualifications?.length > 0 || app.presentOccupation?.length > 0) && (
+            <div className="premium-card p-6 space-y-4">
+              {app.professionalQualifications?.length > 0 && (
+                <div>
+                  <h3 className="font-bold text-navy text-base mb-2 pb-2 border-b border-ice">09. Professional Qualifications</h3>
+                  <div className="space-y-2 text-xs">
+                    {app.professionalQualifications.map((p) => (
+                      <div key={p.id} className="rounded bg-ice p-3 border border-slate/10">
+                        <strong className="text-navy">{p.institution}</strong> — {p.qualificationObtained}
+                        {(p.dateOfCommencement || p.effectiveDate || p.duration) && (
+                          <div className="text-slate mt-1">
+                            {p.dateOfCommencement && <>Commenced: {p.dateOfCommencement} </>}
+                            {p.effectiveDate && <>· Effective: {p.effectiveDate} </>}
+                            {p.duration && <>· Duration: {p.duration}</>}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {app.presentOccupation?.length > 0 && (
+                <div>
+                  <h3 className="font-bold text-navy text-base mb-2 pb-2 border-b border-ice">10(a). Present Occupation</h3>
+                  <div className="space-y-2 text-xs">
+                    {app.presentOccupation.map((o) => (
+                      <div key={o.id} className="rounded bg-ice p-3 border border-slate/10">
+                        <strong className="text-navy">{o.occupation}</strong> — {o.institute}
+                        {(o.from || o.to || o.numberOfMonths || o.lastSalaryDrawn) && (
+                          <div className="text-slate mt-1">
+                            {o.from && <>From: {o.from} </>}
+                            {o.to && <>· To: {o.to} </>}
+                            {o.numberOfMonths && <>· {o.numberOfMonths} months </>}
+                            {o.lastSalaryDrawn && <>· Last salary: {o.lastSalaryDrawn}</>}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Section 3: Academic Qualifications */}
           <div className="premium-card p-6">
             <h3 className="font-bold text-navy text-base mb-4 pb-2 border-b border-ice">
-              Academic Qualifications ({app.qualifications?.length || 0})
+              07–08. G.C.E. (O/L) &amp; (A/L)
             </h3>
             {app.qualifications?.length > 0 ? (
               <div className="space-y-4">
                 {app.qualifications.map((q, idx) => (
                   <div key={q.id || idx} className="rounded-xl bg-ice p-4 text-xs border border-slate/10 space-y-2">
                     <div className="flex justify-between font-bold text-navy text-sm">
-                      <span>{q.qualificationType}</span>
-                      <span>Completed: {q.yearCompleted}</span>
+                      <span>{q.qualificationType === "GCE O/L" ? "07. G.C.E. (O/L)" : q.qualificationType === "GCE A/L" ? "08. G.C.E. (A/L)" : q.qualificationType}</span>
+                      <span>Year: {q.yearCompleted || "—"}{q.indexOrRegNumber ? ` · Index No: ${q.indexOrRegNumber}` : ""}</span>
                     </div>
-                    <div className="text-slate">Institution: <strong>{q.institution}</strong></div>
+                    {q.institution && <div className="text-slate">Institution: <strong>{q.institution}</strong></div>}
                     {q.subjectsAndGrades?.length > 0 && (
                       <div className="mt-2 flex flex-wrap gap-2 pt-2 border-t border-slate/15">
                         {q.subjectsAndGrades.map((sub, sIdx) => (

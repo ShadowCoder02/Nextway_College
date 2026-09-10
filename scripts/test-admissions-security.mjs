@@ -190,23 +190,29 @@ async function runSecurityAndFunctionalTests() {
       currentStep: 2,
       personalInfo: {
         fullName: "Kavindu Madushanka",
+        nameWithInitials: "K. Madushanka",
         dateOfBirth: "2002-05-15",
-        gender: "Male",
-        nationality: "Sri Lankan",
+        civilStatus: "Single",
         nicOrPassport: "200213501234",
         email: testEmail,
         phone: "+94771234567",
         addressLine1: "123 Peradeniya Road",
         city: "Kandy",
         country: "Sri Lanka",
-        emergencyContactName: "Kamal Madushanka",
-        emergencyContactPhone: "+94779876543",
-        emergencyContactRelationship: "Father",
       },
       qualifications: [
         {
-          id: "qual_1",
-          institution: "Dharmaraja College",
+          id: "ol",
+          qualificationType: "GCE O/L",
+          yearCompleted: "2018",
+          subjectsAndGrades: [
+            { subject: "Mathematics", grade: "A" },
+            { subject: "Science", grade: "A" },
+            { subject: "English", grade: "B" },
+          ],
+        },
+        {
+          id: "al",
           qualificationType: "GCE A/L",
           yearCompleted: "2022",
           subjectsAndGrades: [
@@ -216,6 +222,8 @@ async function runSecurityAndFunctionalTests() {
           ],
         },
       ],
+      professionalQualifications: [],
+      presentOccupation: [],
       programmeChoice: {
         programmeId: "prog_bsc_it",
         programmeTitle: "BSc (Hons) in Information Technology",
@@ -228,30 +236,36 @@ async function runSecurityAndFunctionalTests() {
     });
 
     assert.strictEqual(draftSave.ok, true);
-    assert.strictEqual(draftSave.application.qualifications.length, 1);
+    assert.strictEqual(draftSave.application.qualifications.length, 2);
   });
 
   await asyncTest("Final application submission with server validation", async () => {
     const submitRes = await submitApplication(applicantId, {
       personalInfo: {
         fullName: "Kavindu Madushanka",
+        nameWithInitials: "K. Madushanka",
         dateOfBirth: "2002-05-15",
-        gender: "Male",
-        nationality: "Sri Lankan",
+        civilStatus: "Single",
         nicOrPassport: "200213501234",
         email: testEmail,
         phone: "+94771234567",
         addressLine1: "123 Peradeniya Road",
         city: "Kandy",
         country: "Sri Lanka",
-        emergencyContactName: "Kamal Madushanka",
-        emergencyContactPhone: "+94779876543",
-        emergencyContactRelationship: "Father",
       },
       qualifications: [
         {
-          id: "qual_1",
-          institution: "Dharmaraja College",
+          id: "ol",
+          qualificationType: "GCE O/L",
+          yearCompleted: "2018",
+          subjectsAndGrades: [
+            { subject: "Mathematics", grade: "A" },
+            { subject: "Science", grade: "A" },
+            { subject: "English", grade: "B" },
+          ],
+        },
+        {
+          id: "al",
           qualificationType: "GCE A/L",
           yearCompleted: "2022",
           subjectsAndGrades: [
@@ -261,6 +275,8 @@ async function runSecurityAndFunctionalTests() {
           ],
         },
       ],
+      professionalQualifications: [],
+      presentOccupation: [],
       programmeChoice: {
         programmeId: "prog_bsc_it",
         programmeTitle: "BSc (Hons) in Information Technology",
@@ -270,6 +286,7 @@ async function runSecurityAndFunctionalTests() {
         studyMode: "Hybrid",
         campus: "Kandy (Main Campus)",
       },
+      signatureName: "Kavindu Madushanka",
       declarationConfirmed: true,
     });
 
