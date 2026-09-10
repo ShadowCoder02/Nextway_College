@@ -1,4 +1,6 @@
-import { SITE, BRANCHES } from "@/constants/site";
+import Image from "next/image";
+import { SITE } from "@/constants/site";
+import { IMAGES } from "@/constants/images";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Button } from "@/components/ui/Button";
 
@@ -53,15 +55,14 @@ export function BranchesSection() {
           align="center"
         />
         <div className="glass-panel mx-auto max-w-4xl p-8 text-center">
-          <div className="mb-6 flex flex-wrap justify-center gap-3">
-            {[...BRANCHES, "All island"].map((branch) => (
-              <span
-                key={branch}
-                className="rounded-full border border-navy/10 bg-white/80 px-5 py-2.5 text-sm font-semibold text-navy shadow-sm"
-              >
-                {branch}
-              </span>
-            ))}
+          <div className="relative mx-auto mb-6 h-64 w-48 sm:h-72 sm:w-56">
+            <Image
+              src={IMAGES.branchMap}
+              alt="Map of Sri Lanka marked with Nextway College International branch locations island-wide"
+              fill
+              className="object-contain"
+              sizes="(max-width:640px) 12rem, 14rem"
+            />
           </div>
           <Button href="/branches" variant="secondary">
             Find your nearest branch

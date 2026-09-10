@@ -7,6 +7,8 @@ import type {
   DocumentVerificationStatus,
   InterviewDetails,
   PersonalInformation,
+  PresentOccupationEntry,
+  ProfessionalQualification,
   ProgrammeChoice,
   StudentApplication,
   UploadedDocument,
@@ -331,18 +333,15 @@ export async function getApplicantApplication(
   return getOrCreateApplicantDraft(applicantId, {
     personalInfo: {
       fullName: applicant.fullName,
+      nameWithInitials: "",
       email: applicant.email,
       phone: applicant.phone,
       dateOfBirth: "",
-      gender: "Male",
-      nationality: "Sri Lankan",
+      civilStatus: "",
       nicOrPassport: "",
       addressLine1: "",
       city: "",
       country: "Sri Lanka",
-      emergencyContactName: "",
-      emergencyContactPhone: "",
-      emergencyContactRelationship: "",
     },
   });
 }
@@ -357,6 +356,8 @@ export async function saveApplicationDraft(
     currentStep?: number;
     personalInfo?: Partial<PersonalInformation>;
     qualifications?: DraftQualificationPatch[];
+    professionalQualifications?: Partial<ProfessionalQualification>[];
+    presentOccupation?: Partial<PresentOccupationEntry>[];
     programmeChoice?: Partial<ProgrammeChoice>;
   },
 ): Promise<{ ok: true; application: StudentApplication } | { ok: false; error: string }> {
@@ -375,6 +376,12 @@ export async function saveApplicationDraft(
   }
   if (patch.qualifications) {
     app.qualifications = patch.qualifications as AcademicQualification[];
+  }
+  if (patch.professionalQualifications) {
+    app.professionalQualifications = patch.professionalQualifications as ProfessionalQualification[];
+  }
+  if (patch.presentOccupation) {
+    app.presentOccupation = patch.presentOccupation as PresentOccupationEntry[];
   }
   if (patch.programmeChoice) {
     app.programmeChoice = { ...app.programmeChoice, ...patch.programmeChoice } as ProgrammeChoice;
@@ -466,7 +473,10 @@ export async function submitApplication(
   data: {
     personalInfo: PersonalInformation;
     qualifications: AcademicQualification[];
+    professionalQualifications: ProfessionalQualification[];
+    presentOccupation: PresentOccupationEntry[];
     programmeChoice: ProgrammeChoice;
+    signatureName: string;
     declarationConfirmed: boolean;
   },
 ): Promise<{ ok: true; application: StudentApplication } | { ok: false; error: string }> {
@@ -479,16 +489,28 @@ export async function submitApplication(
   }
 
   // Server-side validation
-  if (!data.personalInfo.fullName || !data.personalInfo.email || !data.personalInfo.phone || !data.personalInfo.nicOrPassport) {
+  if (
+    !data.personalInfo.fullName ||
+    !data.personalInfo.nameWithInitials ||
+    !data.personalInfo.email ||
+    !data.personalInfo.phone ||
+    !data.personalInfo.nicOrPassport ||
+    !data.personalInfo.civilStatus
+  ) {
     return { ok: false, error: "Required personal information fields are missing." };
   }
 
-  if (!data.qualifications || data.qualifications.length === 0) {
-    return { ok: false, error: "Please provide at least one academic qualification." };
+  const olQual = data.qualifications?.find((q) => q.qualificationType === "GCE O/L");
+  if (!olQual || !olQual.yearCompleted?.trim() || olQual.subjectsAndGrades.length === 0) {
+    return { ok: false, error: "Please provide your G.C.E. (O/L) year and at least one subject/grade." };
   }
 
   if (!data.programmeChoice.programmeId || !data.programmeChoice.programmeTitle) {
     return { ok: false, error: "Please select your chosen study programme." };
+  }
+
+  if (!data.signatureName?.trim()) {
+    return { ok: false, error: "Please type your full name as your signature." };
   }
 
   if (!data.declarationConfirmed) {
@@ -497,7 +519,10 @@ export async function submitApplication(
 
   app.personalInfo = data.personalInfo;
   app.qualifications = data.qualifications;
+  app.professionalQualifications = data.professionalQualifications || [];
+  app.presentOccupation = data.presentOccupation || [];
   app.programmeChoice = data.programmeChoice;
+  app.signatureName = data.signatureName.trim();
   app.declarationConfirmed = true;
   app.declarationTimestamp = new Date().toISOString();
   app.status = "SUBMITTED";
