@@ -47,7 +47,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <HybridLearningSection />
+      <HybridLearningSection image="student" />
       <BranchesSection />
       <ApprovalsStrip compact />
 
