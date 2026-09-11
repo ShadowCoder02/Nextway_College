@@ -5,6 +5,8 @@ export const IMAGES = {
   logo: "/brand/logo.png",
   logoIcon: "/brand/logo-icon.png",
   branchMap: "/images/sri-lanka-branch-map.jpeg",
+  hybridCampus: "/images/hybrid-campus.png",
+  onlineStudent: "/images/online-student.png",
 } as const;
 
 // Shared blur placeholder for the site's hero-style images (a 1x1 navy SVG)
