@@ -6,6 +6,9 @@ export interface Approval {
    * never invent these. */
   description: string;
   verifyUrl?: string;
+  /** Renders the logo in a larger box — for marks that read as too small
+   * (relative to the other partner logos) at the strip's default size. */
+  large?: boolean;
 }
 
 // TODO(content): the college must confirm and describe what each
@@ -22,6 +25,6 @@ export const APPROVALS: Approval[] = [
   { name: "UNESCO", logo: "/partners/unesco.png", description: TODO_DESCRIPTION },
   { name: "UGC Recognised", logo: "/partners/ugc.png", description: TODO_DESCRIPTION },
   { name: "International Business Development Forum", logo: "/partners/ibdf.png", description: TODO_DESCRIPTION },
-  { name: "Accreditation Partner", logo: "/partners/app.png", description: TODO_DESCRIPTION },
-  { name: "Future Focus Welfare Team", logo: "/partners/ffwt.png", description: TODO_DESCRIPTION },
+  { name: "Accreditation Partner", logo: "/partners/app.png", description: TODO_DESCRIPTION, large: true },
+  { name: "Future Focus Welfare Team", logo: "/partners/ffwt.png", description: TODO_DESCRIPTION, large: true },
 ] as const;
