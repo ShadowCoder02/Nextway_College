@@ -27,8 +27,12 @@ export function ApprovalsStrip({
                   key={item.name}
                   className="group flex flex-col items-center justify-center gap-3 rounded-2xl bg-white/60 p-4 transition hover:-translate-y-1 hover:bg-white/90"
                 >
-                  <div className="relative h-16 w-full max-w-[140px] opacity-90 transition group-hover:opacity-100">
-                    <Image src={item.logo} alt={item.name} fill className="object-contain" sizes="140px" />
+                  <div
+                    className={`relative w-full opacity-90 transition group-hover:opacity-100 ${
+                      item.large ? "h-20 max-w-[170px]" : "h-16 max-w-[140px]"
+                    }`}
+                  >
+                    <Image src={item.logo} alt={item.name} fill className="object-contain" sizes={item.large ? "170px" : "140px"} />
                   </div>
                 </div>
               ))}
@@ -41,8 +45,8 @@ export function ApprovalsStrip({
                 key={item.name}
                 className="premium-card flex flex-col items-center gap-3 p-6 text-center transition hover:-translate-y-1"
               >
-                <div className="relative h-16 w-full max-w-[140px] opacity-90">
-                  <Image src={item.logo} alt={item.name} fill className="object-contain" sizes="140px" />
+                <div className={`relative w-full opacity-90 ${item.large ? "h-20 max-w-[170px]" : "h-16 max-w-[140px]"}`}>
+                  <Image src={item.logo} alt={item.name} fill className="object-contain" sizes={item.large ? "170px" : "140px"} />
                 </div>
                 <p className="text-sm font-bold text-navy">{item.name}</p>
                 <p className="text-xs text-slate">{item.description}</p>
