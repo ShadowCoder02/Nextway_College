@@ -29,13 +29,25 @@ import { readStoredFile } from "@/lib/admissions/file-security";
  * "BodyBold" fonts registered below instead — real files embedded the same
  * way as the Tamil font, sidestepping pdfkit's internal font loading
  * entirely rather than fighting the bundler further.
+ *
+ * BodyRegular/BodyBold are "Tinos" (Google Fonts' metric-compatible,
+ * Apache-2.0-licensed match for Times New Roman) rather than a sans-serif
+ * face — the paper form this PDF mirrors is a Word document set in Times
+ * New Roman, and matching that serif look was called out explicitly as
+ * part of matching the paper form exactly.
  */
 
 const PAGE_MARGIN = 50;
 const PAGE_WIDTH = 595.28; // A4 pt
 const CONTENT_WIDTH = PAGE_WIDTH - PAGE_MARGIN * 2;
 
-const LOGO_PATH = path.join(process.cwd(), "public", "brand", "logo.png");
+// The icon-only mark, not public/brand/logo.png (that file bakes the
+// "Nextway College International" wordmark into the image itself) — the
+// paper form's letterhead shows the icon alone in a circular badge, with
+// the institution name set as separate type next to it. Using the
+// wordmark image here would both squash it into the circular badge and
+// duplicate the institution name already typeset to its right.
+const LOGO_PATH = path.join(process.cwd(), "public", "brand", "logo-icon.png");
 const TAMIL_REGULAR_PATH = path.join(process.cwd(), "public", "fonts", "NotoSansTamil-Regular.woff");
 // Registered as "BodyRegular"/"BodyBold" rather than using pdfkit's own
 // built-in "Helvetica"/"Helvetica-Bold": pdfkit resolves those through a
@@ -46,8 +58,8 @@ const TAMIL_REGULAR_PATH = path.join(process.cwd(), "public", "fonts", "NotoSans
 // files via registerFont() is the same proven-working mechanism already
 // used for the Tamil font below, and bypasses pdfkit's internal
 // standard-font loading entirely.
-const ROBOTO_REGULAR_PATH = path.join(process.cwd(), "public", "fonts", "Roboto-Regular.woff");
-const ROBOTO_BOLD_PATH = path.join(process.cwd(), "public", "fonts", "Roboto-Bold.woff");
+const TINOS_REGULAR_PATH = path.join(process.cwd(), "public", "fonts", "Tinos-Regular.ttf");
+const TINOS_BOLD_PATH = path.join(process.cwd(), "public", "fonts", "Tinos-Bold.ttf");
 
 async function readFileIfExists(filePath: string): Promise<Buffer | null> {
   try {
@@ -66,37 +78,87 @@ async function loadPhotoAsPngOrJpeg(mimeType: string, buffer: Buffer): Promise<B
   return sharp(buffer).png().toBuffer();
 }
 
+// Column layout for every numbered item on page 1, matching the paper
+// form's indentation: the item number sits flush with the margin, its
+// letter (a)/(b)/(c) in a narrow column after it, and the label — with
+// its Tamil translation and value below — in a wide column after that.
+// Every numbered item shares these columns even when it has no letter
+// (03, 05), so labels still line up vertically with items that do.
+const NUM_COL_W = 34;
+const LETTER_COL_W = 40;
+const LABEL_X = PAGE_MARGIN + NUM_COL_W + LETTER_COL_W;
+const LABEL_WIDTH = CONTENT_WIDTH - NUM_COL_W - LETTER_COL_W;
+
+/** Draws the "NN." / "(a)" columns for a numbered item at the given y —
+ * shared by every item below so their labels start at the same x. */
+function numberAndLetter(doc: PDFKit.PDFDocument, number: string, letter: string | null, y: number) {
+  doc.font("BodyBold").fontSize(10).fillColor("#000");
+  if (number) doc.text(number, PAGE_MARGIN, y, { width: NUM_COL_W });
+  if (letter) doc.text(letter, PAGE_MARGIN + NUM_COL_W, y, { width: LETTER_COL_W });
+}
+
 /** A field with an English label and (if the source form showed one for
- * this field) its Tamil counterpart, rendered as a two-line bilingual
- * label followed by an underline the value sits above. */
+ * this field) its Tamil counterpart stacked below it, followed by an
+ * underline the value sits above. Always drawn at LABEL_X so it lines up
+ * with whatever number/letter numberAndLetter() drew at the same y. */
 function bilingualField(
   doc: PDFKit.PDFDocument,
-  x: number,
   y: number,
-  width: number,
   englishLabel: string,
   tamilLabel: string | null,
   value: string,
 ): number {
-  doc.font("BodyBold").fontSize(9.5).fillColor("#000").text(englishLabel, x, y, { width });
+  const x = LABEL_X;
+  const width = LABEL_WIDTH;
+  doc.font("BodyBold").fontSize(10).fillColor("#000").text(`${englishLabel}  :`, x, y, { width });
   let cursorY = doc.y;
   if (tamilLabel) {
     doc.font("TamilRegular").fontSize(9).text(tamilLabel, x, cursorY, { width });
     cursorY = doc.y;
   }
-  cursorY += 3;
+  cursorY += 8;
   doc
     .font("BodyRegular")
-    .fontSize(10)
+    .fontSize(10.5)
     .text(value || "", x + 4, cursorY, { width: width - 8 });
-  const valueY = Math.max(cursorY + 14, doc.y);
+  const valueY = Math.max(cursorY + 13, doc.y);
   doc
-    .moveTo(x, valueY + 2)
-    .lineTo(x + width, valueY + 2)
+    .moveTo(x, valueY + 4)
+    .lineTo(PAGE_MARGIN + CONTENT_WIDTH, valueY + 4)
     .lineWidth(0.75)
     .strokeColor("#000")
     .stroke();
-  return valueY + 10;
+  return valueY + 14;
+}
+
+/** A single-line numbered item whose English label and Tamil translation
+ * sit on the same line (the paper form's pattern for 04 and 05, unlike
+ * the stacked label used elsewhere), boxed above and below by a thick
+ * rule so it reads as one row of the 03/04/05 "table". */
+function inlineBoxedField(
+  doc: PDFKit.PDFDocument,
+  y: number,
+  number: string,
+  letter: string | null,
+  englishLabel: string,
+  tamilLabel: string | null,
+  value: string,
+): number {
+  numberAndLetter(doc, number, letter, y);
+  doc.font("BodyBold").fontSize(10).fillColor("#000").text(englishLabel, LABEL_X, y, { continued: true });
+  if (tamilLabel) {
+    doc.font("TamilRegular").fontSize(9).text(` ${tamilLabel}`, { continued: true });
+  }
+  doc.font("BodyBold").fontSize(10).text("    :   ", { continued: true });
+  doc.font("BodyRegular").fontSize(10.5).text(value || "", { continued: false });
+  const rowBottom = doc.y + 10;
+  doc
+    .moveTo(PAGE_MARGIN, rowBottom)
+    .lineTo(PAGE_MARGIN + CONTENT_WIDTH, rowBottom)
+    .lineWidth(1.5)
+    .strokeColor("#000")
+    .stroke();
+  return rowBottom + 12;
 }
 
 type TableColumn = { header: string; width: number };
@@ -154,11 +216,11 @@ async function loadPhotoBuffer(app: StudentApplication): Promise<Buffer | null> 
 }
 
 export async function generateApplicationPdf(app: StudentApplication): Promise<Buffer> {
-  const [logoBuffer, tamilRegular, robotoRegular, robotoBold, photoBuffer] = await Promise.all([
+  const [logoBuffer, tamilRegular, tinosRegular, tinosBold, photoBuffer] = await Promise.all([
     readFileIfExists(LOGO_PATH),
     readFileIfExists(TAMIL_REGULAR_PATH),
-    readFileIfExists(ROBOTO_REGULAR_PATH),
-    readFileIfExists(ROBOTO_BOLD_PATH),
+    readFileIfExists(TINOS_REGULAR_PATH),
+    readFileIfExists(TINOS_BOLD_PATH),
     loadPhotoBuffer(app),
   ]);
 
@@ -187,11 +249,11 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
     // BodyBold are the document's primary font for every English label
     // and value, so a missing file here should throw loudly rather than
     // silently fall back to pdfkit's broken-in-production "Helvetica".
-    if (!robotoRegular || !robotoBold) {
-      throw new Error("Missing public/fonts/Roboto-{Regular,Bold}.woff — cannot generate the application PDF.");
+    if (!tinosRegular || !tinosBold) {
+      throw new Error("Missing public/fonts/Tinos-{Regular,Bold}.ttf — cannot generate the application PDF.");
     }
-    doc.registerFont("BodyRegular", robotoRegular);
-    doc.registerFont("BodyBold", robotoBold);
+    doc.registerFont("BodyRegular", tinosRegular);
+    doc.registerFont("BodyBold", tinosBold);
 
     if (tamilRegular) doc.registerFont("TamilRegular", tamilRegular);
     // Tamil is the one genuinely optional font here (unlike BodyRegular/
@@ -205,23 +267,41 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
     /* ---------------------------- Page 1: header + particulars ---------------------------- */
 
     const headerTop = PAGE_MARGIN;
+    // Circular badge, matching the paper letterhead: the icon clipped into
+    // a circle with a thin ring around it, not a plain square logo image.
+    const logoDiameter = 84;
+    const logoCenterX = PAGE_MARGIN + logoDiameter / 2;
+    const logoCenterY = headerTop + logoDiameter / 2;
     if (logoBuffer) {
-      doc.image(logoBuffer, PAGE_MARGIN, headerTop, { fit: [70, 70] });
+      doc.save();
+      doc.circle(logoCenterX, logoCenterY, logoDiameter / 2).clip();
+      doc.image(logoBuffer, PAGE_MARGIN, headerTop, { fit: [logoDiameter, logoDiameter], align: "center", valign: "center" });
+      doc.restore();
+      doc.lineWidth(1.25).strokeColor("#000").circle(logoCenterX, logoCenterY, logoDiameter / 2).stroke();
     }
-    doc
-      .font("BodyBold")
-      .fontSize(15)
-      .text("NEXTWAY COLLEGE INTERNATIONAL (Pvt) Ltd", PAGE_MARGIN + 80, headerTop, {
-        width: CONTENT_WIDTH - 80 - 130,
-        align: "center",
-      });
-    doc.font("BodyBold").fontSize(11).text("SRI LANKA", { width: CONTENT_WIDTH - 80 - 130, align: "center" });
-    doc.moveDown(0.3);
-    doc.font("BodyBold").fontSize(13).text("FORM OF APPLICATION", { width: CONTENT_WIDTH - 80 - 130, align: "center" });
-
     const photoBoxX = PAGE_MARGIN + CONTENT_WIDTH - 110;
     const photoBoxW = 110;
     const photoBoxH = 130;
+
+    const titleX = PAGE_MARGIN + logoDiameter + 8;
+    const titleWidth = CONTENT_WIDTH - (logoDiameter + 8) - (photoBoxW + 10);
+
+    // The institution name must stay on one line, exactly as on the paper
+    // letterhead — shrink from the usual heading size rather than letting
+    // pdfkit wrap it onto a second line when it doesn't quite fit.
+    const institutionName = "NEXTWAY COLLEGE INTERNATIONAL (Pvt) Ltd";
+    let titleFontSize = 15;
+    doc.font("BodyBold");
+    while (titleFontSize > 10 && doc.fontSize(titleFontSize).widthOfString(institutionName) > titleWidth) {
+      titleFontSize -= 0.5;
+    }
+    doc.font("BodyBold").fontSize(titleFontSize).text(institutionName, titleX, headerTop, {
+      width: titleWidth,
+      align: "center",
+    });
+    doc.font("BodyBold").fontSize(11).text("SRI LANKA", titleX, doc.y + 4, { width: titleWidth, align: "center" });
+    doc.font("BodyBold").fontSize(13).text("FORM OF APPLICATION", titleX, doc.y + 6, { width: titleWidth, align: "center" });
+
     doc.lineWidth(1).strokeColor("#000").rect(photoBoxX, headerTop, photoBoxW, photoBoxH).stroke();
     if (photoBuffer) {
       try {
@@ -267,85 +347,131 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
     const courseLabel = tamil("தெரிவு செய்யும் பாடநெறி");
     if (courseLabel) doc.font("TamilRegular").fontSize(9).text(courseLabel, PAGE_MARGIN + 6, doc.y, { width: 220 });
     doc.font("BodyRegular").fontSize(11).text(courseValue, PAGE_MARGIN + 230, cursorY + 16, { width: courseValueWidth });
-    cursorY += courseBoxHeight + 14;
+    cursorY += courseBoxHeight + 30;
 
     const halfWidth = (CONTENT_WIDTH - 20) / 2;
 
-    // 01(a) Name in Full / (b) Name with initials
-    doc.font("BodyBold").fontSize(10).text("01. (a) Name in Full: (Mr/Mrs/Miss — underline the Surname)", PAGE_MARGIN, cursorY, { width: CONTENT_WIDTH });
+    // 01(a) Name in Full — number/letter in their own columns, label (with
+    // its Tamil translation below) in the wide column, then two ruled
+    // lines the name sits above (the paper form leaves two blank lines
+    // here for a long name to be written across).
+    numberAndLetter(doc, "01.", "(a)", cursorY);
+    doc
+      .font("BodyBold")
+      .fontSize(10)
+      .text("Name in Full: (Mr/Mrs/Miss — underline the Surname)", LABEL_X, cursorY, { width: LABEL_WIDTH });
     cursorY = doc.y;
     const nameLabel = tamil("முதல் பெயர்");
     if (nameLabel) {
-      doc.font("TamilRegular").fontSize(9).text(nameLabel, PAGE_MARGIN + 20, cursorY, { width: CONTENT_WIDTH - 20 });
+      doc.font("TamilRegular").fontSize(9).text(nameLabel, LABEL_X, cursorY, { width: LABEL_WIDTH });
       cursorY = doc.y;
     }
+    cursorY += 8;
     const fullNameValue = [personalInfo.title, personalInfo.fullName].filter(Boolean).join(" ");
-    doc.font("BodyRegular").fontSize(11).text(fullNameValue, PAGE_MARGIN + 20, cursorY + 4, { width: CONTENT_WIDTH - 20 });
-    cursorY = doc.y + 4;
-    doc.moveTo(PAGE_MARGIN, cursorY).lineTo(PAGE_MARGIN + CONTENT_WIDTH, cursorY).lineWidth(0.75).stroke();
-    cursorY += 12;
+    doc.font("BodyRegular").fontSize(11).text(fullNameValue, LABEL_X + 4, cursorY, { width: LABEL_WIDTH - 8 });
+    const nameLine1Y = doc.y + 4;
+    doc.moveTo(LABEL_X, nameLine1Y).lineTo(PAGE_MARGIN + CONTENT_WIDTH, nameLine1Y).lineWidth(0.75).stroke();
+    cursorY = nameLine1Y + 22;
+    doc.moveTo(LABEL_X, cursorY).lineTo(PAGE_MARGIN + CONTENT_WIDTH, cursorY).lineWidth(0.75).stroke();
+    cursorY += 16;
 
-    doc.font("BodyBold").fontSize(10).text("(b) Name with initials", PAGE_MARGIN, cursorY, { width: 200 });
+    // (b) Name with initials — label and value share one line (the value
+    // sits on the same ruled line as the label, not below it), Tamil below.
+    const bLabelWidth = 150;
+    numberAndLetter(doc, "", "(b)", cursorY);
+    doc.font("BodyBold").fontSize(10).text("Name with initials", LABEL_X, cursorY, { width: bLabelWidth });
+    const bLabelBottom = doc.y;
+    doc.font("BodyBold").fontSize(10).text(":", LABEL_X + bLabelWidth, cursorY, { continued: true });
+    doc.font("BodyRegular").fontSize(10).text(` ${personalInfo.nameWithInitials || ""}`, { continued: false });
+    doc
+      .moveTo(LABEL_X + bLabelWidth + 8, cursorY + 12)
+      .lineTo(PAGE_MARGIN + CONTENT_WIDTH, cursorY + 12)
+      .lineWidth(0.75)
+      .stroke();
+    cursorY = bLabelBottom;
     const initialsLabel = tamil("முதலெழுத்துடன் பெயர்");
-    if (initialsLabel) doc.font("TamilRegular").fontSize(9).text(initialsLabel, PAGE_MARGIN, doc.y, { width: 200 });
-    doc.font("BodyRegular").fontSize(10).text(personalInfo.nameWithInitials || "", PAGE_MARGIN + 220, cursorY, { width: CONTENT_WIDTH - 220 });
-    doc.moveTo(PAGE_MARGIN + 210, cursorY + 10).lineTo(PAGE_MARGIN + CONTENT_WIDTH, cursorY + 10).lineWidth(0.75).stroke();
-    cursorY += 30;
+    if (initialsLabel) {
+      doc.font("TamilRegular").fontSize(9).text(initialsLabel, LABEL_X, cursorY, { width: bLabelWidth });
+      cursorY = doc.y;
+    }
+    cursorY += 14;
+
+    // Thick rule closes the free-form 01/02 block before the boxed
+    // 03/04/05 rows start, matching the paper form's section break.
+    doc.moveTo(PAGE_MARGIN, cursorY).lineTo(PAGE_MARGIN + CONTENT_WIDTH, cursorY).lineWidth(1.5).strokeColor("#000").stroke();
+    cursorY += 14;
 
     // 02(a) Permanent Address / (b) Contact Address / (c) Telephone
+    numberAndLetter(doc, "02.", "(a)", cursorY);
     const permAddressValue = [personalInfo.addressLine1, personalInfo.city, personalInfo.postalCode, personalInfo.country]
       .filter(Boolean)
       .join(", ");
-    cursorY = bilingualField(doc, PAGE_MARGIN, cursorY, CONTENT_WIDTH, "02. (a) Permanent Address", tamil("நிரந்தர முகவரி"), permAddressValue);
+    cursorY = bilingualField(doc, cursorY, "Permanent Address", tamil("நிரந்தர முகவரி"), permAddressValue);
 
+    numberAndLetter(doc, "", "(b)", cursorY);
     cursorY = bilingualField(
       doc,
-      PAGE_MARGIN,
       cursorY,
-      CONTENT_WIDTH,
-      "(b) Contact Address (if different from permanent address)",
+      "Contact Address (if different from permanent address)",
       tamil("தொடர்பு முகவரி"),
       personalInfo.contactAddress || "",
     );
 
-    doc.font("BodyBold").fontSize(10).text("(c) Contact Telephone No.", PAGE_MARGIN, cursorY, { width: CONTENT_WIDTH });
-    cursorY = doc.y + 4;
+    numberAndLetter(doc, "", "(c)", cursorY);
+    doc.font("BodyBold").fontSize(10).text("Contact Telephone No.", LABEL_X, cursorY, { width: LABEL_WIDTH });
+    cursorY = doc.y + 6;
     // Mixed English/Tamil on one line needs separate font-switched
     // `continued` segments — a Tamil-subset font has no Latin parenthesis
     // glyphs, so wrapping the whole "(label)" string in one .text() call
     // under the Tamil font renders the parens as tofu boxes.
     const homeLabel = tamil("வீடு");
-    doc.font("BodyRegular").fontSize(10).text("Home (", PAGE_MARGIN, cursorY, { continued: true });
+    doc.font("BodyRegular").fontSize(10).text("Home (", LABEL_X, cursorY, { continued: true });
     if (homeLabel) doc.font("TamilRegular").fontSize(9).text(homeLabel, { continued: true });
-    doc.font("BodyRegular").fontSize(10).text(")");
-    doc.font("BodyRegular").fontSize(10).text(personalInfo.homeTelephone || "", PAGE_MARGIN + 90, cursorY, { width: halfWidth - 90 });
-    doc.moveTo(PAGE_MARGIN + 85, cursorY + 12).lineTo(PAGE_MARGIN + halfWidth, cursorY + 12).lineWidth(0.75).stroke();
+    doc.font("BodyRegular").fontSize(10).text(")", { continued: true });
+    doc.font("BodyRegular").fontSize(10).text(` ${personalInfo.homeTelephone || ""}`, { continued: false });
+    doc
+      .moveTo(LABEL_X + 95, cursorY + 12)
+      .lineTo(LABEL_X + halfWidth - 40, cursorY + 12)
+      .lineWidth(0.75)
+      .stroke();
 
-    const mobileX = PAGE_MARGIN + halfWidth + 20;
+    const mobileX = LABEL_X + halfWidth - 30;
     const mobileLabel = tamil("கையடக்கம்");
     doc.font("BodyRegular").fontSize(10).text("Mobile (", mobileX, cursorY, { continued: true });
     if (mobileLabel) doc.font("TamilRegular").fontSize(9).text(mobileLabel, { continued: true });
-    doc.font("BodyRegular").fontSize(10).text(")");
-    doc.font("BodyRegular").fontSize(10).text(personalInfo.phone || "", mobileX + 105, cursorY, { width: PAGE_MARGIN + CONTENT_WIDTH - (mobileX + 105) });
-    doc.moveTo(mobileX + 105, cursorY + 12).lineTo(PAGE_MARGIN + CONTENT_WIDTH, cursorY + 12).lineWidth(0.75).stroke();
+    doc.font("BodyRegular").fontSize(10).text(")", { continued: true });
+    doc.font("BodyRegular").fontSize(10).text(` ${personalInfo.phone || ""}`, { continued: false });
+    doc
+      .moveTo(mobileX + 105, cursorY + 12)
+      .lineTo(PAGE_MARGIN + CONTENT_WIDTH, cursorY + 12)
+      .lineWidth(0.75)
+      .stroke();
     cursorY += 26;
 
     // Not a numbered item on the paper form — carried from the applicant's
     // account, kept here purely as an internal reference, not asked as a
     // form question.
-    doc.font("BodyBold").fontSize(9).text("Email: ", PAGE_MARGIN, cursorY, { continued: true });
+    doc.font("BodyBold").fontSize(9).text("Email: ", LABEL_X, cursorY, { continued: true });
     doc.font("BodyRegular").text(personalInfo.email || "");
-    cursorY = doc.y + 6;
+    cursorY = doc.y + 10;
 
-    // 03. NIC
-    cursorY = bilingualField(doc, PAGE_MARGIN, cursorY, CONTENT_WIDTH, "03. National Identity Card No.", tamil("தேசிய அடையாள அட்டை இலக்கம்"), personalInfo.nicOrPassport);
+    // Thick rule opens the boxed 03/04/05 "table" — each of these three
+    // items is its own full-width row framed above and below by a rule,
+    // unlike the free-form 01/02 block above.
+    doc.moveTo(PAGE_MARGIN, cursorY).lineTo(PAGE_MARGIN + CONTENT_WIDTH, cursorY).lineWidth(1.5).strokeColor("#000").stroke();
+    cursorY += 12;
 
-    // 04(a) DOB / 05. Civil Status side by side
+    // 03. National Identity Card No. — its own boxed row, no letter.
+    numberAndLetter(doc, "03.", null, cursorY);
+    cursorY = bilingualField(doc, cursorY, "National Identity Card No.", tamil("தேசிய அடையாள அட்டை இலக்கம்"), personalInfo.nicOrPassport);
+    doc.moveTo(PAGE_MARGIN, cursorY).lineTo(PAGE_MARGIN + CONTENT_WIDTH, cursorY).lineWidth(1.5).strokeColor("#000").stroke();
+    cursorY += 12;
+
+    // 04(a) Date of Birth / 05. Civil Status — each its own full-width
+    // boxed row (stacked, not side by side), label and Tamil on one line.
     const dobValue = personalInfo.dateOfBirth ? formatDate(personalInfo.dateOfBirth) : "";
-    const rowY = cursorY;
-    const afterDob = bilingualField(doc, PAGE_MARGIN, rowY, halfWidth, "04. (a) Date of Birth", tamil("பிறந்த திகதி"), dobValue);
-    const afterCivil = bilingualField(doc, PAGE_MARGIN + halfWidth + 20, rowY, halfWidth, "05. Civil Status", tamil("விவாக நிலை"), personalInfo.civilStatus || "");
-    cursorY = Math.max(afterDob, afterCivil);
+    cursorY = inlineBoxedField(doc, cursorY, "04.", "(a)", "Date of Birth", tamil("பிறந்த திகதி"), dobValue);
+    cursorY = inlineBoxedField(doc, cursorY, "05.", null, "Civil Status", tamil("விவாக நிலை"), personalInfo.civilStatus || "");
 
     /* ---------------------------- Page 2: qualifications, occupation, declaration ---------------------------- */
     // Known limitation, not fixed here: page 1's layout is hand-positioned
@@ -372,7 +498,7 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
       });
     cursorY = doc.y + 8;
     const olRows = (olQual?.subjectsAndGrades || []).map((s) => [s.subject, s.grade]);
-    while (olRows.length < 6) olRows.push(["", ""]);
+    while (olRows.length < 9) olRows.push(["", ""]);
     cursorY = drawTable(
       doc,
       PAGE_MARGIN,
@@ -393,7 +519,7 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
       });
     cursorY = doc.y + 8;
     const alRows = (alQual?.subjectsAndGrades || []).map((s) => [s.subject, s.grade]);
-    while (alRows.length < 4) alRows.push(["", ""]);
+    while (alRows.length < 3) alRows.push(["", ""]);
     cursorY = drawTable(
       doc,
       PAGE_MARGIN,
@@ -480,12 +606,20 @@ export async function generateApplicationPdf(app: StudentApplication): Promise<B
       .fontSize(11)
       .text(app.signatureName || "", PAGE_MARGIN + CONTENT_WIDTH - 220, cursorY - 14, { width: 220, align: "center" });
     doc.font("BodyRegular").fontSize(10).text("......................................................", PAGE_MARGIN + CONTENT_WIDTH - 220, cursorY, { width: 220, align: "center" });
-    doc.text("Signature of Applicant", PAGE_MARGIN + CONTENT_WIDTH - 220, doc.y, { width: 220, align: "center" });
+    doc.font("BodyBold").fontSize(10).text("Signature of Applicant", PAGE_MARGIN + CONTENT_WIDTH - 220, doc.y, { width: 220, align: "center" });
+    const signatureLabel = tamil("கையொப்பம்");
+    if (signatureLabel) {
+      doc.font("TamilRegular").fontSize(9).text(signatureLabel, PAGE_MARGIN + CONTENT_WIDTH - 220, doc.y, { width: 220, align: "center" });
+    }
 
-    doc
-      .font("BodyRegular")
-      .fontSize(10)
-      .text(`Date: ${app.submittedAt ? formatDate(app.submittedAt) : ""}`, PAGE_MARGIN, cursorY + 4, { width: 220 });
+    const dateLabel = tamil("திகதி");
+    doc.font("BodyBold").fontSize(10).text("Date", PAGE_MARGIN, cursorY + 4, { continued: !!dateLabel });
+    if (dateLabel) {
+      doc.font("BodyBold").fontSize(10).text(" / ", { continued: true });
+      doc.font("TamilRegular").fontSize(9).text(dateLabel, { continued: true });
+    }
+    doc.font("BodyBold").fontSize(10).text("  :  ", { continued: true });
+    doc.font("BodyRegular").fontSize(10).text(app.submittedAt ? formatDate(app.submittedAt) : "", { continued: false });
 
     doc.end();
   });

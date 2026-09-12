@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getApplicantSession } from "@/lib/admissions/session";
-import { getApplicantApplication } from "@/services/admissions";
+import { getApplicantApplications } from "@/services/admissions";
 import { readStoredFile } from "@/lib/admissions/file-security";
 
 type Props = { params: Promise<{ id: string }> };
@@ -12,16 +12,19 @@ export async function GET(_request: Request, { params }: Props) {
   }
 
   const { id: docId } = await params;
-  const app = await getApplicantApplication(session.applicantId);
-  if (!app) {
-    return new NextResponse("Application not found", { status: 404 });
-  }
+  // Search across every application this applicant has ever filed, not just
+  // their current one, so documents on a past (already-decided) application
+  // stay viewable from its entry in the portal's application history.
+  const apps = await getApplicantApplications(session.applicantId);
+  const match = apps
+    .map((candidate) => ({ app: candidate, doc: candidate.documents.find((d) => d.id === docId) }))
+    .find((entry) => entry.doc);
 
-  const doc = app.documents.find((d) => d.id === docId);
-  if (!doc) {
+  if (!match?.doc) {
     // IDOR protection: Document does not exist or does not belong to this applicant
     return new NextResponse("Document not found", { status: 404 });
   }
+  const { app, doc } = match;
 
   const buffer = await readStoredFile(doc.filePath, app.id);
   if (!buffer) {

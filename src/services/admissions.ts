@@ -324,6 +324,13 @@ export async function resetPasswordWithToken(
 /*                         Applicant Application Services                      */
 /* -------------------------------------------------------------------------- */
 
+export async function getApplicantApplications(applicantId: string): Promise<StudentApplication[]> {
+  const apps = await getStoredApplications();
+  return apps
+    .filter((a) => a.applicantId === applicantId)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
 export async function getApplicantApplication(
   applicantId: string,
 ): Promise<StudentApplication | null> {

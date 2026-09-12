@@ -112,8 +112,18 @@ export async function getOrCreateApplicantDraft(
   // Supabase query round trip now that this store is backed by Supabase
   // rather than a near-free local fs read.
   const data = await readAdmissionsData();
-  const draft = data.applications.find((a) => a.applicantId === applicantId && a.status === "DRAFT");
+  const applicantApps = data.applications.filter((a) => a.applicantId === applicantId);
+
+  const draft = applicantApps.find((a) => a.status === "DRAFT");
   if (draft) return draft;
+
+  // The applicant already has an application on file (submitted, under
+  // review, approved, etc.) — return the most recent one instead of
+  // silently starting a new blank draft, which would bury their real
+  // status behind an empty form on their next portal visit.
+  if (applicantApps.length > 0) {
+    return applicantApps.reduce((latest, a) => (a.createdAt > latest.createdAt ? a : latest));
+  }
 
   const count = data.applications.length + 1;
   const appNumber = generateApplicationNumber(count);
