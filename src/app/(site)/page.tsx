@@ -9,6 +9,9 @@ import { FallbackImage } from "@/components/ui/FallbackImage";
 import { ProgrammeCard } from "@/components/ui/ProgrammeCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { StatStrip } from "@/components/ui/StatStrip";
+import { HeroBackdrop, HeroContent } from "@/components/motion/HeroParallax";
+import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { TestimonialCarousel } from "@/components/motion/TestimonialCarousel";
 import { IMAGES, HERO_BLUR_PLACEHOLDER } from "@/constants/images";
 import { SITE } from "@/constants/site";
 import {
@@ -36,7 +39,7 @@ export default async function HomePage() {
       {/* Hero */}
       <section className="relative min-h-[88vh] overflow-hidden hero-gradient text-white">
         <div className="mesh-overlay absolute inset-0" />
-        <div className="absolute inset-0 opacity-20">
+        <HeroBackdrop className="absolute inset-x-0 -top-[30%] bottom-0 opacity-20">
           <Image
             src={IMAGES.hero}
             alt=""
@@ -48,10 +51,11 @@ export default async function HomePage() {
             placeholder="blur"
             blurDataURL={HERO_BLUR_PLACEHOLDER}
           />
-        </div>
+        </HeroBackdrop>
         <div className="absolute inset-0 bg-linear-to-r from-navy/85 via-navy/72 to-navy/55" />
         <div className="container-nwc relative flex min-h-[88vh] flex-col justify-center py-24 lg:py-32">
-          <div className="max-w-3xl fade-up">
+          <HeroContent className="max-w-3xl">
+          <div className="fade-up">
             <span className="eyebrow mb-5 block text-gold">{SITE.location}</span>
             <h1 className="text-display mb-6 text-white">{SITE.tagline}</h1>
             <p className="text-lead mb-10 max-w-2xl text-white/88">
@@ -66,6 +70,7 @@ export default async function HomePage() {
               </Button>
             </div>
           </div>
+          </HeroContent>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-linear-to-t from-white to-transparent" />
       </section>
@@ -87,11 +92,13 @@ export default async function HomePage() {
             title="Programmes built for distinguished careers"
             description="Degree, law, geography, political science, education, English, Tamil and professional training — delivered through our hybrid model."
           />
-          <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+          <RevealGroup className="grid gap-8 md:grid-cols-2 xl:grid-cols-3" stagger={0.08}>
             {featured.slice(0, 3).map((p) => (
-              <ProgrammeCard key={p.id} programme={p} featured />
+              <RevealItem key={p.id} className="h-full">
+                <ProgrammeCard programme={p} featured />
+              </RevealItem>
             ))}
-          </div>
+          </RevealGroup>
           <div className="mt-12 text-center">
             <Button href="/programmes" variant="secondary">
               View All Programmes
@@ -176,17 +183,19 @@ export default async function HomePage() {
             title="From enquiry to opportunity"
             align="center"
           />
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+          <RevealGroup className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5" stagger={0.08}>
             {studentJourney.map((step) => (
-              <div key={step.step} className="premium-card p-6 text-center">
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-navy text-lg font-bold text-gold">
-                  {step.step}
+              <RevealItem key={step.step} className="h-full">
+                <div className="premium-card h-full p-6 text-center">
+                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-navy text-lg font-bold text-gold">
+                    {step.step}
+                  </div>
+                  <h3 className="mb-2 text-lg font-bold">{step.title}</h3>
+                  <p className="text-sm text-slate">{step.text}</p>
                 </div>
-                <h3 className="mb-2 text-lg font-bold">{step.title}</h3>
-                <p className="text-sm text-slate">{step.text}</p>
-              </div>
+              </RevealItem>
             ))}
-          </div>
+          </RevealGroup>
         </div>
       </section>
 
@@ -270,17 +279,16 @@ export default async function HomePage() {
       <section className="section-padding bg-pearl">
         <div className="container-nwc">
           <SectionHeader eyebrow="Student Voices" title="What learners say" align="center" />
-          <div className="grid gap-6 md:grid-cols-3">
-            {testimonials.map((t) => (
-              <blockquote key={t.id} className="premium-card quote-mark p-7">
-                <p className="mb-5 text-charcoal leading-relaxed">{t.quote}</p>
-                <footer>
-                  <cite className="not-italic font-bold text-navy">{t.studentName}</cite>
-                  <p className="text-sm text-slate">{t.programme}</p>
-                </footer>
-              </blockquote>
-            ))}
-          </div>
+          <Reveal>
+            <TestimonialCarousel
+              testimonials={testimonials.map(({ id, quote, studentName, programme }) => ({
+                id,
+                quote,
+                studentName,
+                programme,
+              }))}
+            />
+          </Reveal>
         </div>
       </section>
 

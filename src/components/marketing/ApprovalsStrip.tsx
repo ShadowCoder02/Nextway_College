@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { APPROVALS } from "@/constants/approvals";
+import { APPROVALS, type Approval } from "@/constants/approvals";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 
 type ApprovalsStripProps = {
@@ -7,6 +7,28 @@ type ApprovalsStripProps = {
   description?: string;
   compact?: boolean;
 };
+
+function ApprovalCard({ item }: { item: Approval }) {
+  return (
+    <div className="premium-card flex h-full flex-col items-center gap-3 p-6 text-center">
+      <div className={`relative w-full opacity-90 ${item.large ? "h-20 max-w-[170px]" : "h-16 max-w-[140px]"}`}>
+        <Image src={item.logo} alt={item.name} fill className="object-contain" sizes={item.large ? "170px" : "140px"} />
+      </div>
+      <p className="text-sm font-bold text-navy">{item.name}</p>
+      {item.description && <p className="text-xs text-slate">{item.description}</p>}
+      {item.verifyUrl && (
+        <a
+          href={item.verifyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs font-bold text-brand-red underline underline-offset-2 hover:text-brand-red/80"
+        >
+          Verify →
+        </a>
+      )}
+    </div>
+  );
+}
 
 export function ApprovalsStrip({
   title = "Accreditations & Affiliations",
@@ -39,29 +61,26 @@ export function ApprovalsStrip({
             </div>
           </div>
         ) : (
-          <div className="mx-auto grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {APPROVALS.map((item) => (
-              <div
-                key={item.name}
-                className="premium-card flex flex-col items-center gap-3 p-6 text-center transition hover:-translate-y-1"
-              >
-                <div className={`relative w-full opacity-90 ${item.large ? "h-20 max-w-[170px]" : "h-16 max-w-[140px]"}`}>
-                  <Image src={item.logo} alt={item.name} fill className="object-contain" sizes={item.large ? "170px" : "140px"} />
-                </div>
-                <p className="text-sm font-bold text-navy">{item.name}</p>
-                {item.description && <p className="text-xs text-slate">{item.description}</p>}
-                {item.verifyUrl && (
-                  <a
-                    href={item.verifyUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-bold text-brand-red underline underline-offset-2 hover:text-brand-red/80"
-                  >
-                    Verify →
-                  </a>
-                )}
-              </div>
-            ))}
+          <div className="marquee mx-auto max-w-6xl py-4">
+            <div className="marquee-track">
+              <ul className="flex shrink-0">
+                {APPROVALS.map((item) => (
+                  <li key={item.name} className="w-56 shrink-0 pr-5">
+                    <ApprovalCard item={item} />
+                  </li>
+                ))}
+              </ul>
+              {/* Duplicate copy makes the -50% loop seamless; hidden from
+                  assistive tech and made inert so any verify links inside it
+                  can't be tabbed to twice. */}
+              <ul className="marquee-dup flex shrink-0" aria-hidden="true" inert>
+                {APPROVALS.map((item) => (
+                  <li key={item.name} className="w-56 shrink-0 pr-5">
+                    <ApprovalCard item={item} />
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         )}
       </div>

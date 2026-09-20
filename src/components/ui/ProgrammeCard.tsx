@@ -18,7 +18,7 @@ export function ProgrammeCard({ programme, featured }: ProgrammeCardProps) {
           fallbackSrc={IMAGES.campus}
           alt=""
           fill
-          className="object-cover transition duration-700 group-hover:scale-105"
+          className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 400px"
           placeholder="blur"
           blurDataURL={CARD_BLUR_PLACEHOLDER}

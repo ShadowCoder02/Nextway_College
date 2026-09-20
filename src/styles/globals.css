@@ -264,9 +264,13 @@
     transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
   }
 
-  .premium-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-card-hover);
+  /* Hover lift only where hover exists — on touch a tap would otherwise
+     leave the card stuck in its lifted state. */
+  @media (hover: hover) and (pointer: fine) {
+    .premium-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-card-hover);
+    }
   }
 
   /* Decorative opening quote mark for testimonials — a CSS pseudo-element,
@@ -399,5 +403,113 @@
   }
   50% {
     opacity: 0.62;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Motion layer (Framer Motion reveals, Lenis, marquee, WhatsApp pulse) */
+/* ------------------------------------------------------------------ */
+
+/* Lenis owns wheel smoothing; native smooth-scrolling would double up. */
+html.lenis,
+html.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+/* Reveal blocks are server-rendered at opacity 0 (Framer's initial state).
+   Force them visible when motion is off or JS is unavailable (the <noscript>
+   rule in the root layout covers the latter). !important beats Framer's
+   inline style. */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Counter digits stay hidden until the client has armed the count-up, so the
+   final SSR value never flashes before it resets to 0. `.js` is added by an
+   inline script in the root layout, so no-JS visitors still see the value. */
+html.js [data-counter]:not([data-ready]) {
+  visibility: hidden;
+}
+
+/* Infinite partner marquee: transform-only, paused on hover/focus. */
+.marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 50s linear infinite;
+  will-change: transform;
+}
+
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes marqueeScroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .marquee-track {
+    animation: none;
+    width: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .marquee-track > ul {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .marquee-dup {
+    display: none;
+  }
+}
+
+/* WhatsApp button: a slow expanding ring (transform + opacity only). */
+.whatsapp-pulse::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 9999px;
+  background: #25d366;
+  opacity: 0;
+  animation: whatsappPulse 3.6s ease-out infinite;
+}
+
+@keyframes whatsappPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  70%,
+  100% {
+    transform: scale(1.75);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .whatsapp-pulse::before {
+    animation: none;
+    display: none;
   }
 }

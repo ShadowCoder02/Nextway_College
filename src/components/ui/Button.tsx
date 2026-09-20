@@ -17,16 +17,16 @@ type ButtonProps = React.ComponentProps<"button"> & {
 
 const variants = {
   primary:
-    "bg-gradient-to-r from-brand-red to-brand-red-dark text-white shadow-lg shadow-brand-red/25 hover:brightness-110 active:scale-[0.99]",
-  red: "bg-brand-red text-white hover:bg-brand-red-dark active:scale-[0.99]",
-  secondary: "bg-navy text-white hover:bg-deep-blue shadow-lg shadow-navy/20 active:scale-[0.99]",
+    "bg-gradient-to-r from-brand-red to-brand-red-dark text-white shadow-lg shadow-brand-red/25 hover:shadow-xl hover:shadow-brand-red/35 hover:brightness-110 active:scale-[0.99]",
+  red: "bg-brand-red text-white hover:shadow-lg hover:bg-brand-red-dark active:scale-[0.99]",
+  secondary: "bg-navy text-white hover:bg-deep-blue hover:shadow-xl shadow-lg shadow-navy/20 active:scale-[0.99]",
   outline:
-    "border-2 border-navy/25 bg-white text-navy hover:border-brand-red hover:text-brand-red active:scale-[0.99]",
+    "border-2 border-navy/25 bg-white text-navy hover:shadow-lg hover:border-brand-red hover:text-brand-red active:scale-[0.99]",
   "outline-light":
-    "border-2 border-white/85 bg-white/10 text-white backdrop-blur-xs hover:bg-white hover:text-navy hover:border-white shadow-sm active:scale-[0.99]",
+    "border-2 border-white/85 bg-white/10 text-white backdrop-blur-xs hover:bg-white hover:text-navy hover:border-white hover:shadow-lg shadow-sm active:scale-[0.99]",
   ghost: "text-navy hover:bg-ice active:scale-[0.99]",
   "ghost-light": "text-white hover:bg-white/10 active:scale-[0.99]",
-  gold: "bg-gold text-navy hover:brightness-105 shadow-md active:scale-[0.99]",
+  gold: "bg-gold text-navy hover:brightness-105 hover:shadow-lg shadow-md active:scale-[0.99]",
 };
 
 const sizes = {
@@ -44,7 +44,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const classes = cn(
-    "inline-flex items-center justify-center gap-2 rounded-full font-semibold tracking-wide transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-red disabled:opacity-50",
+    "inline-flex items-center justify-center gap-2 rounded-full font-semibold tracking-wide transition-[transform,scale,box-shadow,background-color,color,border-color,filter] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.03] disabled:hover:scale-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-red disabled:opacity-50",
     variants[variant],
     sizes[size],
     className,
