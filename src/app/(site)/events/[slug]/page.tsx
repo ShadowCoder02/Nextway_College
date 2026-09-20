@@ -62,6 +62,7 @@ export default async function EventDetailPage({ params }: PageProps) {
             fill
             className="object-cover"
             sizes="100vw"
+            quality={60}
             priority
             fetchPriority="high"
             placeholder="blur"

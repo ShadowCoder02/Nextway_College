@@ -71,6 +71,7 @@ export default async function ProgrammeDetailPage({ params }: PageProps) {
             fill
             className="object-cover"
             sizes="100vw"
+            quality={60}
             priority
             fetchPriority="high"
             placeholder="blur"

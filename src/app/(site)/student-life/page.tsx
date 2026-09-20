@@ -44,7 +44,7 @@ export default function StudentLifePage() {
           {highlights.map((item) => (
             <article key={item.title} className="grid items-center gap-8 lg:grid-cols-2">
               <div className="relative aspect-16/10 overflow-hidden rounded-[var(--radius-card)]">
-                <Image src={item.image} alt={item.title} fill className="object-cover" sizes="50vw" />
+                <Image src={item.image} alt={item.title} fill className="object-cover" sizes="(max-width: 1024px) 100vw, 600px" />
               </div>
               <div>
                 <h2 className="text-section mb-4">{item.title}</h2>

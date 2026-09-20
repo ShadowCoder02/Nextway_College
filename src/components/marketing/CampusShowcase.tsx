@@ -19,7 +19,7 @@ export function CampusShowcase() {
               alt="Nextway College International campus"
               fill
               className="object-cover transition duration-700 hover:scale-[1.02]"
-              sizes="(max-width:1024px) 100vw, 58vw"
+              sizes="(max-width: 1024px) 100vw, 710px"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-navy/70 via-transparent to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-8 text-white">

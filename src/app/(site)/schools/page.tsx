@@ -41,7 +41,7 @@ export default async function SchoolsPage() {
                   alt={school.name}
                   fill
                   className="object-cover"
-                  sizes="(max-width:1024px) 100vw, 50vw"
+                  sizes="(max-width: 1024px) 100vw, 600px"
                 />
               </div>
               <div>

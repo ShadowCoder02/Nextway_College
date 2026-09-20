@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Programme } from "@/types";
 import { Badge } from "./Badge";
-import { IMAGES } from "@/constants/images";
+import { CARD_BLUR_PLACEHOLDER, IMAGES } from "@/constants/images";
 import { FallbackImage } from "./FallbackImage";
 
 type ProgrammeCardProps = {
@@ -19,7 +19,9 @@ export function ProgrammeCard({ programme, featured }: ProgrammeCardProps) {
           alt=""
           fill
           className="object-cover transition duration-700 group-hover:scale-105"
-          sizes="(max-width:768px) 100vw, 33vw"
+          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 400px"
+          placeholder="blur"
+          blurDataURL={CARD_BLUR_PLACEHOLDER}
         />
         <div className="absolute inset-0 bg-linear-to-t from-navy/60 via-transparent to-transparent" />
         <div className="absolute left-4 top-4 flex gap-2">

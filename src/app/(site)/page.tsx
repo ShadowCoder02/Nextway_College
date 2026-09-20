@@ -140,7 +140,7 @@ export default async function HomePage() {
                 alt={flagship.title}
                 fill
                 className="object-cover"
-                sizes="(max-width:1024px) 100vw, 50vw"
+                sizes="(max-width: 1024px) 100vw, 600px"
               />
             </div>
             <div>
@@ -206,7 +206,7 @@ export default async function HomePage() {
                         alt={article.title}
                         fill
                         className="object-cover"
-                        sizes="(max-width: 1024px) 100vw, 50vw"
+                        sizes="(max-width: 1024px) 100vw, 600px"
                       />
                     </div>
                   </div>
@@ -242,7 +242,7 @@ export default async function HomePage() {
                           alt={event.title}
                           fill
                           className="object-cover"
-                          sizes="(max-width: 1024px) 100vw, 50vw"
+                          sizes="(max-width: 1024px) 100vw, 600px"
                         />
                       </div>
                     </div>

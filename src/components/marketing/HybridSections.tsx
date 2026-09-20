@@ -63,7 +63,7 @@ export function HybridLearningSection({ image = "campus" }: HybridLearningSectio
         </div>
 
         <div className="relative mx-auto aspect-[3/2] w-full max-w-xl overflow-hidden rounded-[var(--radius-card)] shadow-premium">
-          <Image src={visual} alt={alt} fill className="object-cover" sizes="(max-width:1024px) 100vw, 50vw" />
+          <Image src={visual} alt={alt} fill className="object-cover" sizes="(max-width: 640px) 100vw, 576px" />
         </div>
       </div>
     </section>

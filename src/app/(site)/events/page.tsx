@@ -20,7 +20,7 @@ function EventCard({ event }: { event: EventItem }) {
   return (
     <article className="overflow-hidden rounded-[var(--radius-card)] bg-white shadow-[var(--shadow-soft)]">
       <div className="relative aspect-[16/9]">
-        <Image src={event.imageUrl} alt="" fill className="object-cover" sizes="50vw" />
+        <Image src={event.imageUrl} alt="" fill className="object-cover" sizes="(max-width: 768px) 100vw, 620px" />
       </div>
       <div className="p-6">
         <p className="mb-2 text-sm font-medium text-deep-blue">{formatDateTime(event.startAt)}</p>

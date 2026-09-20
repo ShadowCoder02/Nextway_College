@@ -62,6 +62,14 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ["image/avif", "image/webp"],
+    // Next's defaults go up to 3840px wide — a 1920px retina desktop asking
+    // for a full-bleed `sizes="100vw"` image would be served a 3840px
+    // variant nothing on this site needs. Capped at 1920, with extra steps
+    // near common phone widths (e.g. 360 CSS px @ 2.625x = 945px -> 960)
+    // and the partner-logo slots (140/170 CSS px, 1x-3x) so those don't
+    // round up to the next default (640) size.
+    deviceSizes: [360, 414, 480, 640, 750, 828, 960, 1080, 1200, 1440, 1680, 1920],
+    imageSizes: [48, 64, 96, 128, 140, 170, 192, 224, 256, 280, 340, 420, 448, 512],
     remotePatterns: [
       {
         protocol: "https",

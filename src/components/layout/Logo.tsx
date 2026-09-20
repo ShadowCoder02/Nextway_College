@@ -61,7 +61,7 @@ export function Logo({ className, variant = "default" }: LogoProps) {
           fill
           className="object-contain"
           sizes="(max-width: 640px) 54px, (max-width: 1024px) 58px, 72px"
-          priority
+          loading="eager"
         />
       </div>
       <BrandText variant={variant} />
