@@ -3,7 +3,8 @@ import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { PageHero } from "@/components/ui/PageHero";
-import { formatDateTime } from "@/lib/utils";
+import { formatDateTime, whatsappUrl } from "@/lib/utils";
+import { SITE } from "@/constants/site";
 import { getUpcomingEvents, getPastEvents } from "@/services/events";
 import type { EventItem } from "@/types";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -50,8 +51,26 @@ export default async function EventsPage() {
             {upcoming.length === 0 ? (
               <EmptyState
                 heading="No upcoming events are scheduled right now"
-                body="Check back soon, or browse our programmes in the meantime."
-                action={<Button href="/programmes" variant="secondary">Browse Programmes</Button>}
+                body="Ask Admissions about upcoming open days and information sessions — or explore our programmes while you wait."
+                action={
+                  <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+                    <Button href="/contact" variant="primary">Ask Admissions</Button>
+                    <a
+                      href={whatsappUrl(SITE.whatsapp, "Hello Nextway College, please let me know about upcoming events and open days.")}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-semibold text-navy underline underline-offset-2 hover:text-brand-red"
+                    >
+                      Message us on WhatsApp
+                    </a>
+                    <Link
+                      href="/programmes"
+                      className="text-sm font-semibold text-navy underline underline-offset-2 hover:text-brand-red"
+                    >
+                      Browse programmes
+                    </Link>
+                  </div>
+                }
               />
             ) : (
               <div className="grid gap-8 md:grid-cols-2">

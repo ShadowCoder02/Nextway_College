@@ -49,7 +49,7 @@ export function ApprovalsStrip({
                   <Image src={item.logo} alt={item.name} fill className="object-contain" sizes={item.large ? "170px" : "140px"} />
                 </div>
                 <p className="text-sm font-bold text-navy">{item.name}</p>
-                <p className="text-xs text-slate">{item.description}</p>
+                {item.description && <p className="text-xs text-slate">{item.description}</p>}
                 {item.verifyUrl && (
                   <a
                     href={item.verifyUrl}

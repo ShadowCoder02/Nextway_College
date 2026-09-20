@@ -38,10 +38,11 @@ export function LeadForm({
     fullName: useRef<HTMLInputElement>(null),
     phone: useRef<HTMLInputElement>(null),
     email: useRef<HTMLInputElement>(null),
+    consent: useRef<HTMLInputElement>(null),
   };
 
   function focusFirstInvalid(fieldErrors: Partial<Record<keyof EnquiryFormData, string>>) {
-    const field = (["fullName", "phone", "email"] as const).find((f) => fieldErrors[f]);
+    const field = (["fullName", "phone", "email", "consent"] as const).find((f) => fieldErrors[f]);
     if (field) fieldRefs[field].current?.focus();
   }
 
@@ -276,6 +277,7 @@ export function LeadForm({
 
       <label className="flex items-start gap-3 text-sm">
         <input
+          ref={fieldRefs.consent}
           type="checkbox"
           name="consent"
           className="mt-1 h-4 w-4 accent-gold"
