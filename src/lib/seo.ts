@@ -41,13 +41,13 @@ export function buildMetadata({
       siteName: SITE.name,
       locale: SITE.locale,
       type,
-      images: [{ url: image ?? SITE.logo }],
+      images: image ? [{ url: image }] : [{ url: SITE.ogImage, width: 1200, height: 630, alt: `${SITE.name} — ${SITE.tagline}` }],
     },
     twitter: {
       card: "summary_large_image",
       title: pageTitle,
       description,
-      images: [image ?? SITE.logo],
+      images: [image ?? SITE.ogImage],
     },
   };
 }
@@ -91,6 +91,31 @@ export function organizationJsonLd() {
   };
 }
 
+/** "3 years" -> "P3Y", "18 months" -> "P18M", "2 years 6 months" -> "P2Y6M".
+ * schema.org needs an ISO 8601 duration; anything that isn't a plain
+ * quantity (e.g. "As per programme structure") returns undefined so the
+ * property is omitted rather than published inaccurately. */
+export function isoDuration(text: string): string | undefined {
+  const units: Record<string, string> = { year: "Y", yr: "Y", month: "M", week: "W", day: "D" };
+  const parts = [...text.toLowerCase().matchAll(/(\d+(?:\.\d+)?)\s*(year|yr|month|week|day)s?\b/g)];
+  if (parts.length === 0) return undefined;
+  const totals: Record<string, number> = {};
+  for (const [, qty, unit] of parts) {
+    let n = Number(qty);
+    let u = units[unit];
+    if (u === "Y" && !Number.isInteger(n)) {
+      n = Math.round(n * 12);
+      u = "M";
+    }
+    if (!Number.isInteger(n)) return undefined;
+    totals[u] = (totals[u] ?? 0) + n;
+  }
+  const order = ["Y", "M", "W", "D"] as const;
+  return "P" + order.filter((u) => totals[u]).map((u) => `${totals[u]}${u}`).join("");
+}
+
+const COURSE_MODE: Record<string, string> = { Hybrid: "Blended", Online: "Online", Direct: "Onsite" };
+
 export function courseJsonLd(programme: {
   title: string;
   description: string;
@@ -99,6 +124,8 @@ export function courseJsonLd(programme: {
   level: string;
   mode: string;
 }) {
+  const duration = isoDuration(programme.duration);
+  const courseMode = COURSE_MODE[programme.mode];
   return {
     "@context": "https://schema.org",
     "@type": "Course",
@@ -111,12 +138,21 @@ export function courseJsonLd(programme: {
       url: SITE.url,
     },
     educationalLevel: programme.level,
-    hasCourseInstance: {
-      "@type": "CourseInstance",
-      courseMode: programme.mode,
-      duration: programme.duration,
-    },
+    // Only properties we can state accurately: an unparseable duration or an
+    // unmapped study mode is left out instead of guessed.
+    ...(duration || courseMode
+      ? { hasCourseInstance: { "@type": "CourseInstance", ...(courseMode ? { courseMode } : {}), ...(duration ? { duration } : {}) } }
+      : {}),
   };
+}
+
+/** Location text like "Online / Campus hybrid" is mixed attendance, not offline. */
+function attendanceMode(location: string): string {
+  const online = /\bonline\b|\bvirtual\b|\bzoom\b/i.test(location);
+  const inPerson = /campus|hall|branch|kandy|colombo|room|in[- ]person|hybrid/i.test(location);
+  if (online && inPerson) return "https://schema.org/MixedEventAttendanceMode";
+  if (online) return "https://schema.org/OnlineEventAttendanceMode";
+  return "https://schema.org/OfflineEventAttendanceMode";
 }
 
 export function eventJsonLd(event: {
@@ -147,7 +183,7 @@ export function eventJsonLd(event: {
       name: SITE.name,
       url: SITE.url,
     },
-    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    eventAttendanceMode: attendanceMode(event.location),
     eventStatus: "https://schema.org/EventScheduled",
   };
 }

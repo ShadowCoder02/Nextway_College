@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { PasswordField } from "@/components/ui/PasswordField";
 import { Turnstile } from "@/components/ui/Turnstile";
@@ -11,9 +11,8 @@ import { apiFetch } from "@/lib/api-fetch";
 import { useOnlineStatus } from "@/lib/use-online-status";
 import { TURNSTILE_AFTER_ATTEMPTS } from "@/lib/turnstile-constants";
 
-export function LoginForm() {
+export function LoginForm({ programmeSlug }: { programmeSlug?: string }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const isOnline = useOnlineStatus();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,9 +25,8 @@ export function LoginForm() {
   // "Sign In to Continue Application" — remember it so it still pre-selects
   // once they're on the application form.
   useEffect(() => {
-    const programmeSlug = searchParams.get("programme");
     if (programmeSlug) rememberProgrammeSlug(programmeSlug);
-  }, [searchParams]);
+  }, [programmeSlug]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

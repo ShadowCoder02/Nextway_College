@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { SiteShell } from "@/components/layout/SiteShell";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
@@ -10,6 +11,11 @@ const QUICK_LINKS = [
   { href: "/apply", label: "Apply" },
   { href: "/contact", label: "Contact" },
 ];
+
+export const metadata: Metadata = {
+  title: `Page not found | ${SITE.shortName}`,
+  robots: { index: false, follow: true },
+};
 
 export default function NotFound() {
   return (

@@ -44,6 +44,8 @@ export const SITE = {
   logo: "/brand/logo-icon.png",
   logoFull: "/brand/logo-icon.png",
   logoIcon: "/brand/logo-icon.png",
+  /** 1200x630 default social-share image (Open Graph / Twitter card). */
+  ogImage: "/images/og-default.jpg",
   studyModel: "80% online · 20% direct (hybrid)",
   mediums: ["English", "Tamil"],
   // Real profile URLs only. Footer renders a network only when its value is

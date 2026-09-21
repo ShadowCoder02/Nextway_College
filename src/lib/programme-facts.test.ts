@@ -30,3 +30,17 @@ describe("getProgrammeFacts", () => {
     expect(facts.duration.value).toBe("3 years");
   });
 });
+
+import { DEFAULT_LEARNING_OUTCOMES } from "@/data/programmes-seed";
+import { isGenericLearningOutcomes, repeatsOverview } from "./programme-facts";
+
+describe("thin-content guards", () => {
+  it("flags the shared placeholder outcomes but not real ones", () => {
+    expect(isGenericLearningOutcomes([...DEFAULT_LEARNING_OUTCOMES])).toBe(true);
+    expect(isGenericLearningOutcomes(["Design and build a web application"])).toBe(false);
+  });
+  it("detects a 'why this programme' that just repeats the overview", () => {
+    expect(repeatsOverview({ overview: "Same  text", whyThisProgramme: "same text" })).toBe(true);
+    expect(repeatsOverview({ overview: "One", whyThisProgramme: "Two" })).toBe(false);
+  });
+});

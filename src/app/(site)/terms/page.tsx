@@ -5,6 +5,7 @@ import { SITE } from "@/constants/site";
 
 export const metadata = buildMetadata({
   title: "Terms of Use",
+  description: "The terms that apply to using the Nextway College International website, enquiry forms and online applicant portal.",
   path: "/terms",
 });
 

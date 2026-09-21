@@ -1,5 +1,5 @@
-import { Suspense } from "react";
 import { buildMetadata } from "@/lib/seo";
+import { emailParam, otpParam, slugParam } from "@/lib/url-params";
 import { VerifyForm } from "./VerifyForm";
 
 export const metadata = buildMetadata({
@@ -9,10 +9,9 @@ export const metadata = buildMetadata({
   noindex: true,
 });
 
-export default function ApplicantVerifyPage() {
-  return (
-    <Suspense fallback={null}>
-      <VerifyForm />
-    </Suspense>
-  );
+type PageProps = { searchParams: Promise<Record<string, string | string[] | undefined>> };
+
+export default async function ApplicantVerifyPage({ searchParams }: PageProps) {
+  const { email, otp, programme } = await searchParams;
+  return <VerifyForm defaultEmail={emailParam(email)} defaultOtp={otpParam(otp)} programmeSlug={slugParam(programme)} />;
 }

@@ -9,6 +9,7 @@ import { FallbackImage } from "@/components/ui/FallbackImage";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { getProgrammeBySlug } from "@/services/programmes";
 import { ProgrammeDetail } from "@/components/programme/ProgrammeDetail";
+import { isGenericLearningOutcomes, repeatsOverview } from "@/lib/programme-facts";
 
 type PageProps = { params: Promise<{ slug: string }> };
 
@@ -120,13 +121,15 @@ export default async function ProgrammeDetailPage({ params }: PageProps) {
               <p className="text-lg text-charcoal">{programme.overview}</p>
             </section>
 
-            <section>
-              <h2 className="text-section mb-4">Why this programme</h2>
-              <div className="gold-rule mb-4" />
-              <p className="text-charcoal">{programme.whyThisProgramme}</p>
-            </section>
+            {!repeatsOverview(programme) && (
+              <section>
+                <h2 className="text-section mb-4">Why this programme</h2>
+                <div className="gold-rule mb-4" />
+                <p className="text-charcoal">{programme.whyThisProgramme}</p>
+              </section>
+            )}
 
-            {programme.learningOutcomes.length > 0 && (
+            {programme.learningOutcomes.length > 0 && !isGenericLearningOutcomes(programme.learningOutcomes) && (
               <section>
                 <h2 className="text-section mb-4">Learning outcomes</h2>
                 <div className="gold-rule mb-4" />

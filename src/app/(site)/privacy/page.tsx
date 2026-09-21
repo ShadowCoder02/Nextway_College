@@ -5,6 +5,7 @@ import { SITE } from "@/constants/site";
 
 export const metadata = buildMetadata({
   title: "Privacy Policy",
+  description: "How Nextway College International collects, uses and protects the personal information submitted through this website and the applicant portal.",
   path: "/privacy",
 });
 

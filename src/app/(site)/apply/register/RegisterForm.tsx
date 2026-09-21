@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { PasswordField } from "@/components/ui/PasswordField";
 import { PasswordPolicyChecklist } from "@/components/ui/PasswordPolicyChecklist";
@@ -15,9 +15,8 @@ import { TURNSTILE_AFTER_ATTEMPTS } from "@/lib/turnstile-constants";
 
 type FieldErrors = Partial<Record<keyof ApplicantRegisterInput | "confirmPassword" | "general", string>>;
 
-export function RegisterForm() {
+export function RegisterForm({ programmeSlug }: { programmeSlug?: string }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const isOnline = useOnlineStatus();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -38,7 +37,6 @@ export function RegisterForm() {
 
   // Carries a programme picked on /apply?programme=<slug> through this page,
   // since it isn't tied to the account until after verification.
-  const programmeSlug = searchParams.get("programme");
 
   useEffect(() => {
     if (programmeSlug) rememberProgrammeSlug(programmeSlug);

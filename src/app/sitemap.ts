@@ -30,6 +30,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     "/schools",
 
+    "/student-life",
+
     "/programmes",
 
     "/admissions",

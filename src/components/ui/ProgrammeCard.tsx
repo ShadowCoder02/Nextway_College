@@ -47,7 +47,7 @@ export function ProgrammeCard({ programme, featured, comparable }: ProgrammeCard
           href={`/programmes/${programme.slug}`}
           className="inline-flex items-center gap-2 text-sm font-bold text-brand-red"
         >
-          View programme
+          View programme<span className="sr-only"> — {programme.title}</span>
           <span aria-hidden className="inline-block transition-transform duration-300 ease-out group-hover:translate-x-1.5 group-focus-within:translate-x-1.5">→</span>
         </Link>
         {comparable && (

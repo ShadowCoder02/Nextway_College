@@ -1,5 +1,5 @@
-import { Suspense } from "react";
 import { buildMetadata } from "@/lib/seo";
+import { tokenParam } from "@/lib/url-params";
 import { ResetPasswordForm } from "./ResetPasswordForm";
 
 export const metadata = buildMetadata({
@@ -9,10 +9,9 @@ export const metadata = buildMetadata({
   noindex: true,
 });
 
-export default function ResetPasswordPage() {
-  return (
-    <Suspense fallback={null}>
-      <ResetPasswordForm />
-    </Suspense>
-  );
+type PageProps = { searchParams: Promise<Record<string, string | string[] | undefined>> };
+
+export default async function ResetPasswordPage({ searchParams }: PageProps) {
+  const { token } = await searchParams;
+  return <ResetPasswordForm token={tokenParam(token) ?? ""} />;
 }

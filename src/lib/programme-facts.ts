@@ -1,5 +1,6 @@
 import type { Programme } from "@/types";
 import { clientValue, needsInput } from "@/lib/client-input";
+import { DEFAULT_LEARNING_OUTCOMES } from "@/data/programmes-seed";
 
 /**
  * Every programme page must answer the same seven questions. This is enforced
@@ -72,4 +73,16 @@ export function getProgrammeFacts(p: Programme): Record<FactKey, ProgrammeFact> 
     deliveryMode: fact("deliveryMode", [p.mode, p.medium && `${p.medium} medium`].filter(Boolean).join(" · ")),
     nextIntake: fact("nextIntake", [p.intake, p.applicationDeadline && `apply by ${p.applicationDeadline}`].filter(Boolean).join(" · ")),
   };
+}
+
+const norm = (t: string) => t.replace(/\s+/g, " ").trim().toLowerCase();
+
+/** True when the outcomes are the shared placeholder list (see programmes-seed). */
+export function isGenericLearningOutcomes(outcomes: readonly string[]): boolean {
+  return outcomes.length === DEFAULT_LEARNING_OUTCOMES.length && outcomes.every((o, i) => norm(o) === norm(DEFAULT_LEARNING_OUTCOMES[i]));
+}
+
+/** "Why this programme" adds nothing when it just repeats the overview. */
+export function repeatsOverview(p: Pick<Programme, "overview" | "whyThisProgramme">): boolean {
+  return norm(p.overview) === norm(p.whyThisProgramme);
 }

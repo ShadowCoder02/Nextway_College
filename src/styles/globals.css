@@ -640,3 +640,13 @@ html.js [data-counter]:not([data-ready]) {
   outline: 3px solid var(--color-navy) !important;
   outline-offset: 2px !important;
 }
+
+/* Touch devices: text fields below 16px make iOS Safari zoom the page when
+   focused (and leave it zoomed). Several forms style fields `text-sm`. */
+@media (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}

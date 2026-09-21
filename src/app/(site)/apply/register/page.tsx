@@ -1,5 +1,5 @@
-import { Suspense } from "react";
 import { buildMetadata } from "@/lib/seo";
+import { slugParam } from "@/lib/url-params";
 import { RegisterForm } from "./RegisterForm";
 
 export const metadata = buildMetadata({
@@ -9,10 +9,9 @@ export const metadata = buildMetadata({
   noindex: true,
 });
 
-export default function ApplicantRegisterPage() {
-  return (
-    <Suspense fallback={null}>
-      <RegisterForm />
-    </Suspense>
-  );
+type PageProps = { searchParams: Promise<Record<string, string | string[] | undefined>> };
+
+export default async function ApplicantRegisterPage({ searchParams }: PageProps) {
+  const { programme } = await searchParams;
+  return <RegisterForm programmeSlug={slugParam(programme)} />;
 }

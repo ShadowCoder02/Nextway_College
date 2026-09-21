@@ -2,19 +2,23 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { readRememberedProgrammeSlug } from "@/lib/applicant-programme";
 import { apiFetch } from "@/lib/api-fetch";
 import { useOnlineStatus } from "@/lib/use-online-status";
 
-export function VerifyForm() {
+export function VerifyForm({
+  defaultEmail = "",
+  defaultOtp = "",
+  programmeSlug,
+}: {
+  defaultEmail?: string;
+  defaultOtp?: string;
+  programmeSlug?: string;
+}) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const isOnline = useOnlineStatus();
-  const defaultEmail = searchParams.get("email") || "";
-  const defaultOtp = searchParams.get("otp") || "";
-  const programmeSlug = searchParams.get("programme");
   const [email, setEmail] = useState(defaultEmail);
   const [otp, setOtp] = useState(defaultOtp);
   const [loading, setLoading] = useState(false);

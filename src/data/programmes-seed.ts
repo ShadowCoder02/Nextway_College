@@ -8,6 +8,16 @@ const img = (id: string) => {
   return seedImages[seed % seedImages.length];
 };
 
+/** Placeholder outcomes shared by every programme that hasn't had real ones
+ * written. The programme page hides a list identical to this rather than
+ * repeating the same three generic bullets on ten different pages (thin,
+ * duplicated content) — see isGenericLearningOutcomes. */
+export const DEFAULT_LEARNING_OUTCOMES: readonly string[] = [
+  "Build professional knowledge aligned with industry and academic standards",
+  "Apply learning through online and direct hybrid sessions",
+  "Develop confidence for career progression and further study",
+];
+
 function baseProgramme(
   partial: Partial<Programme> &
     Pick<Programme, "id" | "title" | "slug" | "level" | "shortPitch" | "schoolId" | "schoolSlug" | "schoolName">,
@@ -20,11 +30,7 @@ function baseProgramme(
     location: partial.location ?? "All island — 22 branches",
     overview: partial.overview ?? partial.shortPitch,
     whyThisProgramme: partial.whyThisProgramme ?? partial.shortPitch,
-    learningOutcomes: partial.learningOutcomes ?? [
-      "Build professional knowledge aligned with industry and academic standards",
-      "Apply learning through online and direct hybrid sessions",
-      "Develop confidence for career progression and further study",
-    ],
+    learningOutcomes: partial.learningOutcomes ?? [...DEFAULT_LEARNING_OUTCOMES],
     entryRequirements: partial.entryRequirements ?? [
       "GCE O/L or A/L or equivalent qualification as approved by the College",
       "English and/or Tamil medium suitability for the selected programme",

@@ -112,6 +112,23 @@ Every placeholder is a `{{NEEDS CLIENT INPUT: …}}` token in source/data
 - [ ] **Programme entry requirements** are generic boilerplate for most
       programmes ("as approved by the College") — supply the real ones.
 
+- [ ] **Programme page content is largely boilerplate.** "Learning outcomes"
+      and "Why this programme" are the shared placeholder text for most
+      programmes (now hidden rather than repeated on every page), entry
+      requirements are identical generic wording, and `overview` equals the
+      short pitch. For each programme supply genuinely distinct overview,
+      outcomes, entry requirements, career paths and FAQs — thin duplicate
+      pages rank poorly and give applicants nothing to decide with.
+- [ ] **"22 branches" claim** appears in: `src/constants/site.ts`
+      (`SITE.description`), `src/data/content.ts` (why-us card),
+      `src/components/marketing/HybridSections.tsx` (heading),
+      `src/app/(site)/about/page.tsx`, `src/app/(site)/apply/page.tsx`,
+      `src/data/programmes-seed.ts` + admin editor default (`location`).
+      It is deliberately NOT in the homepage trust strip until verified.
+- [ ] **Hero photography:** the homepage hero is a dimmed stock-style campus
+      photo. Authentic photography of real students/campus would replace it
+      (`public/images/hero-backdrop.jpg` is derived from `hero-image.jpg`).
+
 ### Repeated imagery (client to supply distinct photography)
 
 - Home: `hero-image.jpg` ×3 (hero backdrop, one programme card, campus
