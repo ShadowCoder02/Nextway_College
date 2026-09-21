@@ -11,7 +11,10 @@ export type ProgrammeFilters = {
   q?: string;
   level?: ProgrammeLevel;
   mode?: StudyMode;
+  /** "English" | "Tamil" — matches programmes whose medium includes it. */
+  medium?: string;
   school?: string;
+  intake?: string;
   sort?: ProgrammeSort;
 };
 
@@ -48,25 +51,38 @@ export async function getProgrammes(filters?: ProgrammeFilters): Promise<Program
   if (filters?.level) results = results.filter((p) => p.level === filters.level);
   if (filters?.mode) results = results.filter((p) => p.mode === filters.mode);
   if (filters?.school) results = results.filter((p) => p.schoolSlug === filters.school);
+  if (filters?.medium) {
+    const medium = filters.medium.toLowerCase();
+    results = results.filter((p) => p.medium.toLowerCase().includes(medium));
+  }
+  if (filters?.intake) results = results.filter((p) => p.intake === filters.intake);
 
   return sortProgrammes(results, filters?.sort ?? "featured");
 }
 
-/** Live per-option counts for the level/mode filter dropdowns, computed
- * against all published programmes (not cross-filtered by other active
- * filters) — same convention as getSchoolsWithProgrammeCounts below. */
+/** Live per-option counts for the filter dropdowns, computed against all
+ * published programmes (not cross-filtered by other active filters) — same
+ * convention as getSchoolsWithProgrammeCounts below. */
 export async function getProgrammeFacetCounts(): Promise<{
   levels: Record<string, number>;
   modes: Record<string, number>;
+  mediums: Record<string, number>;
+  intakes: Record<string, number>;
 }> {
   const programmes = await getProgrammes();
   const levels: Record<string, number> = {};
   const modes: Record<string, number> = {};
+  const mediums: Record<string, number> = {};
+  const intakes: Record<string, number> = {};
   for (const p of programmes) {
     levels[p.level] = (levels[p.level] ?? 0) + 1;
     modes[p.mode] = (modes[p.mode] ?? 0) + 1;
+    intakes[p.intake] = (intakes[p.intake] ?? 0) + 1;
+    for (const m of ["English", "Tamil"]) {
+      if (p.medium.toLowerCase().includes(m.toLowerCase())) mediums[m] = (mediums[m] ?? 0) + 1;
+    }
   }
-  return { levels, modes };
+  return { levels, modes, mediums, intakes };
 }
 
 export async function getAllProgrammesAdmin(): Promise<Programme[]> {

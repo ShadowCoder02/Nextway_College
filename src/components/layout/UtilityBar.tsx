@@ -1,9 +1,8 @@
 import { SITE } from "@/constants/site";
 import { whatsappUrl } from "@/lib/utils";
-import { faArrowUpRightFromSquare, faLocationDot, faPhone, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { faLocationDot, faPhone, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Link from "next/link";
 
 function IconWrap({ children }: { children: React.ReactNode }) {
   return <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center text-current">{children}</span>;
@@ -28,13 +27,6 @@ export function UtilityBar() {
           </a>
         </div>
         <div className="flex items-center gap-5">
-          <Link
-            href="/apply"
-            className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold/15 px-3 py-0.5 font-semibold text-gold transition-all hover:border-gold hover:bg-gold hover:text-navy"
-          >
-            <IconWrap><FontAwesomeIcon icon={faArrowUpRightFromSquare} className="h-3.5 w-3.5" /></IconWrap>
-            Apply Online
-          </Link>
           <a
             href={whatsappUrl(SITE.whatsapp, "Hello Nextway College, I would like to enquire.")}
             target="_blank"

@@ -7,9 +7,11 @@ import { FallbackImage } from "./FallbackImage";
 type ProgrammeCardProps = {
   programme: Programme;
   featured?: boolean;
+  /** Adds a "Compare" checkbox (name="p") for the /programmes compare form. */
+  comparable?: boolean;
 };
 
-export function ProgrammeCard({ programme, featured }: ProgrammeCardProps) {
+export function ProgrammeCard({ programme, featured, comparable }: ProgrammeCardProps) {
   return (
     <article className="premium-card group flex h-full flex-col overflow-hidden">
       <div className="relative aspect-16/10 overflow-hidden">
@@ -48,6 +50,14 @@ export function ProgrammeCard({ programme, featured }: ProgrammeCardProps) {
           View programme
           <span aria-hidden>→</span>
         </Link>
+        {comparable && (
+          <label className="mt-4 flex cursor-pointer items-center gap-2 border-t border-ice pt-4 text-sm text-charcoal">
+            <input type="checkbox" name="p" value={programme.slug} className="h-4 w-4 accent-brand-red" />
+            <span>
+              Compare<span className="sr-only"> {programme.title}</span>
+            </span>
+          </label>
+        )}
       </div>
     </article>
   );

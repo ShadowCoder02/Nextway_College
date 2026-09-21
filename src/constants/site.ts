@@ -68,6 +68,30 @@ export const NAV_LINKS = [
   { href: "/contact", label: "Contact" },
 ] as const;
 
+export type PrimaryNavItem =
+  | { label: string; href: string }
+  | { label: string; children: { label: string; href: string; description: string }[] };
+
+/** Header navigation. Schools / Programmes / Admissions are grouped under
+ * "Study"; the flat NAV_LINKS above stays for the footer. "Home" is the logo. */
+export const PRIMARY_NAV: PrimaryNavItem[] = [
+  { label: "About", href: "/about" },
+  {
+    label: "Study",
+    children: [
+      { label: "Programmes", href: "/programmes", description: "Browse, filter and compare every programme" },
+      { label: "Schools", href: "/schools", description: "Our academic schools and what they teach" },
+      { label: "Admissions", href: "/admissions", description: "Entry requirements and how to apply" },
+      { label: "Student life", href: "/student-life", description: "Support, community and campus life" },
+      { label: "Find a branch", href: "/branches", description: "Branch locations and contact details" },
+    ],
+  },
+  { label: "News", href: "/news" },
+  { label: "Events", href: "/events" },
+  { label: "Careers", href: "/careers" },
+  { label: "Contact", href: "/contact" },
+];
+
 export const PROGRAMME_LEVELS = [
   "Degree",
   "Higher Diploma",

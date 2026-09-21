@@ -643,26 +643,32 @@ export const trustPoints: SiteStat[] = [
 
 export const whyNextWay = [
   {
+    id: "hybrid",
     title: "Hybrid learning model",
     description: "80% online classes with 20% direct sessions for practical engagement and community.",
   },
   {
+    id: "reach",
     title: "Island-wide access",
     description: "Study from 22 branches including Kandy, Colombo, Galle, Batticaloa and more.",
   },
   {
+    id: "medium",
     title: "English & Tamil medium",
     description: "Programmes delivered in the language that best supports your learning journey.",
   },
   {
+    id: "careers",
     title: "Career-focused pathways",
     description: "From BSc IT and LLB to HND and diploma programmes aligned with employability.",
   },
   {
+    id: "accreditation",
     title: "Accredited partnerships",
     description: "Affiliations and recognitions that strengthen trust in our academic standards.",
   },
   {
+    id: "admissions",
     title: "Guided admissions support",
     description: "Student counsellors help you from enquiry through enrolment and orientation.",
   },

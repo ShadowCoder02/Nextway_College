@@ -41,7 +41,7 @@ export const FACT_INPUT_NEEDED: Record<FactKey, string> = {
 
 const GENERIC_DURATION = /^as per programme structure$/i;
 
-const LABELS: Record<FactKey, string> = {
+export const FACT_LABELS: Record<FactKey, string> = {
   awardingInstitution: "Awarding institution",
   recognition: "Recognition & accreditation",
   entryRequirements: "Entry requirements",
@@ -54,7 +54,7 @@ const LABELS: Record<FactKey, string> = {
 export function getProgrammeFacts(p: Programme): Record<FactKey, ProgrammeFact> {
   const fact = (key: FactKey, value: string | undefined | null, state?: ProgrammeFact["state"]): ProgrammeFact => {
     const real = clientValue(value ?? undefined) ?? null;
-    return { key, label: LABELS[key], value: real, state: state ?? (real ? "provided" : "pending") };
+    return { key, label: FACT_LABELS[key], value: real, state: state ?? (real ? "provided" : "pending") };
   };
 
   const feeParts = p.fees

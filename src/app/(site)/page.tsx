@@ -17,23 +17,43 @@ import { SITE } from "@/constants/site";
 import {
   studentJourney,
   testimonials,
-  trustPoints,
   whyNextWay,
 } from "@/data/content";
 import { formatDate, formatDateTime } from "@/lib/utils";
 import { publishedTestimonials } from "@/lib/testimonials";
-import { getFeaturedProgrammes, getFlagshipProgramme } from "@/services/programmes";
+import { getFeaturedProgrammes, getFlagshipProgramme, getProgrammes, getSchoolsWithProgrammeCounts } from "@/services/programmes";
+import { getPublicApprovals } from "@/constants/approvals";
+import type { SiteStat } from "@/types";
 import { getLatestNews } from "@/services/news";
 import { getUpcomingEvents } from "@/services/events";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 export default async function HomePage() {
-  const [featured, flagship, news, events] = await Promise.all([
+  const [featured, flagship, news, events, allProgrammes, schoolCounts] = await Promise.all([
     getFeaturedProgrammes(),
     getFlagshipProgramme(),
     getLatestNews(3),
     getUpcomingEvents(2),
+    getProgrammes(),
+    getSchoolsWithProgrammeCounts(),
   ]);
+
+  // Trust strip: only facts that can be read straight from the site's own
+  // data — never a hand-typed number. (The "22 branches" claim is unverified;
+  // see content/TODO-content.md.)
+  const schoolsWithProgrammes = schoolCounts.filter((s) => s.programmeCount > 0).length;
+  const trustStats: SiteStat[] = [
+    { value: "80/20", label: "Hybrid: online and direct classes" },
+    { value: String(allProgrammes.length), label: "Programmes on offer" },
+    { value: String(schoolsWithProgrammes), label: "Academic schools" },
+    { value: String(SITE.mediums.length), label: `${SITE.mediums.join(" & ")} medium` },
+  ];
+  const hasApprovals = getPublicApprovals().length > 0;
+  const whyItems = whyNextWay.filter(
+    // The hybrid model has its own section below; accreditation claims only
+    // appear once there is verified partner copy to back them.
+    (item) => item.id !== "hybrid" && (item.id !== "accreditation" || hasApprovals),
+  );
 
   return (
     <>
@@ -56,22 +76,42 @@ export default async function HomePage() {
         </HeroBackdrop>
         <div className="absolute inset-0 bg-linear-to-r from-navy/85 via-navy/72 to-navy/55" />
         <div className="container-nwc relative flex min-h-[88vh] flex-col justify-center py-24 lg:py-32">
-          <HeroContent className="max-w-3xl">
-          <div className="fade-up">
-            <span className="eyebrow mb-5 block text-gold">{SITE.location}</span>
-            <h1 className="text-display mb-6 text-white">{SITE.tagline}</h1>
-            <p className="text-lead mb-10 max-w-2xl text-white/88">
-              {SITE.supportingLine}
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Button href="/programmes" variant="primary" size="lg">
-                Explore Programmes
-              </Button>
-              <Button href="/admissions" variant="outline-light" size="lg">
-                Apply for 2026 Intake
-              </Button>
+          <HeroContent className="max-w-4xl">
+            <div className="fade-up">
+              <span className="eyebrow mb-5 block text-gold">{SITE.location}</span>
+              <h1 className="text-display mb-6 text-white">{SITE.tagline}</h1>
+              <p className="text-lead mb-8 max-w-2xl text-white/90">{SITE.supportingLine}</p>
+              <div className="flex flex-wrap gap-4">
+                <Button href="/programmes" variant="primary" size="lg">
+                  Explore Programmes
+                </Button>
+                <Button href="/contact" variant="outline-light" size="lg">
+                  Talk to Admissions
+                </Button>
+              </div>
+
+              {/* The four questions a visitor arrives with, each answered
+                  with a fact from the site and one link to act on it. */}
+              <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {[
+                  { q: "What can I study?", a: `${allProgrammes.length} programmes across ${schoolsWithProgrammes} schools`, href: "/programmes" },
+                  { q: "Is it right for me?", a: "See entry requirements, or speak to a counsellor", href: "/admissions" },
+                  { q: "How will I learn?", a: `80% online, 20% direct classes, in ${SITE.mediums.join(" or ")}`, href: "#hybrid" },
+                  { q: "What do I do next?", a: "Apply online for the 2026 intake", href: "/apply" },
+                ].map((item) => (
+                  <li key={item.q}>
+                    <Link
+                      href={item.href}
+                      className="group block h-full rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm transition hover:border-gold/60 hover:bg-white/15"
+                    >
+                      <span className="block text-[0.6875rem] font-bold uppercase tracking-[0.16em] text-gold">{item.q}</span>
+                      <span className="mt-1 block text-sm leading-snug text-white">{item.a}</span>
+                      <span aria-hidden="true" className="mt-2 inline-block text-sm text-gold transition-transform group-hover:translate-x-1">→</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </div>
           </HeroContent>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-linear-to-t from-white to-transparent" />
@@ -81,7 +121,7 @@ export default async function HomePage() {
       <section className="relative -mt-12 z-10 pb-4">
         <div className="container-nwc">
           <div className="premium-card overflow-hidden">
-            <StatStrip stats={trustPoints} />
+            <StatStrip stats={trustStats} />
           </div>
         </div>
       </section>
@@ -109,11 +149,11 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <HybridLearningSection />
+
       <ApprovalsStrip />
 
       <CampusShowcase />
-
-      <HybridLearningSection />
 
       <BranchesSection />
 
@@ -126,9 +166,9 @@ export default async function HomePage() {
             description="Structured academic excellence combined with practical experiences and personal guidance."
             align="center"
           />
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {whyNextWay.map((item) => (
-              <article key={item.title} className="premium-card p-7">
+          <div className="flex flex-wrap justify-center gap-6">
+            {whyItems.map((item) => (
+              <article key={item.title} className="premium-card w-full p-7 sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)]">
                 <div className="mb-4 h-1 w-10 rounded-full bg-brand-red" />
                 <h3 className="mb-3 font-heading text-xl font-semibold">{item.title}</h3>
                 <p className="text-subtle">{item.description}</p>

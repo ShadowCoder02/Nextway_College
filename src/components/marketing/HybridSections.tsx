@@ -30,7 +30,7 @@ export function HybridLearningSection({ image = "campus" }: HybridLearningSectio
       : "A student learning online from home alongside Nextway College International students meeting for a direct session on campus";
 
   return (
-    <section className="section-padding bg-navy text-white">
+    <section id="hybrid" className="section-padding bg-navy text-white">
       <div className="container-nwc grid items-center gap-12 lg:grid-cols-2">
         <div>
           <div className="mb-4 flex items-center gap-4">

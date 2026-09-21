@@ -81,6 +81,9 @@
 
   html {
     scroll-behavior: smooth;
+    /* Keep anchor targets and keyboard-focused elements out from under the
+       sticky header (WCAG 2.2 "Focus Not Obscured"). */
+    scroll-padding-top: calc(var(--header-height) + 1rem);
   }
 
   body {

@@ -1,5 +1,6 @@
 import type { Programme } from "@/types";
 import { SITE } from "@/constants/site";
+import { Card } from "@/components/ui/Card";
 import { FACT_KEYS, getProgrammeFacts, type ProgrammeFact } from "@/lib/programme-facts";
 
 function FactValue({ fact }: { fact: ProgrammeFact }) {
@@ -29,7 +30,7 @@ function FactValue({ fact }: { fact: ProgrammeFact }) {
 export function ProgrammeDetail({ programme }: { programme: Programme }) {
   const facts = getProgrammeFacts(programme);
   return (
-    <section aria-labelledby="programme-facts" className="rounded-[var(--radius-card)] bg-ice p-6">
+    <Card as="section" aria-labelledby="programme-facts">
       <h2 id="programme-facts" className="mb-4 text-base font-bold text-navy">
         Programme facts
       </h2>
@@ -49,6 +50,6 @@ export function ProgrammeDetail({ programme }: { programme: Programme }) {
           </dd>
         </div>
       </dl>
-    </section>
+    </Card>
   );
 }
