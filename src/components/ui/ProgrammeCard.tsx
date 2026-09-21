@@ -13,7 +13,7 @@ type ProgrammeCardProps = {
 
 export function ProgrammeCard({ programme, featured, comparable }: ProgrammeCardProps) {
   return (
-    <article className="premium-card group flex h-full flex-col overflow-hidden">
+    <article className="premium-card card-choreo group flex h-full flex-col overflow-hidden">
       <div className="relative aspect-16/10 overflow-hidden">
         <FallbackImage
           src={photoOrPlaceholder(programme.imageUrl)}
@@ -45,10 +45,10 @@ export function ProgrammeCard({ programme, featured, comparable }: ProgrammeCard
         </div>
         <Link
           href={`/programmes/${programme.slug}`}
-          className="inline-flex items-center gap-2 text-sm font-bold text-brand-red transition hover:gap-3"
+          className="inline-flex items-center gap-2 text-sm font-bold text-brand-red"
         >
           View programme
-          <span aria-hidden>→</span>
+          <span aria-hidden className="inline-block transition-transform duration-300 ease-out group-hover:translate-x-1.5 group-focus-within:translate-x-1.5">→</span>
         </Link>
         {comparable && (
           <label className="mt-4 flex cursor-pointer items-center gap-2 border-t border-ice pt-4 text-sm text-charcoal">

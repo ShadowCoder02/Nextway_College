@@ -28,7 +28,7 @@ export function CTASection({
         <div className="gold-rule mx-auto mb-6" />
         <p className="mx-auto mb-10 max-w-2xl text-lg text-white/80">{description}</p>
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <Button href={primaryHref} variant="primary" size="lg">
+          <Button href={primaryHref} variant="primary" size="lg" magnetic>
             {primaryLabel}
           </Button>
           <Button href={secondaryHref} variant="outline-light" size="lg">

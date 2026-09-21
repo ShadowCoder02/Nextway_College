@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
 import { FallbackImage } from "@/components/ui/FallbackImage";
 import { IMAGES } from "@/constants/images";
 import { buildMetadata } from "@/lib/seo";
@@ -26,16 +27,17 @@ export default async function NewsPage() {
       <section className="py-16 lg:py-24">
         <div className="container-nwc">
           <h2 className="text-section mb-8">Latest news</h2>
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <RevealGroup className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {articles.map((article) => (
-              <article key={article.id} className="overflow-hidden rounded-[var(--radius-card)] bg-white shadow-[var(--shadow-soft)]">
-                <div className="relative aspect-16/10">
+              <RevealItem key={article.id} className="h-full">
+              <article className="premium-card card-choreo group h-full overflow-hidden">
+                <div className="relative aspect-16/10 overflow-hidden">
                   <FallbackImage
                     src={article.coverImageUrl}
                     fallbackSrc={IMAGES.campus}
-                    alt={article.title}
+                    alt=""
                     fill
-                    className="object-cover"
+                    className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 400px"
                   />
                 </div>
@@ -44,13 +46,15 @@ export default async function NewsPage() {
                   <h3 className="mb-2 text-xl font-bold">
                     <Link href={`/news/${article.slug}`} className="hover:text-deep-blue">
                       {article.title}
+                      <span aria-hidden="true" className="ml-1 inline-block text-brand-red transition-transform duration-300 group-hover:translate-x-1.5 group-focus-within:translate-x-1.5">→</span>
                     </Link>
                   </h3>
                   <p className="text-slate">{article.excerpt}</p>
                 </div>
               </article>
+              </RevealItem>
             ))}
-          </div>
+          </RevealGroup>
 
           <h2 className="text-section mb-8 mt-16">Upcoming events</h2>
           {events.length === 0 ? (

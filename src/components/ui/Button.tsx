@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { Magnetic } from "@/components/motion/Magnetic";
 
 type ButtonProps = React.ComponentProps<"button"> & {
   variant?:
@@ -13,6 +14,10 @@ type ButtonProps = React.ComponentProps<"button"> & {
     | "gold";
   size?: "sm" | "md" | "lg";
   href?: string;
+  /** Shows a spinner, sets aria-busy and blocks further clicks. */
+  loading?: boolean;
+  /** Desktop-only magnetic pull toward the cursor — use on the one primary CTA per view. */
+  magnetic?: boolean;
 };
 
 const variants = {
@@ -40,6 +45,8 @@ export function Button({
   variant = "primary",
   size = "md",
   href,
+  loading,
+  magnetic,
   children,
   ...props
 }: ButtonProps) {
@@ -50,17 +57,27 @@ export function Button({
     className,
   );
 
-  if (href) {
-    return (
-      <Link href={href} className={classes}>
-        {children}
-      </Link>
-    );
-  }
-
-  return (
-    <button className={classes} {...props}>
+  const content = (
+    <>
+      {loading && (
+        <span
+          aria-hidden="true"
+          className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent motion-reduce:animate-none"
+        />
+      )}
       {children}
+    </>
+  );
+
+  const element = href ? (
+    <Link href={href} className={classes}>
+      {content}
+    </Link>
+  ) : (
+    <button className={classes} {...props} disabled={props.disabled || loading} aria-busy={loading || undefined}>
+      {content}
     </button>
   );
+
+  return magnetic ? <Magnetic>{element}</Magnetic> : element;
 }

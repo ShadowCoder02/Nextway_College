@@ -196,7 +196,7 @@ export function Navbar({ schools }: { schools: SchoolLink[] }) {
         <div className="flex items-center gap-2 sm:gap-3">
           <SearchDialog schools={schools} className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-navy/15 bg-white px-3 text-sm font-medium text-navy transition hover:border-brand-red hover:text-brand-red xl:px-4" />
           <div className="hidden lg:block">
-            <Button href="/apply" variant="primary" size="sm">
+            <Button href="/apply" variant="primary" size="sm" magnetic>
               Apply Online
             </Button>
           </div>

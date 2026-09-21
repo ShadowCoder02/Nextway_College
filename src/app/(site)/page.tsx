@@ -12,6 +12,7 @@ import { StatStrip } from "@/components/ui/StatStrip";
 import { HeroBackdrop, HeroContent } from "@/components/motion/HeroParallax";
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
 import { TestimonialCarousel } from "@/components/motion/TestimonialCarousel";
+import { JourneyTimeline } from "@/components/motion/JourneyTimeline";
 import { IMAGES, HERO_BLUR_PLACEHOLDER, photoOrPlaceholder } from "@/constants/images";
 import { SITE } from "@/constants/site";
 import {
@@ -82,7 +83,7 @@ export default async function HomePage() {
               <h1 className="text-display mb-6 text-white">{SITE.tagline}</h1>
               <p className="text-lead mb-8 max-w-2xl text-white/90">{SITE.supportingLine}</p>
               <div className="flex flex-wrap gap-4">
-                <Button href="/programmes" variant="primary" size="lg">
+                <Button href="/programmes" variant="primary" size="lg" magnetic>
                   Explore Programmes
                 </Button>
                 <Button href="/contact" variant="outline-light" size="lg">
@@ -149,7 +150,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <HybridLearningSection />
+      <HybridLearningSection interactive />
 
       <ApprovalsStrip />
 
@@ -166,15 +167,17 @@ export default async function HomePage() {
             description="Structured academic excellence combined with practical experiences and personal guidance."
             align="center"
           />
-          <div className="flex flex-wrap justify-center gap-6">
+          <RevealGroup className="flex flex-wrap justify-center gap-6">
             {whyItems.map((item) => (
-              <article key={item.title} className="premium-card w-full p-7 sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)]">
-                <div className="mb-4 h-1 w-10 rounded-full bg-brand-red" />
-                <h3 className="mb-3 font-heading text-xl font-semibold">{item.title}</h3>
-                <p className="text-subtle">{item.description}</p>
-              </article>
+              <RevealItem key={item.title} className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)]">
+                <article className="premium-card h-full p-7">
+                  <div className="mb-4 h-1 w-10 rounded-full bg-brand-red" />
+                  <h3 className="mb-3 font-heading text-xl font-semibold">{item.title}</h3>
+                  <p className="text-subtle">{item.description}</p>
+                </article>
+              </RevealItem>
             ))}
-          </div>
+          </RevealGroup>
         </div>
       </section>
 
@@ -225,19 +228,7 @@ export default async function HomePage() {
             title="From enquiry to opportunity"
             align="center"
           />
-          <RevealGroup className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5" stagger={0.08}>
-            {studentJourney.map((step) => (
-              <RevealItem key={step.step} className="h-full">
-                <div className="premium-card h-full p-6 text-center">
-                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-navy text-lg font-bold text-gold">
-                    {step.step}
-                  </div>
-                  <h3 className="mb-2 text-lg font-bold">{step.title}</h3>
-                  <p className="text-sm text-slate">{step.text}</p>
-                </div>
-              </RevealItem>
-            ))}
-          </RevealGroup>
+          <JourneyTimeline steps={studentJourney} />
         </div>
       </section>
 
@@ -248,15 +239,15 @@ export default async function HomePage() {
             <SectionHeader eyebrow="News" title="Latest updates" />
             <div className="space-y-5">
               {news.map((article) => (
-                <article key={article.id} className="premium-card p-5">
+                <article key={article.id} className="premium-card card-choreo group p-5">
                   <div className="-m-5 mb-4 overflow-hidden rounded-t-[var(--radius-card)]">
                     <div className="relative aspect-16/9">
                       <FallbackImage
                         src={article.coverImageUrl}
                         fallbackSrc={IMAGES.campus}
-                        alt={article.title}
+                        alt=""
                         fill
-                        className="object-cover"
+                        className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                         sizes="(max-width: 1024px) 100vw, 600px"
                       />
                     </div>
@@ -284,15 +275,15 @@ export default async function HomePage() {
             ) : (
               <div className="space-y-5">
                 {events.map((event) => (
-                  <article key={event.id} className="premium-card p-5">
+                  <article key={event.id} className="premium-card card-choreo group p-5">
                     <div className="-m-5 mb-4 overflow-hidden rounded-t-[var(--radius-card)]">
                       <div className="relative aspect-16/9">
                         <FallbackImage
                           src={event.imageUrl}
                           fallbackSrc={IMAGES.campus}
-                          alt={event.title}
+                          alt=""
                           fill
-                          className="object-cover"
+                          className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                           sizes="(max-width: 1024px) 100vw, 600px"
                         />
                       </div>

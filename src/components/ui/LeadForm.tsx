@@ -38,6 +38,25 @@ export function LeadForm({
   const [serverError, setServerError] = useState("");
   const [messageLength, setMessageLength] = useState(0);
   const [referenceId, setReferenceId] = useState("");
+  const [valid, setValid] = useState<Partial<Record<"fullName" | "phone" | "email", boolean>>>({});
+
+  /** Inline validation on blur (and while fixing an error): same schema as
+   * submit, so the messages match; the server re-validates everything. */
+  async function validateField(name: "fullName" | "phone" | "email", value: string) {
+    const { enquirySchema } = await loadValidation();
+    const result = enquirySchema.shape[name].safeParse(value);
+    setErrors((prev) => ({ ...prev, [name]: result.success ? undefined : result.error.issues[0]?.message }));
+    setValid((prev) => ({ ...prev, [name]: result.success }));
+  }
+  const fieldHandlers = (name: "fullName" | "phone" | "email") => ({
+    onBlur: (e: React.FocusEvent<HTMLInputElement>) => {
+      if (e.target.value.trim() || errors[name]) void validateField(name, e.target.value);
+    },
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (errors[name]) void validateField(name, e.target.value);
+      else if (valid[name] === false) setValid((prev) => ({ ...prev, [name]: undefined }));
+    },
+  });
 
   const fieldRefs = {
     fullName: useRef<HTMLInputElement>(null),
@@ -169,14 +188,22 @@ export function LeadForm({
     );
   }
 
-  const inputClass =
-    "w-full rounded-lg border border-slate/30 bg-white px-4 py-3 text-charcoal placeholder:text-slate/60 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold";
+  const inputBase =
+    "w-full rounded-lg border bg-white px-4 py-3 text-charcoal placeholder:text-slate/60 transition-colors focus:outline-none focus:ring-1";
+  const inputClass = `${inputBase} border-slate/30 focus:border-gold focus:ring-gold`;
+  const stateClass = (name: "fullName" | "phone" | "email") =>
+    errors[name]
+      ? `${inputBase} border-error focus:border-error focus:ring-error`
+      : valid[name]
+        ? `${inputBase} border-success/60 focus:border-success focus:ring-success`
+        : inputClass;
 
   return (
     <form
       onSubmit={handleSubmit}
       onFocusCapture={warmValidation}
       onPointerEnter={warmValidation}
+      aria-busy={status === "loading"}
       className={cn("space-y-4", className)}
       noValidate
     >
@@ -203,13 +230,14 @@ export function LeadForm({
             ref={fieldRefs.fullName}
             id={`${uid}-fullName`}
             name="fullName"
-            className={inputClass}
+            className={stateClass("fullName")}
+            {...fieldHandlers("fullName")}
             required
             aria-invalid={Boolean(errors.fullName)}
             aria-describedby={errors.fullName ? `${uid}-fullName-error` : undefined}
           />
           {errors.fullName && (
-            <p id={`${uid}-fullName-error`} className="mt-1 text-sm text-error" role="alert">{errors.fullName}</p>
+            <p id={`${uid}-fullName-error`} className="field-error mt-1 text-sm text-error" role="alert">{errors.fullName}</p>
           )}
         </div>
         <div>
@@ -222,14 +250,15 @@ export function LeadForm({
             name="phone"
             type="tel"
             placeholder="077 123 4567"
-            className={inputClass}
+            className={stateClass("phone")}
+            {...fieldHandlers("phone")}
             required
             aria-invalid={Boolean(errors.phone)}
             aria-describedby={errors.phone ? `${uid}-phone-error` : `${uid}-phone-hint`}
           />
           <p id={`${uid}-phone-hint`} className="mt-1 text-xs text-slate">Sri Lankan number, e.g. 077 123 4567.</p>
           {errors.phone && (
-            <p id={`${uid}-phone-error`} className="mt-1 text-sm text-error" role="alert">{errors.phone}</p>
+            <p id={`${uid}-phone-error`} className="field-error mt-1 text-sm text-error" role="alert">{errors.phone}</p>
           )}
         </div>
       </div>
@@ -243,13 +272,14 @@ export function LeadForm({
           id={`${uid}-email`}
           name="email"
           type="email"
-          className={inputClass}
+          className={stateClass("email")}
+          {...fieldHandlers("email")}
           required
           aria-invalid={Boolean(errors.email)}
           aria-describedby={errors.email ? `${uid}-email-error` : undefined}
         />
         {errors.email && (
-          <p id={`${uid}-email-error`} className="mt-1 text-sm text-error" role="alert">{errors.email}</p>
+          <p id={`${uid}-email-error`} className="field-error mt-1 text-sm text-error" role="alert">{errors.email}</p>
         )}
       </div>
 
@@ -304,16 +334,24 @@ export function LeadForm({
         </span>
       </label>
       {errors.consent && (
-        <p id={`${uid}-consent-error`} className="text-sm text-error" role="alert">{errors.consent}</p>
+        <p id={`${uid}-consent-error`} className="field-error text-sm text-error" role="alert">{errors.consent}</p>
       )}
 
       {serverError && (
         <p className="text-sm text-error" role="alert" aria-live="polite">{serverError}</p>
       )}
 
-      <Button type="submit" variant="primary" disabled={status === "loading"} className="w-full sm:w-auto">
-        {status === "loading" ? "Submitting..." : "Submit enquiry"}
+      <Button type="submit" variant="primary" loading={status === "loading"} className="w-full sm:w-auto">
+        {status === "loading" ? "Submitting…" : "Submit enquiry"}
       </Button>
+      {status === "loading" && (
+        <>
+          <div className="submit-progress h-1 overflow-hidden rounded-full bg-ice" aria-hidden="true">
+            <span className="block h-full w-1/3 rounded-full bg-brand-red" style={{ animation: "submitProgress 1.1s ease-in-out infinite" }} />
+          </div>
+          <p role="status" className="sr-only">Submitting your enquiry…</p>
+        </>
+      )}
     </form>
   );
 }

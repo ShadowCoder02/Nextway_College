@@ -115,7 +115,6 @@
     background-size: 92px 92px;
     mask-image: radial-gradient(circle at center, black 30%, transparent 100%);
     opacity: 0.5;
-    animation: gentleGridDrift 20s linear infinite;
   }
 
   body::after {
@@ -131,7 +130,6 @@
       radial-gradient(circle at 65% 40%, rgba(201, 162, 39, 0.08), rgba(201, 162, 39, 0) 74%);
     filter: blur(72px);
     opacity: 0.56;
-    animation: ambientFloat 18s ease-in-out infinite alternate, ambientGlowShift 22s ease-in-out infinite;
   }
 
   @media (min-width: 1024px) {
@@ -191,13 +189,6 @@
       scroll-behavior: auto !important;
     }
 
-    body::before {
-      animation: none !important;
-    }
-
-    body::after {
-      animation: none !important;
-    }
   }
 }
 
@@ -378,39 +369,8 @@
   }
 }
 
-@keyframes gentleGridDrift {
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(16px, -10px, 0);
-  }
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes ambientFloat {
-  0% {
-    transform: translate3d(0, 0, 0) scale(0.98);
-  }
-  100% {
-    transform: translate3d(48px, 26px, 0) scale(1.06);
-  }
-}
-
-@keyframes ambientGlowShift {
-  0%,
-  100% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 0.62;
-  }
-}
-
 /* ------------------------------------------------------------------ */
-/* Motion layer (Framer Motion reveals, Lenis, marquee, WhatsApp pulse) */
+/* Motion layer (scroll reveals, Lenis, route transition, WhatsApp cue)     */
 /* ------------------------------------------------------------------ */
 
 /* Lenis owns wheel smoothing; native smooth-scrolling would double up. */
@@ -419,74 +379,89 @@ html.lenis-smooth {
   scroll-behavior: auto !important;
 }
 
-/* Reveal blocks are server-rendered at opacity 0 (Framer's initial state).
-   Force them visible when motion is off or JS is unavailable (the <noscript>
-   rule in the root layout covers the latter). !important beats Framer's
-   inline style. */
+/* Route change: 220ms fade + 8px rise. Reduced-motion users get none. */
+.route-enter {
+  animation: routeEnter 0.22s ease-out both;
+}
+
+@keyframes routeEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  [data-reveal] {
+  .route-enter {
+    animation: none;
+  }
+}
+
+/* Scroll reveals (see src/components/motion/Reveal.tsx). Nothing is hidden
+   until JS marks an off-screen element `pending`; the failsafe animation shows
+   it after 3s even if the IntersectionObserver never fires. */
+[data-reveal="pending"],
+[data-reveal-group="pending"] > [data-reveal-item] {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: revealFailsafe 0.01s linear 3s forwards;
+}
+
+[data-reveal="in"],
+[data-reveal-group="in"] > [data-reveal-item] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.5s ease-out var(--reveal-delay, 0s),
+    transform 0.5s ease-out var(--reveal-delay, 0s);
+}
+
+/* 70ms stagger between siblings. */
+[data-reveal-group] > [data-reveal-item]:nth-child(2) { --reveal-delay: 0.07s; }
+[data-reveal-group] > [data-reveal-item]:nth-child(3) { --reveal-delay: 0.14s; }
+[data-reveal-group] > [data-reveal-item]:nth-child(4) { --reveal-delay: 0.21s; }
+[data-reveal-group] > [data-reveal-item]:nth-child(5) { --reveal-delay: 0.28s; }
+[data-reveal-group] > [data-reveal-item]:nth-child(6) { --reveal-delay: 0.35s; }
+[data-reveal-group] > [data-reveal-item]:nth-child(n + 7) { --reveal-delay: 0.42s; }
+
+@keyframes revealFailsafe {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal],
+  [data-reveal-item] {
     opacity: 1 !important;
     transform: none !important;
+    transition: none !important;
+    animation: none !important;
   }
 }
 
 /* Counter digits stay hidden until the client has armed the count-up, so the
    final SSR value never flashes before it resets to 0. `.js` is added by an
-   inline script in the root layout, so no-JS visitors still see the value. */
+   inline script in the root layout (no-JS visitors still see the value), and
+   the failsafe reveals them after 2.5s if hydration never completes. */
 html.js [data-counter]:not([data-ready]) {
   visibility: hidden;
+  animation: counterFailsafe 0.01s linear 2.5s forwards;
 }
 
-/* Infinite partner marquee: transform-only, paused on hover/focus. */
-.marquee {
-  overflow: hidden;
-  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
-}
-
-.marquee-track {
-  display: flex;
-  width: max-content;
-  animation: marqueeScroll 50s linear infinite;
-  will-change: transform;
-}
-
-.marquee:hover .marquee-track,
-.marquee:focus-within .marquee-track {
-  animation-play-state: paused;
-}
-
-@keyframes marqueeScroll {
+@keyframes counterFailsafe {
   to {
-    transform: translateX(-50%);
+    visibility: visible;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .marquee {
-    mask-image: none;
-    -webkit-mask-image: none;
-  }
-
-  .marquee-track {
-    animation: none;
-    width: auto;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .marquee-track > ul {
-    flex-wrap: wrap;
-    justify-content: center;
-    width: 100%;
-  }
-
-  .marquee-dup {
-    display: none;
-  }
-}
-
-/* WhatsApp button: a slow expanding ring (transform + opacity only). */
+/* WhatsApp button: a soft ring that pulses twice after load, then stops
+   (transform + opacity only; no perpetual motion). */
 .whatsapp-pulse::before {
   content: "";
   position: absolute;
@@ -495,7 +470,7 @@ html.js [data-counter]:not([data-ready]) {
   border-radius: 9999px;
   background: #25d366;
   opacity: 0;
-  animation: whatsappPulse 3.6s ease-out infinite;
+  animation: whatsappPulse 2.4s ease-out 3s 2;
 }
 
 @keyframes whatsappPulse {
@@ -514,5 +489,141 @@ html.js [data-counter]:not([data-ready]) {
   .whatsapp-pulse::before {
     animation: none;
     display: none;
+  }
+}
+
+/* Testimonial carousel: slide + quote-mark reveal, only after the visitor
+   changes slide (data-dir is unset on first render). */
+.carousel-slide[data-dir] {
+  animation: carouselIn 0.35s ease-out both;
+}
+
+.carousel-slide[data-dir="next"] {
+  --from: 32px;
+}
+
+.carousel-slide[data-dir="prev"] {
+  --from: -32px;
+}
+
+.carousel-slide[data-dir] .quote-glyph {
+  animation: quoteIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+}
+
+@keyframes carouselIn {
+  from {
+    opacity: 0;
+    transform: translateX(var(--from, 0));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes quoteIn {
+  from {
+    opacity: 0;
+    transform: scale(0.4) rotate(-12deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-slide[data-dir],
+  .carousel-slide[data-dir] .quote-glyph {
+    animation: none;
+  }
+}
+
+/* Scroll-scrubbed diagrams (journey timeline, 80/20 ring): steps ease between
+   "not yet reached" and "reached". The final state is the server-rendered one. */
+.journey-dot {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.journey-step[data-active="true"] .journey-dot {
+  border-color: var(--color-navy);
+  background: var(--color-navy);
+  color: var(--color-gold);
+}
+
+.journey-step[data-active="false"] .journey-dot {
+  border-color: rgba(15, 35, 64, 0.2);
+  background: var(--color-white);
+  color: var(--color-slate);
+}
+
+.hybrid-check {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.hybrid-item[data-active="true"] .hybrid-check {
+  border-color: rgba(201, 162, 39, 0.6);
+  background: rgba(201, 162, 39, 0.15);
+  color: var(--color-gold);
+}
+
+.hybrid-item[data-active="false"] .hybrid-check {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* Programme / news cards: a touch of scale on hover, and equivalent pressed +
+   keyboard-focus feedback where there is no hover (touch). */
+@media (hover: hover) and (pointer: fine) {
+  .card-choreo:hover {
+    transform: translateY(-4px) scale(1.02);
+  }
+}
+
+@media (hover: none) {
+  .card-choreo:active {
+    transform: scale(0.985);
+    box-shadow: var(--shadow-card-hover);
+  }
+}
+
+.card-choreo:focus-within {
+  box-shadow: var(--shadow-card-hover), 0 0 0 2px var(--color-gold);
+}
+
+/* Inline form feedback: a message eases in, but is always real text. */
+.field-error {
+  animation: fieldErrorIn 0.2s ease-out both;
+}
+
+@keyframes fieldErrorIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes submitProgress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field-error {
+    animation: none;
+  }
+
+  .submit-progress > span {
+    animation: none !important;
+    width: 100% !important;
   }
 }

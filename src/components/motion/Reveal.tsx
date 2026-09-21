@@ -1,70 +1,64 @@
 "use client";
 
-import { m, type Variants } from "framer-motion";
+import { useEffect, useRef } from "react";
+import { cn } from "@/lib/utils";
 
-// Spec: translateY ~24px, opacity 0 -> 1, ~400ms ease-out, once, triggered
-// slightly before the element is fully in view.
-const VIEWPORT = { once: true, margin: "-100px" } as const;
+/**
+ * Scroll reveals as progressive enhancement. The server renders everything
+ * visible; on mount, only elements that are still below the fold are marked
+ * `pending` (translated 12px, transparent) and flipped to `in` when they
+ * scroll into view — once. If JS never runs, nothing is ever hidden; if the
+ * observer somehow never fires, a CSS failsafe reveals after 3s; reduced-motion
+ * users get the final state immediately (all in globals.css).
+ */
+function useRevealOnce<T extends HTMLElement>(attr: "data-reveal" | "data-reveal-group") {
+  const ref = useRef<T>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Already on screen at load: leave it alone (no flash, no animation).
+    if (el.getBoundingClientRect().top < window.innerHeight * 0.95) return;
 
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
-};
+    el.setAttribute(attr, "pending");
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        el.setAttribute(attr, "in");
+        io.disconnect();
+      },
+      { rootMargin: "0px 0px -8% 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [attr]);
+  return ref;
+}
 
-type RevealProps = {
-  children: React.ReactNode;
-  className?: string;
-  /** seconds */
-  delay?: number;
-};
-
-/** Fade + slide-up for a single block as it scrolls into view. The
- * `data-reveal` hook lets globals.css force it visible for reduced-motion
- * users and no-JS visitors (SSR markup starts at opacity 0). */
-export function Reveal({ children, className, delay = 0 }: RevealProps) {
+/** Fade + 12px slide-up (500ms) for a single block as it scrolls into view. */
+export function Reveal({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; /** seconds */ delay?: number }) {
+  const ref = useRevealOnce<HTMLDivElement>("data-reveal");
   return (
-    <m.div
-      data-reveal
-      className={className}
-      initial="hidden"
-      whileInView="show"
-      viewport={VIEWPORT}
-      variants={{
-        hidden: itemVariants.hidden,
-        show: { ...(itemVariants.show as object), transition: { duration: 0.4, ease: "easeOut", delay } },
-      }}
-    >
+    <div ref={ref} className={className} style={delay ? ({ "--reveal-delay": `${delay}s` } as React.CSSProperties) : undefined}>
       {children}
-    </m.div>
+    </div>
   );
 }
 
-type RevealGroupProps = {
-  children: React.ReactNode;
-  className?: string;
-  /** seconds between children */
-  stagger?: number;
-};
-
-/** Container that staggers its <RevealItem> children into view. */
-export function RevealGroup({ children, className, stagger = 0.08 }: RevealGroupProps) {
+/** Reveals its <RevealItem> children in sequence (70ms apart, see globals.css). */
+export function RevealGroup({ children, className }: { children: React.ReactNode; className?: string; /** kept for API compatibility; spacing is fixed at 70ms */ stagger?: number }) {
+  const ref = useRevealOnce<HTMLDivElement>("data-reveal-group");
   return (
-    <m.div
-      className={className}
-      initial="hidden"
-      whileInView="show"
-      viewport={VIEWPORT}
-      variants={{ hidden: {}, show: { transition: { staggerChildren: stagger } } }}
-    >
+    <div ref={ref} className={className}>
       {children}
-    </m.div>
+    </div>
   );
 }
 
 export function RevealItem({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <m.div data-reveal className={className} variants={itemVariants}>
+    <div data-reveal-item="" className={cn(className)}>
       {children}
-    </m.div>
+    </div>
   );
 }

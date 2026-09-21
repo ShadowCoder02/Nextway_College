@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { getPublicApprovals, type Approval } from "@/constants/approvals";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
 
 type ApprovalsStripProps = {
   title?: string;
@@ -64,27 +65,13 @@ export function ApprovalsStrip({
             </div>
           </div>
         ) : (
-          <div className="marquee mx-auto max-w-6xl py-4">
-            <div className="marquee-track">
-              <ul className="flex shrink-0">
-                {approvals.map((item) => (
-                  <li key={item.name} className="w-56 shrink-0 pr-5">
-                    <ApprovalCard item={item} />
-                  </li>
-                ))}
-              </ul>
-              {/* Duplicate copy makes the -50% loop seamless; hidden from
-                  assistive tech and made inert so any verify links inside it
-                  can't be tabbed to twice. */}
-              <ul className="marquee-dup flex shrink-0" aria-hidden="true" inert>
-                {approvals.map((item) => (
-                  <li key={item.name} className="w-56 shrink-0 pr-5">
-                    <ApprovalCard item={item} />
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+          <RevealGroup className="mx-auto grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {approvals.map((item) => (
+              <RevealItem key={item.name} className="h-full">
+                <ApprovalCard item={item} />
+              </RevealItem>
+            ))}
+          </RevealGroup>
         )}
       </div>
     </section>
