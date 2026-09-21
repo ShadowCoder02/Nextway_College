@@ -80,6 +80,49 @@ structured for this data, rendering "To be confirmed" placeholders and a
 - [ ] Once addresses exist, the branch finder's map placeholder can be
       replaced with a real embed/plot.
 
+## Master remediation pass — items needing client input
+
+Every placeholder is a `{{NEEDS CLIENT INPUT: …}}` token in source/data
+(`grep -rn "NEEDS CLIENT INPUT" src content`). Tokens never render publicly —
+`src/lib/client-input.ts` strips them and shows a neutral fallback or nothing.
+
+- [ ] **Partner / accreditation logos** (`src/constants/approvals.ts`): a logo
+      alone implies an endorsement, so partners WITHOUT a real, specific
+      description are now hidden (the whole "Accreditations & Affiliations"
+      section disappears from Home and About until at least one is supplied).
+      Per partner: description of the relationship + a verify URL. To show
+      logos anyway (not recommended) set `SHOW_UNVERIFIED_APPROVALS = true`.
+- [ ] **Unsubstantiated accreditation wording in copy** — confirm or reword:
+      `src/data/content.ts` ("Accredited partnerships" card), `src/app/(site)/about/page.tsx`
+      ("accredited partnerships"), `src/app/(site)/apply/page.tsx`
+      ("internationally recognised qualification"), and the default heading
+      text in `src/components/marketing/ApprovalsStrip.tsx`.
+- [ ] **Social profiles** (`SITE.social` in `src/constants/site.ts`): real
+      Facebook / Instagram / LinkedIn URLs. Until then the footer shows none
+      and JSON-LD `sameAs` is omitted.
+- [ ] **Testimonials** (`src/data/content.ts`): confirm all three are genuine
+      and consented; supply full first name, graduation year/intake and — with
+      written consent — a real photo for each. Photos only render when
+      `photoConsentConfirmed` is true.
+- [ ] **Programme facts** (per programme, editable in the admin programme
+      editor): awarding institution, recognition/accreditation status, actual
+      duration (many still say the generic "As per programme structure"),
+      published fees (or confirm "on request"), next intake date. Missing
+      facts render as "Not yet confirmed — ask Admissions".
+- [ ] **Programme entry requirements** are generic boilerplate for most
+      programmes ("as approved by the College") — supply the real ones.
+
+### Repeated imagery (client to supply distinct photography)
+
+- Home: `hero-image.jpg` ×3 (hero backdrop, one programme card, campus
+  showcase); `nextway-college.jpg` ×4 (cards + fallback tiles).
+- `/programmes`: `nextway-college.jpg` ×5, `hero-image.jpg` ×2, and the
+  college **logo graphic (`nextway.png`) ×3 shown as a programme "photo"**
+  (now swapped for the campus placeholder at render time by
+  `photoOrPlaceholder`, but the seed data should get real photos).
+- 6 programmes share `/images/programmes/placeholder.jpg`
+  (see "Programme photography" above).
+
 ## Accreditation partner descriptions (Session 3, accreditation redesign)
 
 `src/constants/approvals.ts` — all 8 partner logos (CPD, Universidad Azteca,

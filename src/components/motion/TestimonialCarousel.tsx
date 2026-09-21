@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, LazyMotion, m, type PanInfo } from "framer-motion";
 import { useInView } from "./use-in-view";
+import Image from "next/image";
+import type { PresentedTestimonial } from "@/lib/testimonials";
 import { usePrefersReducedMotion } from "./use-reduced-motion";
 
 // Drag needs the larger feature bundle. It is only requested once the
@@ -10,12 +12,7 @@ import { usePrefersReducedMotion } from "./use-reduced-motion";
 // visitors who don't scroll that far. Until it arrives the carousel already
 // works via the arrows/dots and autoplay.
 
-export type CarouselTestimonial = {
-  id: string;
-  quote: string;
-  studentName: string;
-  programme: string;
-};
+export type CarouselTestimonial = PresentedTestimonial;
 
 const AUTOPLAY_MS = 7000;
 const SWIPE_OFFSET = 60;
@@ -31,9 +28,26 @@ function Quote({ t }: { t: CarouselTestimonial }) {
   return (
     <>
       <p className="text-lg leading-relaxed text-charcoal sm:text-xl">{t.quote}</p>
-      <footer className="mt-6">
-        <cite className="font-bold not-italic text-navy">{t.studentName}</cite>
-        <p className="text-sm text-slate">{t.programme}</p>
+      <footer className="mt-6 flex items-center gap-4">
+        {t.photoUrl ? (
+          <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full ring-2 ring-gold/40">
+            <Image src={t.photoUrl} alt="" fill className="object-cover" sizes="56px" />
+          </span>
+        ) : (
+          <span
+            aria-hidden="true"
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-navy font-heading text-lg font-semibold text-gold"
+          >
+            {t.initials}
+          </span>
+        )}
+        <div>
+          <cite className="font-bold not-italic text-navy">{t.name}</cite>
+          <p className="text-sm text-slate">
+            {t.programme}
+            {t.cohort ? ` · ${t.cohort}` : ""}
+          </p>
+        </div>
       </footer>
     </>
   );

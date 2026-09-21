@@ -38,6 +38,22 @@ export const enquirySchema = z.object({
 
 export type EnquiryFormData = z.infer<typeof enquirySchema>;
 
+/** "Notify me about upcoming events" — email is the only required contact. */
+export const eventNotifySchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .max(100, "Name must be under 100 characters")
+    .optional()
+    .transform((v) => (v ? v : undefined)),
+  email: emailSchema,
+  consent: z.literal(true, {
+    errorMap: () => ({ message: "Please agree to receive event notifications" }),
+  }),
+});
+
+export type EventNotifyData = z.infer<typeof eventNotifySchema>;
+
 // Staff/admin login (username + password, no phone field) moved to
 // src/lib/staff-login-validation.ts so it doesn't share a module — and
 // therefore a client bundle — with this file's phone-parsing dependency.

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Programme } from "@/types";
 import { Badge } from "./Badge";
-import { CARD_BLUR_PLACEHOLDER, IMAGES } from "@/constants/images";
+import { CARD_BLUR_PLACEHOLDER, IMAGES, photoOrPlaceholder } from "@/constants/images";
 import { FallbackImage } from "./FallbackImage";
 
 type ProgrammeCardProps = {
@@ -14,7 +14,7 @@ export function ProgrammeCard({ programme, featured }: ProgrammeCardProps) {
     <article className="premium-card group flex h-full flex-col overflow-hidden">
       <div className="relative aspect-16/10 overflow-hidden">
         <FallbackImage
-          src={programme.imageUrl}
+          src={photoOrPlaceholder(programme.imageUrl)}
           fallbackSrc={IMAGES.campus}
           alt=""
           fill

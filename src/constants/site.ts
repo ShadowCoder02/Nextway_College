@@ -1,4 +1,5 @@
 import { BRANCHES as BRANCH_DIRECTORY } from "@/data/branches";
+import { needsInput } from "@/lib/client-input";
 
 function resolveSiteUrl(): string {
   // Vercel sets VERCEL_ENV to "production" | "preview" | "development" on
@@ -45,14 +46,13 @@ export const SITE = {
   logoIcon: "/brand/logo-icon.png",
   studyModel: "80% online · 20% direct (hybrid)",
   mediums: ["English", "Tamil"],
-  // TODO(content): these were bare domain roots (facebook.com, not a real
-  // page), not real profile links, so they render as broken/generic
-  // footer links. Left empty until the college supplies real profile
-  // URLs — Footer only renders a key with a non-empty value.
+  // Real profile URLs only. Footer renders a network only when its value is
+  // real (see clientValue) — a dead social icon is a trust red flag, so the
+  // token stays here until the college supplies the actual page URL.
   social: {
-    facebook: "",
-    instagram: "",
-    linkedin: "",
+    facebook: needsInput("URL of the college's real Facebook page"),
+    instagram: needsInput("URL of the college's real Instagram profile"),
+    linkedin: needsInput("URL of the college's real LinkedIn page"),
   },
 } as const;
 

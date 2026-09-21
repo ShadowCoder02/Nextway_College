@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { APPROVALS, type Approval } from "@/constants/approvals";
+import { getPublicApprovals, type Approval } from "@/constants/approvals";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 
 type ApprovalsStripProps = {
@@ -35,6 +35,9 @@ export function ApprovalsStrip({
   description = "Recognised partnerships that build trust in our academic standards and global outlook.",
   compact = false,
 }: ApprovalsStripProps) {
+  const approvals = getPublicApprovals();
+  if (approvals.length === 0) return null;
+
   return (
     <section className={compact ? "py-12" : "section-padding bg-ice"}>
       <div className="container-nwc">
@@ -44,7 +47,7 @@ export function ApprovalsStrip({
         {compact ? (
           <div className="glass-panel mx-auto max-w-6xl p-6 lg:p-10">
             <div className="grid grid-cols-2 items-center gap-8 sm:grid-cols-3 lg:grid-cols-4">
-              {APPROVALS.map((item) => (
+              {approvals.map((item) => (
                 <div
                   key={item.name}
                   className="group flex flex-col items-center justify-center gap-3 rounded-2xl bg-white/60 p-4 transition hover:-translate-y-1 hover:bg-white/90"
@@ -64,7 +67,7 @@ export function ApprovalsStrip({
           <div className="marquee mx-auto max-w-6xl py-4">
             <div className="marquee-track">
               <ul className="flex shrink-0">
-                {APPROVALS.map((item) => (
+                {approvals.map((item) => (
                   <li key={item.name} className="w-56 shrink-0 pr-5">
                     <ApprovalCard item={item} />
                   </li>
@@ -74,7 +77,7 @@ export function ApprovalsStrip({
                   assistive tech and made inert so any verify links inside it
                   can't be tabbed to twice. */}
               <ul className="marquee-dup flex shrink-0" aria-hidden="true" inert>
-                {APPROVALS.map((item) => (
+                {approvals.map((item) => (
                   <li key={item.name} className="w-56 shrink-0 pr-5">
                     <ApprovalCard item={item} />
                   </li>

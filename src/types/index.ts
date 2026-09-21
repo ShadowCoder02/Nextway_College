@@ -68,6 +68,10 @@ export interface Programme {
   whyThisProgramme: string;
   learningOutcomes: string[];
   entryRequirements: string[];
+  /** Body that awards the qualification (e.g. a university or awarding organisation). */
+  awardingInstitution?: string;
+  /** Recognition / accreditation status of THIS programme, in the college's own verified words. */
+  recognition?: string;
   assessment: string;
   careerOpportunities: string[];
   progression: string;
@@ -114,11 +118,20 @@ export interface EventItem {
 
 export interface Testimonial {
   id: string;
+  /** Display fallback used when firstName/lastName aren't supplied, e.g. "A. Fernando". */
   studentName: string;
+  /** Real first / last name — use these once the student has agreed to be named in full. */
+  firstName?: string;
+  lastName?: string;
   programme: string;
+  /** Graduation year or intake, e.g. "Graduated 2025" / "2024 intake". */
+  cohort?: string;
   quote: string;
+  /** Real photo of the student. Only ever shown when photoConsentConfirmed is true. */
   imageUrl?: string;
+  photoConsentConfirmed?: boolean;
   status: PublishStatus;
+  /** Consent to publish the quote itself. */
   consentConfirmed: boolean;
 }
 

@@ -150,6 +150,18 @@ export function ProgrammesManager() {
               value={editing.location}
               onChange={(e) => setEditing({ ...editing, location: e.target.value })}
             />
+            <input
+              className="input-premium"
+              placeholder="Awarding institution (verified)"
+              value={editing.awardingInstitution ?? ""}
+              onChange={(e) => setEditing({ ...editing, awardingInstitution: e.target.value })}
+            />
+            <input
+              className="input-premium"
+              placeholder="Recognition / accreditation (verified)"
+              value={editing.recognition ?? ""}
+              onChange={(e) => setEditing({ ...editing, recognition: e.target.value })}
+            />
           </div>
           <textarea
             className="input-premium min-h-24"

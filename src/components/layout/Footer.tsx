@@ -1,5 +1,6 @@
 import { SITE, NAV_LINKS } from "@/constants/site";
 import { whatsappUrl } from "@/lib/utils";
+import { clientValue } from "@/lib/client-input";
 import { faLocationDot, faPhone, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -102,7 +103,7 @@ export function Footer() {
           </ul>
           <div className="flex gap-4">
             {Object.entries(SITE.social)
-              .filter(([, url]) => Boolean(url))
+              .filter(([, url]) => Boolean(clientValue(url)))
               .map(([key, url]) => (
                 <a
                   key={key}

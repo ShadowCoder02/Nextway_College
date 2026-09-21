@@ -9,6 +9,7 @@ import { getUpcomingEvents, getPastEvents } from "@/services/events";
 import type { EventItem } from "@/types";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
+import { EventNotifyForm } from "@/components/events/EventNotifyForm";
 
 export const metadata = buildMetadata({
   title: "Events",
@@ -51,24 +52,21 @@ export default async function EventsPage() {
             {upcoming.length === 0 ? (
               <EmptyState
                 heading="No upcoming events are scheduled right now"
-                body="Ask Admissions about upcoming open days and information sessions — or explore our programmes while you wait."
+                body="Leave your email and we'll tell you when the next open day or information session is scheduled — or catch up on the latest news in the meantime."
                 action={
-                  <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-                    <Button href="/contact" variant="primary">Ask Admissions</Button>
-                    <a
-                      href={whatsappUrl(SITE.whatsapp, "Hello Nextway College, please let me know about upcoming events and open days.")}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm font-semibold text-navy underline underline-offset-2 hover:text-brand-red"
-                    >
-                      Message us on WhatsApp
-                    </a>
-                    <Link
-                      href="/programmes"
-                      className="text-sm font-semibold text-navy underline underline-offset-2 hover:text-brand-red"
-                    >
-                      Browse programmes
-                    </Link>
+                  <div className="space-y-6">
+                    <EventNotifyForm />
+                    <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+                      <Button href="/news" variant="outline">Read the latest news</Button>
+                      <a
+                        href={whatsappUrl(SITE.whatsapp, "Hello Nextway College, please let me know about upcoming events and open days.")}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm font-semibold text-navy underline underline-offset-2 hover:text-brand-red"
+                      >
+                        Or message Admissions on WhatsApp
+                      </a>
+                    </div>
                   </div>
                 }
               />

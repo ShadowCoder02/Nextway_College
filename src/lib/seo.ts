@@ -1,3 +1,4 @@
+import { clientValue } from "@/lib/client-input";
 import type { Metadata } from "next";
 import { SITE } from "@/constants/site";
 
@@ -60,6 +61,12 @@ function absoluteUrl(url: string): string {
   return url.startsWith("http") ? url : `${SITE.url}${url}`;
 }
 
+function socialProfiles(): string[] {
+  return Object.values(SITE.social)
+    .map((url) => clientValue(url))
+    .filter((url): url is string => Boolean(url));
+}
+
 export function organizationJsonLd() {
   return {
     "@context": "https://schema.org",
@@ -80,9 +87,7 @@ export function organizationJsonLd() {
     email: SITE.email,
     // Omit the key entirely while no real profile URLs exist, rather than
     // publishing structured data pointing at bare domain roots.
-    ...(Object.values(SITE.social).some(Boolean)
-      ? { sameAs: Object.values(SITE.social).filter(Boolean) }
-      : {}),
+    ...(socialProfiles().length > 0 ? { sameAs: socialProfiles() } : {}),
   };
 }
 

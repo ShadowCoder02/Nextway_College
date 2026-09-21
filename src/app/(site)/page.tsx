@@ -12,7 +12,7 @@ import { StatStrip } from "@/components/ui/StatStrip";
 import { HeroBackdrop, HeroContent } from "@/components/motion/HeroParallax";
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
 import { TestimonialCarousel } from "@/components/motion/TestimonialCarousel";
-import { IMAGES, HERO_BLUR_PLACEHOLDER } from "@/constants/images";
+import { IMAGES, HERO_BLUR_PLACEHOLDER, photoOrPlaceholder } from "@/constants/images";
 import { SITE } from "@/constants/site";
 import {
   studentJourney,
@@ -21,6 +21,7 @@ import {
   whyNextWay,
 } from "@/data/content";
 import { formatDate, formatDateTime } from "@/lib/utils";
+import { publishedTestimonials } from "@/lib/testimonials";
 import { getFeaturedProgrammes, getFlagshipProgramme } from "@/services/programmes";
 import { getLatestNews } from "@/services/news";
 import { getUpcomingEvents } from "@/services/events";
@@ -142,7 +143,7 @@ export default async function HomePage() {
           <div className="container-nwc grid items-center gap-12 lg:grid-cols-2">
             <div className="relative aspect-4/3 overflow-hidden rounded-card shadow-premium">
               <FallbackImage
-                src={flagship.imageUrl}
+                src={photoOrPlaceholder(flagship.imageUrl)}
                 fallbackSrc={IMAGES.campus}
                 alt={flagship.title}
                 fill
@@ -281,12 +282,7 @@ export default async function HomePage() {
           <SectionHeader eyebrow="Student Voices" title="What learners say" align="center" />
           <Reveal>
             <TestimonialCarousel
-              testimonials={testimonials.map(({ id, quote, studentName, programme }) => ({
-                id,
-                quote,
-                studentName,
-                programme,
-              }))}
+              testimonials={publishedTestimonials(testimonials)}
             />
           </Reveal>
         </div>

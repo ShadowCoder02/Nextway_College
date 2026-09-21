@@ -1,3 +1,4 @@
+import { needsInput } from "@/lib/client-input";
 import type {
   EventItem,
   NewsArticle,
@@ -585,6 +586,11 @@ export const events: EventItem[] = [
   },
 ];
 
+// TODO(content): these three entries carry only initials + surname, a
+// programme and a quote. Before relying on them as social proof the college
+// must (1) confirm each is a genuine, consented testimonial, and (2) supply
+// the full first name, graduation year/intake and — with written consent — a
+// real photo. Placeholders below never render (see src/lib/testimonials.ts).
 export const testimonials: Testimonial[] = [
   {
     id: "t1",
@@ -592,6 +598,10 @@ export const testimonials: Testimonial[] = [
     programme: "Diploma in Software Development",
     quote:
       "The lecturers explained concepts clearly and the practical sessions helped me build confidence for real projects.",
+    cohort: needsInput("graduation year or intake for this student"),
+    firstName: needsInput("this student's real first name (with their consent to be named)"),
+    imageUrl: needsInput("a real photo of this student"),
+    photoConsentConfirmed: false,
     status: "published",
     consentConfirmed: true,
   },
@@ -601,6 +611,10 @@ export const testimonials: Testimonial[] = [
     programme: "Higher Diploma in Business Management",
     quote:
       "I appreciated how approachable the academic team was. The guidance around careers made the journey feel purposeful.",
+    cohort: needsInput("graduation year or intake for this student"),
+    firstName: needsInput("this student's real first name (with their consent to be named)"),
+    imageUrl: needsInput("a real photo of this student"),
+    photoConsentConfirmed: false,
     status: "published",
     consentConfirmed: true,
   },
@@ -610,6 +624,10 @@ export const testimonials: Testimonial[] = [
     programme: "Diploma in English",
     quote:
       "My communication improved quickly. Classes were supportive and focused on both academic and workplace English.",
+    cohort: needsInput("graduation year or intake for this student"),
+    firstName: needsInput("this student's real first name (with their consent to be named)"),
+    imageUrl: needsInput("a real photo of this student"),
+    photoConsentConfirmed: false,
     status: "published",
     consentConfirmed: true,
   },

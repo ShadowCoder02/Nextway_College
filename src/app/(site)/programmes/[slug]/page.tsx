@@ -4,11 +4,11 @@ import { CTASection } from "@/components/ui/CTASection";
 import { LeadForm } from "@/components/ui/LeadForm";
 import { Badge } from "@/components/ui/Badge";
 import { buildMetadata, courseJsonLd } from "@/lib/seo";
-import { IMAGES, HERO_BLUR_PLACEHOLDER } from "@/constants/images";
-import { SITE } from "@/constants/site";
+import { IMAGES, HERO_BLUR_PLACEHOLDER, photoOrPlaceholder } from "@/constants/images";
 import { FallbackImage } from "@/components/ui/FallbackImage";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { getProgrammeBySlug } from "@/services/programmes";
+import { ProgrammeDetail } from "@/components/programme/ProgrammeDetail";
 
 type PageProps = { params: Promise<{ slug: string }> };
 
@@ -65,7 +65,7 @@ export default async function ProgrammeDetailPage({ params }: PageProps) {
       <section className="relative bg-navy text-white">
         <div className="absolute inset-0 opacity-25">
           <FallbackImage
-            src={programme.imageUrl}
+            src={photoOrPlaceholder(programme.imageUrl, IMAGES.hero)}
             fallbackSrc={IMAGES.hero}
             alt=""
             fill
@@ -224,39 +224,7 @@ export default async function ProgrammeDetailPage({ params }: PageProps) {
 
           <aside className="space-y-6">
             <div className="sticky top-24 space-y-6">
-              <div className="rounded-[var(--radius-card)] bg-ice p-6">
-                <h3 className="mb-4 font-bold text-navy">Programme details</h3>
-                <dl className="space-y-3 text-sm">
-                  <div><dt className="text-slate">School</dt><dd className="font-medium">{programme.schoolName}</dd></div>
-                  <div><dt className="text-slate">Level</dt><dd className="font-medium">{programme.level}</dd></div>
-                  <div><dt className="text-slate">Duration</dt><dd className="font-medium">{programme.duration}</dd></div>
-                  <div><dt className="text-slate">Mode</dt><dd className="font-medium">{programme.mode}</dd></div>
-                  <div><dt className="text-slate">Medium</dt><dd className="font-medium">{programme.medium}</dd></div>
-                  <div><dt className="text-slate">Intake</dt><dd className="font-medium">{programme.intake}</dd></div>
-                  <div>
-                    <dt className="text-slate">Application deadline</dt>
-                    <dd className="font-medium">{programme.applicationDeadline || "To be announced — contact Admissions"}</dd>
-                  </div>
-                </dl>
-              </div>
-
-              <div className="rounded-[var(--radius-card)] border border-gold/30 bg-white p-6">
-                <h3 className="mb-4 font-bold text-navy">Fees</h3>
-                {programme.fees ? (
-                  <dl className="space-y-2 text-sm">
-                    <div><dt className="text-slate">Intake</dt><dd>{programme.fees.intake}</dd></div>
-                    <div><dt className="text-slate">Registration</dt><dd>{programme.fees.registrationFee}</dd></div>
-                    <div><dt className="text-slate">Course fee</dt><dd>{programme.fees.courseFee}</dd></div>
-                    {programme.fees.instalmentNote && (
-                      <p className="pt-2 text-slate">{programme.fees.instalmentNote}</p>
-                    )}
-                  </dl>
-                ) : (
-                  <p className="text-sm text-slate">
-                    Available on request — contact Admissions on {SITE.phone} for the current fee structure.
-                  </p>
-                )}
-              </div>
+              <ProgrammeDetail programme={programme} />
 
               <div id="enquire" className="rounded-[var(--radius-card)] bg-white p-6 shadow-[var(--shadow-soft)]">
                 <h3 className="mb-4 font-bold text-navy">Enquire about this programme</h3>
