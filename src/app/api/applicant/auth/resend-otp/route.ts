@@ -10,7 +10,7 @@ const resendSchema = z.object({
 export async function POST(request: Request) {
   try {
     const ip = request.headers.get("x-forwarded-for") || "local";
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
     const emailForLimit = typeof body?.email === "string" ? body.email.toLowerCase().trim() : "unknown";
     const ipLimit = checkRateLimit(`resend_otp_ip_${ip}`, 10, 60 * 1000);
     const emailLimit = checkRateLimit(`resend_otp_email_${emailForLimit}`, 5, 15 * 60 * 1000);

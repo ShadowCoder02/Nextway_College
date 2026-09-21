@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getApplicantSession } from "@/lib/admissions/session";
 import { getApplicantApplication, saveApplicationDraft } from "@/services/admissions";
 import { saveApplicationDraftSchema } from "@/lib/validation";
+import { checkRateLimit } from "@/lib/admissions/rate-limiter";
 
 export async function GET() {
   const session = await getApplicantSession();
@@ -23,8 +24,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Not authenticated" }, { status: 401 });
   }
 
+  // Autosave is frequent, so the ceiling is generous; it exists to stop a
+  // scripted client hammering the store, not to slow a real applicant.
+  const limit = checkRateLimit(`app_draft_${session.applicantId}`, 60, 60 * 1000);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { ok: false, error: `Too many requests. Please try again in ${limit.retryAfterSeconds} seconds.` },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } },
+    );
+  }
+
   try {
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
     const parsed = saveApplicationDraftSchema.safeParse(body);
 
     if (!parsed.success) {

@@ -21,10 +21,19 @@ const CSP_DIRECTIVES = [
   "frame-ancestors 'self'",
 ].join("; ");
 
+// The subset of the policy that cannot break a page, enforced now: framing
+// (clickjacking), <base> injection, form hijacking and plugins. The full
+// resource-loading policy above stays report-only until the in-browser HEIC
+// converter used for applicant document uploads is verified under a strict
+// script-src (a crawl of every public page shows zero violations).
+const ENFORCED_CSP = ["frame-ancestors 'self'", "base-uri 'self'", "form-action 'self'", "object-src 'none'"].join("; ");
+
 const SECURITY_HEADERS = [
+  { key: "Content-Security-Policy", value: ENFORCED_CSP },
   { key: "Content-Security-Policy-Report-Only", value: CSP_DIRECTIVES },
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
   { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "X-Frame-Options", value: "SAMEORIGIN" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   {
     key: "Permissions-Policy",

@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   try {
     const ip = request.headers.get("x-forwarded-for") || "local";
 
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
     const parsed = forgotPasswordSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ ok: false, error: "Please enter a valid email address." }, { status: 400 });

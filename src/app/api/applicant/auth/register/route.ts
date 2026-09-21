@@ -17,7 +17,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
 
     // registerApplicant() emails the existing account holder on every
     // attempt against an already-registered address (a fresh OTP if

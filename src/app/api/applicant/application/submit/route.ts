@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getApplicantSession } from "@/lib/admissions/session";
 import { submitApplication } from "@/services/admissions";
 import { submitApplicationSchema } from "@/lib/validation";
+import { checkRateLimit } from "@/lib/admissions/rate-limiter";
 
 export async function POST(request: Request) {
   const session = await getApplicantSession();
@@ -9,8 +10,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Not authenticated" }, { status: 401 });
   }
 
+  const limit = checkRateLimit(`app_submit_${session.applicantId}`, 5, 60 * 1000);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { ok: false, error: `Too many attempts. Please try again in ${limit.retryAfterSeconds} seconds.` },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } },
+    );
+  }
+
   try {
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
     const parsed = submitApplicationSchema.safeParse(body);
 
     if (!parsed.success) {

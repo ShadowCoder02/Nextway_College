@@ -14,8 +14,8 @@ export async function GET(request: Request) {
   const status = (searchParams.get("status") as ApplicationStatus) || undefined;
   const programmeId = searchParams.get("programmeId") || undefined;
   const intake = searchParams.get("intake") || undefined;
-  const page = parseInt(searchParams.get("page") || "1", 10);
-  const pageSize = parseInt(searchParams.get("pageSize") || "15", 10);
+  const page = Math.max(1, Number.parseInt(searchParams.get("page") || "1", 10) || 1);
+  const pageSize = Math.min(100, Math.max(1, Number.parseInt(searchParams.get("pageSize") || "15", 10) || 15));
 
   const result = await getAllApplicationsAdmin({
     q,
