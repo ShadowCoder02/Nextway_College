@@ -1,5 +1,10 @@
 export const IMAGES = {
   hero: "/images/hero-image.jpg",
+  // Pre-blurred, dedicated derivative of the hero photo for the dimmed (20%
+  // opacity) homepage backdrop. Its own file means its own optimizer variant
+  // (heavily compressed via quality={40}) without forking the cached copy the
+  // campus showcase / programme cards use.
+  heroBackdrop: "/images/hero-backdrop.jpg",
   campus: "/images/nextway-college.jpg",
   brand: "/images/nextway.png",
   logo: "/brand/logo.png",

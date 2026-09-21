@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
-import { eventNotifySchema } from "@/lib/validation";
+import { eventNotifySchema } from "@/lib/event-validation";
 import { apiFetch } from "@/lib/api-fetch";
 import { useOnlineStatus } from "@/lib/use-online-status";
 import { Button } from "@/components/ui/Button";

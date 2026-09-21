@@ -2,7 +2,7 @@
 
 import { useId, useRef, useState } from "react";
 import Link from "next/link";
-import { enquirySchema, type EnquiryFormData } from "@/lib/validation";
+import type { EnquiryFormData } from "@/lib/validation";
 import { Button } from "./Button";
 import { cn, whatsappUrl } from "@/lib/utils";
 import { apiFetch } from "@/lib/api-fetch";
@@ -18,6 +18,11 @@ type LeadFormProps = {
 };
 
 const MESSAGE_MAX_LENGTH = 1000;
+
+const loadValidation = () => import("@/lib/validation");
+const warmValidation = () => {
+  void loadValidation();
+};
 
 export function LeadForm({
   source = "website",
@@ -74,6 +79,9 @@ export function LeadForm({
       consent: fd.get("consent") === "on",
     };
 
+    // The schema (and libphonenumber-js behind it, ~45kB gz) is fetched on
+    // first interaction — see `warmValidation` — not shipped with the page.
+    const { enquirySchema } = await loadValidation();
     const parsed = enquirySchema.safeParse(raw);
     if (!parsed.success) {
       const fieldErrors: Partial<Record<keyof EnquiryFormData, string>> = {};
@@ -165,7 +173,13 @@ export function LeadForm({
     "w-full rounded-lg border border-slate/30 bg-white px-4 py-3 text-charcoal placeholder:text-slate/60 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold";
 
   return (
-    <form onSubmit={handleSubmit} className={cn("space-y-4", className)} noValidate>
+    <form
+      onSubmit={handleSubmit}
+      onFocusCapture={warmValidation}
+      onPointerEnter={warmValidation}
+      className={cn("space-y-4", className)}
+      noValidate
+    >
       {programmeTitle && (
         <p className="rounded-lg bg-ice px-4 py-3 text-sm">
           Enquiring about: <strong>{programmeTitle}</strong>

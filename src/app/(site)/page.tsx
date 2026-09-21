@@ -42,11 +42,12 @@ export default async function HomePage() {
         <div className="mesh-overlay absolute inset-0" />
         <HeroBackdrop className="absolute inset-x-0 -top-[30%] bottom-0 opacity-20">
           <Image
-            src={IMAGES.hero}
+            src={IMAGES.heroBackdrop}
             alt=""
             fill
             className="object-cover"
             sizes="100vw"
+            quality={40}
             priority
             fetchPriority="high"
             placeholder="blur"

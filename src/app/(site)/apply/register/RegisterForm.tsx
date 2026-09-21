@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { PasswordField } from "@/components/ui/PasswordField";
 import { PasswordPolicyChecklist } from "@/components/ui/PasswordPolicyChecklist";
 import { Turnstile } from "@/components/ui/Turnstile";
-import { applicantRegisterSchema, type ApplicantRegisterInput } from "@/lib/validation";
+import type { ApplicantRegisterInput } from "@/lib/validation";
 import { rememberProgrammeSlug, readRememberedProgrammeSlug } from "@/lib/applicant-programme";
 import { apiFetch } from "@/lib/api-fetch";
 import { useOnlineStatus } from "@/lib/use-online-status";
@@ -87,6 +87,9 @@ export function RegisterForm() {
       agreeTerms: fd.get("agreeTerms") === "on",
     };
 
+    // Loaded on first interaction (see the form's onFocusCapture) so
+    // libphonenumber-js isn't part of the page's initial JS.
+    const { applicantRegisterSchema } = await import("@/lib/validation");
     const parsed = applicantRegisterSchema.safeParse(payload);
     if (!parsed.success) {
       const fieldErrors: FieldErrors = {};
@@ -158,7 +161,7 @@ export function RegisterForm() {
             )}
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+          <form onSubmit={handleSubmit} onFocusCapture={() => void import("@/lib/validation")} className="space-y-4" noValidate>
             <div>
               <label htmlFor="fullName" className="mb-1 block text-xs font-bold uppercase tracking-wider text-navy">
                 Full Name (as in NIC / Passport) *

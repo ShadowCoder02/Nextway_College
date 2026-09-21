@@ -58,10 +58,29 @@ const nextConfig: NextConfig = {
     "/api/**/*": ["node_modules/pdfkit/js/standard-fonts/**"],
   },
   async headers() {
-    return [{ source: "/:path*", headers: SECURITY_HEADERS }];
+    return [
+      { source: "/:path*", headers: SECURITY_HEADERS },
+      // Static files in /public are otherwise served `max-age=0,
+      // must-revalidate` — a conditional request per file on every visit,
+      // painful on 4G. Fonts never change under the same name (immutable);
+      // images may be replaced in place by the college (see
+      // content/TODO-content.md), so they get a day + stale-while-revalidate
+      // rather than a year.
+      {
+        source: "/fonts/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+      {
+        source: "/:dir(images|brand|partners)/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
+      },
+    ];
   },
   images: {
     formats: ["image/avif", "image/webp"],
+    // Optimised variants are cached for a day (default: 60s), so repeat
+    // visitors and Vercel's edge don't keep re-transforming the same image.
+    minimumCacheTTL: 86400,
     // Next's defaults go up to 3840px wide — a 1920px retina desktop asking
     // for a full-bleed `sizes="100vw"` image would be served a 3840px
     // variant nothing on this site needs. Capped at 1920, with extra steps

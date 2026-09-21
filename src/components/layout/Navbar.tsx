@@ -7,6 +7,7 @@ import { NAV_LINKS } from "@/constants/site";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/layout/Logo";
 import { cn } from "@/lib/utils";
+import { afterLoad } from "@/components/motion/use-in-view";
 
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -30,9 +31,17 @@ export function Navbar() {
     setOpen(false);
   }, [pathname]);
 
+  // Warm only the routes visitors are most likely to open next, and only once
+  // the page has loaded and the browser is idle — eagerly prefetching all ten
+  // nav routes at mount (RSC payloads + route JS, ~130kB) competed with the
+  // hero image on a 4G phone. Skipped entirely on Data Saver / 2G-3G links.
+  // Desktop nav <Link>s in the viewport are still prefetched by Next itself.
   useEffect(() => {
-    const routes = new Set([...NAV_LINKS.map((link) => link.href), "/admissions"]);
-    routes.forEach((route) => router.prefetch(route));
+    const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+    if (connection?.saveData || /^(slow-2g|2g|3g)$/.test(connection?.effectiveType ?? "")) return;
+    return afterLoad(() => {
+      ["/programmes", "/admissions", "/apply"].forEach((route) => router.prefetch(route));
+    });
   }, [router]);
 
   // Focus trap + Escape-to-close while the mobile menu is open.

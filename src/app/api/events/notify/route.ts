@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { eventNotifySchema } from "@/lib/validation";
+import { eventNotifySchema } from "@/lib/event-validation";
 import { submitEnquiry } from "@/services/enquiries";
 import { checkRateLimit } from "@/lib/admissions/rate-limiter";
 
