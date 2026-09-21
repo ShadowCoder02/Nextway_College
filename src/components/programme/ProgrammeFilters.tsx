@@ -21,7 +21,7 @@ const SORT_OPTIONS = [
 ];
 
 const control =
-  "w-full rounded-lg border border-slate/30 bg-white px-4 py-2.5 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red";
+  "w-full rounded-lg border border-slate/80 bg-white px-4 py-2.5 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red";
 
 function Select({
   id,

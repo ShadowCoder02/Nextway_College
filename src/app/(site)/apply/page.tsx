@@ -150,7 +150,7 @@ export default async function ApplyLandingPage({ searchParams }: PageProps) {
                     ✓
                   </span>
                   <div>
-                    <h4 className="font-bold text-navy text-sm">{req.title}</h4>
+                    <h3 className="font-bold text-navy text-sm">{req.title}</h3>
                     <p className="text-xs text-slate mt-0.5">{req.desc}</p>
                   </div>
                 </div>

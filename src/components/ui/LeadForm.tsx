@@ -189,8 +189,8 @@ export function LeadForm({
   }
 
   const inputBase =
-    "w-full rounded-lg border bg-white px-4 py-3 text-charcoal placeholder:text-slate/60 transition-colors focus:outline-none focus:ring-1";
-  const inputClass = `${inputBase} border-slate/30 focus:border-gold focus:ring-gold`;
+    "w-full rounded-lg border bg-white px-4 py-3 text-charcoal placeholder:text-slate transition-colors focus:outline-none focus:ring-1";
+  const inputClass = `${inputBase} border-slate/80 focus:border-gold focus:ring-gold`;
   const stateClass = (name: "fullName" | "phone" | "email") =>
     errors[name]
       ? `${inputBase} border-error focus:border-error focus:ring-error`
@@ -230,6 +230,7 @@ export function LeadForm({
             ref={fieldRefs.fullName}
             id={`${uid}-fullName`}
             name="fullName"
+            autoComplete="name"
             className={stateClass("fullName")}
             {...fieldHandlers("fullName")}
             required
@@ -249,6 +250,7 @@ export function LeadForm({
             id={`${uid}-phone`}
             name="phone"
             type="tel"
+            autoComplete="tel"
             placeholder="077 123 4567"
             className={stateClass("phone")}
             {...fieldHandlers("phone")}
@@ -272,6 +274,7 @@ export function LeadForm({
           id={`${uid}-email`}
           name="email"
           type="email"
+          autoComplete="email"
           className={stateClass("email")}
           {...fieldHandlers("email")}
           required

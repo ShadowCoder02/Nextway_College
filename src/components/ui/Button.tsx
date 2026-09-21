@@ -51,7 +51,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const classes = cn(
-    "inline-flex items-center justify-center gap-2 rounded-full font-semibold tracking-wide transition-[transform,scale,box-shadow,background-color,color,border-color,filter] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.03] disabled:hover:scale-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-red disabled:opacity-50",
+    "inline-flex items-center justify-center gap-2 rounded-full font-semibold tracking-wide transition-[transform,scale,box-shadow,background-color,color,border-color,filter] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.03] disabled:hover:scale-100 disabled:opacity-50",
     variants[variant],
     sizes[size],
     className,

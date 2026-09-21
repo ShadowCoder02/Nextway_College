@@ -93,7 +93,7 @@ export function SearchDialog({ schools, className, labelClassName }: { schools: 
                   maxLength={80}
                   autoComplete="off"
                   placeholder="e.g. Information Technology, Law…"
-                  className="min-w-0 flex-1 rounded-lg border border-slate/30 bg-white px-4 py-3 text-sm focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
+                  className="min-w-0 flex-1 rounded-lg border border-slate/80 bg-white px-4 py-3 text-sm focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
                 />
                 <button
                   type="submit"

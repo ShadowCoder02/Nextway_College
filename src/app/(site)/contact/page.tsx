@@ -47,7 +47,7 @@ export default function ContactPage() {
                   Phone
                 </dt>
                 <dd>
-                  <a href={`tel:${SITE.phoneTel}`} className="text-lg font-semibold text-navy transition hover:text-brand-red">
+                  <a href={`tel:${SITE.phoneTel}`} className="inline-block py-1 text-lg font-semibold text-navy transition hover:text-brand-red">
                     {SITE.phone}
                   </a>
                 </dd>
@@ -58,7 +58,7 @@ export default function ContactPage() {
                   Email
                 </dt>
                 <dd>
-                  <a href={`mailto:${SITE.email}`} className="text-lg font-semibold text-navy transition hover:text-brand-red">
+                  <a href={`mailto:${SITE.email}`} className="inline-block py-1 text-lg font-semibold text-navy transition hover:text-brand-red">
                     {SITE.email}
                   </a>
                 </dd>
@@ -73,7 +73,7 @@ export default function ContactPage() {
                     href={whatsappUrl(SITE.whatsapp, "Hello Nextway College, I would like to enquire.")}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-lg font-semibold text-navy transition hover:text-brand-red"
+                    className="inline-block py-1 text-lg font-semibold text-navy transition hover:text-brand-red"
                   >
                     {SITE.whatsappDisplay}
                   </a>

@@ -243,7 +243,7 @@ test("mobile menu: opens by keyboard, traps focus, closes on Escape", async ({ p
   await page.setViewportSize({ width: 375, height: 800 });
   await page.goto("/");
 
-  const toggle = page.getByRole("button", { name: /toggle menu/i });
+  const toggle = page.getByRole("button", { name: /open menu/i });
   await toggle.focus();
   await page.keyboard.press("Enter");
   await expect(page.locator("#mobile-nav-panel")).toBeVisible();
@@ -272,7 +272,7 @@ test("mobile menu: opens by keyboard, traps focus, closes on Escape", async ({ p
   await expect(page.locator("#mobile-nav-panel")).not.toBeVisible();
   // Focus should return to the toggle button.
   const focusReturned = await page.evaluate(
-    () => document.activeElement?.getAttribute("aria-label") === "Toggle menu",
+    () => document.activeElement?.getAttribute("aria-label") === "Open menu",
   );
   expect(focusReturned).toBe(true);
 });

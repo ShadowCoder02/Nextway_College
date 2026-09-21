@@ -263,7 +263,7 @@ export function ApplicationReviewer({ initialApplication }: ApplicationReviewerP
             <select
               value={statusInput}
               onChange={(e) => setStatusInput(e.target.value as ApplicationStatus)}
-              className="rounded-lg border border-slate/30 bg-white px-3 py-1.5 text-xs font-semibold text-navy focus:outline-none"
+              className="rounded-lg border border-slate/80 bg-white px-3 py-1.5 text-xs font-semibold text-navy focus:outline-none"
             >
               <option value="DRAFT">DRAFT</option>
               <option value="SUBMITTED">SUBMITTED</option>

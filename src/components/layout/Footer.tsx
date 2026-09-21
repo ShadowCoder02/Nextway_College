@@ -27,27 +27,27 @@ export function Footer() {
         </div>
 
         <div>
-          <h3 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-gold">Explore</h3>
+          <h2 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-gold">Explore</h2>
           <ul className="space-y-3 text-sm text-white/75">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
-                <Link href={link.href} className="transition hover:text-white">
+                <Link href={link.href} className="inline-block py-1 transition hover:text-white">
                   {link.label}
                 </Link>
               </li>
             ))}
             <li>
-              <Link href="/branches" className="transition hover:text-white">
+              <Link href="/branches" className="inline-block py-1 transition hover:text-white">
                 Find a Branch
               </Link>
             </li>
             <li>
-              <Link href="/apply" className="font-semibold text-gold transition hover:text-white">
+              <Link href="/apply" className="inline-block py-1 font-semibold text-gold transition hover:text-white">
                 Apply Online (Portal) →
               </Link>
             </li>
             <li>
-              <Link href="/apply/login" className="text-white/60 transition hover:text-white">
+              <Link href="/apply/login" className="inline-block py-1 text-white/60 transition hover:text-white">
                 Applicant Sign In
               </Link>
             </li>
@@ -55,7 +55,7 @@ export function Footer() {
         </div>
 
         <div>
-          <h3 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-gold">Contact</h3>
+          <h2 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-gold">Contact</h2>
           <ul className="space-y-3 text-sm text-white/75">
             <li className="flex items-start gap-3">
               <IconWrap><FontAwesomeIcon icon={faLocationDot} className="h-3.5 w-3.5" /></IconWrap>
@@ -63,13 +63,13 @@ export function Footer() {
             </li>
             <li className="flex items-center gap-3">
               <IconWrap><FontAwesomeIcon icon={faPhone} className="h-3.5 w-3.5" /></IconWrap>
-              <a href={`tel:${SITE.phoneTel}`} className="transition hover:text-white">
+              <a href={`tel:${SITE.phoneTel}`} className="inline-block py-1 transition hover:text-white">
                 {SITE.phone}
               </a>
             </li>
             <li className="flex items-center gap-3">
               <IconWrap><FontAwesomeIcon icon={faEnvelope} className="h-3.5 w-3.5" /></IconWrap>
-              <a href={`mailto:${SITE.email}`} className="transition hover:text-white">
+              <a href={`mailto:${SITE.email}`} className="inline-block py-1 transition hover:text-white">
                 {SITE.email}
               </a>
             </li>
@@ -79,7 +79,7 @@ export function Footer() {
                 href={whatsappUrl(SITE.whatsapp)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="transition hover:text-white"
+                className="inline-block py-1 transition hover:text-white"
               >
                 WhatsApp {SITE.whatsappDisplay}
               </a>
@@ -88,15 +88,15 @@ export function Footer() {
         </div>
 
         <div>
-          <h3 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-gold">Legal</h3>
+          <h2 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-gold">Legal</h2>
           <ul className="mb-6 space-y-3 text-sm text-white/75">
             <li>
-              <Link href="/privacy" className="transition hover:text-white">
+              <Link href="/privacy" className="inline-block py-1 transition hover:text-white">
                 Privacy Policy
               </Link>
             </li>
             <li>
-              <Link href="/terms" className="transition hover:text-white">
+              <Link href="/terms" className="inline-block py-1 transition hover:text-white">
                 Terms of Use
               </Link>
             </li>

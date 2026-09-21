@@ -444,7 +444,7 @@ export function ApplicationFormClient() {
   }
 
   const inputClass =
-    "w-full rounded-lg border border-slate/30 bg-white px-4 py-2.5 text-charcoal text-sm placeholder:text-slate/60 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold";
+    "w-full rounded-lg border border-slate/80 bg-white px-4 py-2.5 text-charcoal text-sm placeholder:text-slate focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold";
 
   // Renders one O/L or A/L subjects-and-grades table, shared by the two
   // fixed sections (form items 07 and 08 don't allow adding/removing whole
@@ -475,7 +475,7 @@ export function ApplicationFormClient() {
               <input
                 type="text"
                 aria-label={`Grade for subject ${sIdx + 1}`}
-                className="w-24 rounded-lg border border-slate/30 bg-white px-3 py-2.5 text-center text-sm font-bold text-navy uppercase focus:border-gold focus:outline-none"
+                className="w-24 rounded-lg border border-slate/80 bg-white px-3 py-2.5 text-center text-sm font-bold text-navy uppercase focus:border-gold focus:outline-none"
                 value={sub.grade}
                 onChange={(e) => updateSubjectRow(setter, sIdx, "grade", e.target.value)}
                 placeholder="Grade"
@@ -1220,7 +1220,7 @@ export function ApplicationFormClient() {
                 type="button"
                 onClick={() => saveDraft()}
                 disabled={saving || submitting}
-                className="w-full sm:w-auto rounded-lg border border-slate/30 bg-white px-4 py-2.5 text-xs font-semibold text-charcoal hover:bg-ice transition"
+                className="w-full sm:w-auto rounded-lg border border-slate/80 bg-white px-4 py-2.5 text-xs font-semibold text-charcoal hover:bg-ice transition"
               >
                 {saving ? "Saving Draft..." : "Save Draft & Exit"}
               </button>

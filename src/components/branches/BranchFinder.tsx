@@ -8,7 +8,7 @@ import { SITE } from "@/constants/site";
 function BranchCard({ branch }: { branch: Branch }) {
   return (
     <article className="premium-card p-6">
-      <h3 className="mb-3 font-heading text-lg font-bold text-navy">{branch.name}</h3>
+      <h2 className="mb-3 font-heading text-lg font-bold text-navy">{branch.name}</h2>
       <dl className="space-y-2 text-sm text-charcoal">
         <div>
           <dt className="text-xs font-semibold uppercase tracking-wider text-slate">Address</dt>
@@ -75,7 +75,7 @@ export function BranchFinder({ branches }: { branches: Branch[] }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search by town name..."
-          className="w-full rounded-lg border border-slate/30 bg-white px-4 py-2.5 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red sm:max-w-sm"
+          className="w-full rounded-lg border border-slate/80 bg-white px-4 py-2.5 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red sm:max-w-sm"
         />
       </div>
 

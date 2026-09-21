@@ -25,7 +25,7 @@ export function ProgrammeSearchBox() {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder="Search programmes, e.g. Information Technology"
-        className="w-full rounded-lg border border-slate/30 bg-white px-4 py-2.5 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
+        className="w-full rounded-lg border border-slate/80 bg-white px-4 py-2.5 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
       />
       <button
         type="submit"

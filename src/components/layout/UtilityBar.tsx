@@ -10,18 +10,18 @@ function IconWrap({ children }: { children: React.ReactNode }) {
 
 export function UtilityBar() {
   return (
-    <div className="hidden bg-navy text-xs text-white/80 md:block">
+    <aside aria-label="Contact details" className="hidden bg-navy text-xs text-white/80 md:block">
       <div className="container-nwc flex items-center justify-between py-2.5">
         <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
-          <a href="/contact" className="inline-flex items-center gap-2 transition hover:text-white">
+          <a href="/contact" className="inline-flex items-center gap-2 py-1.5 transition hover:text-white">
             <IconWrap><FontAwesomeIcon icon={faLocationDot} className="h-3.5 w-3.5" /></IconWrap>
             <span className="font-medium text-gold">{SITE.location}</span>
           </a>
-          <a href={`tel:${SITE.phoneTel}`} className="inline-flex items-center gap-2 transition hover:text-white">
+          <a href={`tel:${SITE.phoneTel}`} className="inline-flex items-center gap-2 py-1.5 transition hover:text-white">
             <IconWrap><FontAwesomeIcon icon={faPhone} className="h-3.5 w-3.5" /></IconWrap>
             {SITE.phone}
           </a>
-          <a href={`mailto:${SITE.email}`} className="inline-flex items-center gap-2 transition hover:text-white">
+          <a href={`mailto:${SITE.email}`} className="inline-flex items-center gap-2 py-1.5 transition hover:text-white">
             <IconWrap><FontAwesomeIcon icon={faEnvelope} className="h-3.5 w-3.5" /></IconWrap>
             {SITE.email}
           </a>
@@ -31,13 +31,13 @@ export function UtilityBar() {
             href={whatsappUrl(SITE.whatsapp, "Hello Nextway College, I would like to enquire.")}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 transition hover:text-white"
+            className="inline-flex items-center gap-2 py-1.5 transition hover:text-white"
           >
             <IconWrap><FontAwesomeIcon icon={faWhatsapp} className="h-3.5 w-3.5" /></IconWrap>
             WhatsApp
           </a>
         </div>
       </div>
-    </div>
+    </aside>
   );
 }

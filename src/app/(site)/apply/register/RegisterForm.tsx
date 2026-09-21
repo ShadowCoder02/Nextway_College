@@ -134,7 +134,7 @@ export function RegisterForm() {
   }
 
   const inputClass =
-    "w-full rounded-lg border border-slate/30 bg-white px-4 py-3 text-charcoal text-sm placeholder:text-slate/60 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold";
+    "w-full rounded-lg border border-slate/80 bg-white px-4 py-3 text-charcoal text-sm placeholder:text-slate focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold";
 
   return (
     <section className="section-padding bg-pearl min-h-[80vh] flex items-center justify-center">

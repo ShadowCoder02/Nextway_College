@@ -118,7 +118,7 @@ export function VerifyForm() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
                 required
-                className="w-full rounded-lg border border-slate/30 bg-white px-4 py-3 text-charcoal text-sm placeholder:text-slate/60 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
+                className="w-full rounded-lg border border-slate/80 bg-white px-4 py-3 text-charcoal text-sm placeholder:text-slate focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
               />
             </div>
 
@@ -134,7 +134,7 @@ export function VerifyForm() {
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
                 placeholder="123456"
                 required
-                className="w-full rounded-lg border border-slate/30 bg-white px-4 py-3 text-charcoal text-sm placeholder:text-slate/60 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
+                className="w-full rounded-lg border border-slate/80 bg-white px-4 py-3 text-charcoal text-sm placeholder:text-slate focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
               />
             </div>
 

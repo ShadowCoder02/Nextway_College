@@ -84,6 +84,8 @@
     /* Keep anchor targets and keyboard-focused elements out from under the
        sticky header (WCAG 2.2 "Focus Not Obscured"). */
     scroll-padding-top: calc(var(--header-height) + 1rem);
+    /* ...and clear of the fixed WhatsApp button / sticky compare bar. */
+    scroll-padding-bottom: 6rem;
   }
 
   body {
@@ -174,9 +176,13 @@
     text-decoration: none;
   }
 
+  /* Two-tone focus ring: a navy outline (15:1 on white) plus a white halo
+     (15:1 on the navy sections), so the indicator clears WCAG's 3:1 non-text
+     contrast on every surface. Plain gold was only 2.4:1 on white. */
   :focus-visible {
-    outline: 2px solid var(--color-gold);
-    outline-offset: 3px;
+    outline: 3px solid var(--color-navy);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px var(--color-white);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -626,4 +632,11 @@ html.js [data-counter]:not([data-ready]) {
     animation: none !important;
     width: 100% !important;
   }
+}
+
+/* Form fields keep the strong focus ring even where a component's utility
+   classes say `focus:outline-none` (their gold ring alone is 2.4:1 on white). */
+:is(input, select, textarea):focus-visible {
+  outline: 3px solid var(--color-navy) !important;
+  outline-offset: 2px !important;
 }

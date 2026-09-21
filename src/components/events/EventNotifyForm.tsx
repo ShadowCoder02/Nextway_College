@@ -80,7 +80,7 @@ export function EventNotifyForm() {
   }
 
   const input =
-    "w-full rounded-lg border border-slate/30 bg-white px-4 py-3 text-sm text-charcoal placeholder:text-slate/60 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold";
+    "w-full rounded-lg border border-slate/80 bg-white px-4 py-3 text-sm text-charcoal placeholder:text-slate focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold";
 
   return (
     <form onSubmit={onSubmit} noValidate className="mx-auto max-w-md space-y-3 text-left">
