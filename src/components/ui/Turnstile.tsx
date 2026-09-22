@@ -58,7 +58,9 @@ export function Turnstile({ onVerify }: { onVerify: (token: string) => void }) {
 
   return (
     <div>
-      <div ref={containerRef} />
+      {/* Cloudflare's default widget is 300x65 — reserved so it doesn't
+          push the submit button down the instant it mounts. */}
+      <div ref={containerRef} className="min-h-[65px] w-full max-w-[300px]" />
       <p className="mt-1 text-xs text-slate">Please complete the verification challenge to continue.</p>
     </div>
   );

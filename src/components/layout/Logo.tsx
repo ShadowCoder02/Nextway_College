@@ -60,7 +60,7 @@ export function Logo({ className, variant = "default" }: LogoProps) {
           alt=""
           fill
           className="object-contain"
-          sizes="(max-width: 640px) 54px, (max-width: 1024px) 58px, 72px"
+          sizes="(max-width: 640px) 48px, (max-width: 1024px) 54px, 58px"
           loading="eager"
         />
       </div>
