@@ -650,3 +650,146 @@ html.js [data-counter]:not([data-ready]) {
     font-size: 16px;
   }
 }
+
+/* Custom cursor (see src/components/motion/CustomCursor.tsx). Hides the
+   native cursor on the elements a visitor actually clicks; text fields are
+   deliberately excluded so the native I-beam still shows there. */
+html.custom-cursor-active,
+html.custom-cursor-active a,
+html.custom-cursor-active button,
+html.custom-cursor-active [role="button"],
+html.custom-cursor-active label,
+html.custom-cursor-active summary {
+  cursor: none;
+}
+
+.custom-cursor-dot,
+.custom-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+  border-radius: 9999px;
+  will-change: transform;
+  transition: opacity 0.2s ease;
+}
+
+.custom-cursor-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--color-brand-red);
+}
+
+.custom-cursor-ring {
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid rgba(196, 30, 58, 0.5);
+  transition:
+    opacity 0.2s ease,
+    width 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.custom-cursor-ring[data-state="hover"] {
+  width: 56px;
+  height: 56px;
+  background: rgba(196, 30, 58, 0.08);
+  border-color: rgba(196, 30, 58, 0.7);
+}
+
+.custom-cursor-ring[data-state="text"] {
+  opacity: 0;
+}
+
+/* Branded marketing -> portal hand-off (see PortalHandoff.tsx). */
+.portal-handoff {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-navy);
+  opacity: 1;
+  transition: opacity 0.25s ease-in;
+  animation: portalHandoffIn 0.25s ease-out both;
+}
+
+.portal-handoff-out {
+  opacity: 0;
+  animation: none;
+}
+
+.portal-handoff-mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+}
+
+.portal-handoff-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 9999px;
+  background: var(--color-white);
+  padding: 6px;
+  animation: portalHandoffLogoIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.portal-handoff-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 2px solid var(--color-gold);
+  border-top-color: transparent;
+  animation: portalHandoffSpin 0.9s linear infinite;
+}
+
+@keyframes portalHandoffIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes portalHandoffOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes portalHandoffLogoIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes portalHandoffSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .custom-cursor-dot,
+  .custom-cursor-ring {
+    display: none;
+  }
+}
