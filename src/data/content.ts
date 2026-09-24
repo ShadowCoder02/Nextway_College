@@ -650,7 +650,7 @@ export const whyNextWay = [
   {
     id: "reach",
     title: "Island-wide access",
-    description: "Study from 22 branches including Kandy, Colombo, Galle, Batticaloa and more.",
+    description: "Study from branches including Kandy, Colombo, Galle, Batticaloa, Kegalle, Kurunegala and Kalutara.",
   },
   {
     id: "medium",

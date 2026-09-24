@@ -2,6 +2,9 @@ import { buildMetadata } from "@/lib/seo";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { LeadForm } from "@/components/ui/LeadForm";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
 import { studentJourney } from "@/data/content";
 
 export const metadata = buildMetadata({
@@ -22,24 +25,19 @@ export default function AdmissionsPage() {
             Our Admissions team will guide you through programme selection, eligibility and next steps. You can complete your official application directly online or submit a general enquiry.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <a
-              href="/apply"
-              className="inline-flex items-center justify-center rounded-full bg-gold px-8 py-3.5 text-base font-bold text-navy shadow-lg transition-all hover:bg-white hover:text-navy hover:scale-105"
-            >
+            <Button href="/apply" variant="gold" size="lg" magnetic>
               Apply Online Now →
-            </a>
-            <a
-              href="/apply/login"
-              className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/10 px-8 py-3.5 text-base font-semibold text-white transition hover:bg-white hover:text-navy"
-            >
+            </Button>
+            <Button href="/apply/login" variant="outline-light" size="lg">
               Applicant Portal Login
-            </a>
+            </Button>
           </div>
         </div>
       </section>
 
       <section className="py-16 lg:py-24">
-        <div className="container-nwc grid gap-12 lg:grid-cols-2">
+        <RevealGroup className="container-nwc grid gap-12 lg:grid-cols-2">
+          <RevealItem>
           <div>
             <SectionHeader
               eyebrow="How it works"
@@ -59,7 +57,7 @@ export default function AdmissionsPage() {
               ))}
             </ol>
 
-            <div className="mt-10 rounded-[var(--radius-card)] bg-ice p-6">
+            <Card className="mt-10">
               <h3 className="mb-3 font-bold">What you may need</h3>
               <ul className="list-disc space-y-1 pl-5 text-sm text-charcoal">
                 <li>Educational certificates (O/L, A/L or equivalent)</li>
@@ -70,17 +68,20 @@ export default function AdmissionsPage() {
               <p className="mt-4 text-sm text-slate">
                 Final document requirements are confirmed by Admissions for your chosen programme and intake.
               </p>
-            </div>
+            </Card>
           </div>
+          </RevealItem>
 
-          <div className="rounded-[var(--radius-card)] bg-white p-8 shadow-[var(--shadow-soft)]">
+          <RevealItem>
+          <Card variant="elevated" padding="lg">
             <SectionHeader
               title="Submit an enquiry"
               description="Complete the form and our team will contact you."
             />
             <LeadForm source="admissions-page" />
-          </div>
-        </div>
+          </Card>
+          </RevealItem>
+        </RevealGroup>
       </section>
     </>
   );

@@ -4,6 +4,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { CTASection } from "@/components/ui/CTASection";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { PageHero } from "@/components/ui/PageHero";
+import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
 
 export const metadata = buildMetadata({
   title: "Student Life",
@@ -42,9 +43,10 @@ export default function StudentLifePage() {
       <section className="py-16 lg:py-24">
         <div className="container-nwc space-y-16">
           {highlights.map((item) => (
-            <article key={item.title} className="grid items-center gap-8 lg:grid-cols-2">
+            <Reveal key={item.title}>
+            <article className="group grid items-center gap-8 lg:grid-cols-2">
               <div className="relative aspect-16/10 overflow-hidden rounded-[var(--radius-card)]">
-                <Image src={item.image} alt={item.title} fill className="object-cover" sizes="(max-width: 1024px) 100vw, 600px" />
+                <Image src={item.image} alt="" fill className="object-cover transition-transform duration-300 ease-out group-hover:scale-105" sizes="(max-width: 1024px) 100vw, 600px" />
               </div>
               <div>
                 <h2 className="text-section mb-4">{item.title}</h2>
@@ -52,6 +54,7 @@ export default function StudentLifePage() {
                 <p className="text-lg text-charcoal">{item.description}</p>
               </div>
             </article>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -64,20 +67,22 @@ export default function StudentLifePage() {
             description="From your first enquiry through to graduation, student support is part of the Nextway experience."
             align="center"
           />
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <RevealGroup className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {["Admissions counselling", "Academic guidance", "Career conversations", "Campus orientation"].map(
               (service) => (
-                <div key={service} className="rounded-[var(--radius-card)] bg-white p-6 text-center shadow-[var(--shadow-soft)]">
-                  <p className="font-semibold text-navy">{service}</p>
-                </div>
+                <RevealItem key={service}>
+                  <div className="h-full rounded-[var(--radius-card)] bg-white p-6 text-center shadow-[var(--shadow-soft)]">
+                    <p className="font-semibold text-navy">{service}</p>
+                  </div>
+                </RevealItem>
               ),
             )}
-          </div>
+          </RevealGroup>
         </div>
       </section>
 
       <CTASection
-            title="Experience Nextway for yourself"
+        title="Experience Nextway for yourself"
         description="Visit our Open Day or speak with Admissions about campus life."
         primaryHref="/events"
         primaryLabel="View events"

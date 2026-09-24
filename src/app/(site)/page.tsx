@@ -18,12 +18,11 @@ import { SITE } from "@/constants/site";
 import {
   studentJourney,
   testimonials,
-  whyNextWay,
 } from "@/data/content";
 import { formatDate, formatDateTime } from "@/lib/utils";
 import { publishedTestimonials } from "@/lib/testimonials";
+import { getWhyNextWayItems } from "@/lib/why-nextway";
 import { getFeaturedProgrammes, getFlagshipProgramme, getProgrammes, getSchoolsWithProgrammeCounts } from "@/services/programmes";
-import { getPublicApprovals } from "@/constants/approvals";
 import type { SiteStat } from "@/types";
 import { getLatestNews } from "@/services/news";
 import { getUpcomingEvents } from "@/services/events";
@@ -49,12 +48,7 @@ export default async function HomePage() {
     { value: String(schoolsWithProgrammes), label: "Academic schools" },
     { value: String(SITE.mediums.length), label: `${SITE.mediums.join(" & ")} medium` },
   ];
-  const hasApprovals = getPublicApprovals().length > 0;
-  const whyItems = whyNextWay.filter(
-    // The hybrid model has its own section below; accreditation claims only
-    // appear once there is verified partner copy to back them.
-    (item) => item.id !== "hybrid" && (item.id !== "accreditation" || hasApprovals),
-  );
+  const whyItems = getWhyNextWayItems();
 
   return (
     <>

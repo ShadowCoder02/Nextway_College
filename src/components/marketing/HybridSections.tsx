@@ -87,10 +87,14 @@ export function BranchesSection() {
   return (
     <section className="section-padding">
       <div className="container-nwc">
+        {/* No specific branch COUNT is stated here: only 7 town names exist
+            anywhere in the codebase (src/data/branches.ts), with zero
+            confirmed addresses, so a headline figure would be an unverified
+            claim - see content/TODO-content.md. */}
         <SectionHeader
           eyebrow="Island-wide presence"
-          title="22 branches across Sri Lanka"
-          description="Including Kandy, Colombo, Galle, Batticaloa, Kegalle, Kurunegala, Kalutara and more."
+          title="Branches across Sri Lanka"
+          description="Including Kandy, Colombo, Galle, Batticaloa, Kegalle, Kurunegala and Kalutara."
           align="center"
         />
         <div className="glass-panel mx-auto max-w-4xl p-8 text-center">

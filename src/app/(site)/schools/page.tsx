@@ -5,6 +5,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Button } from "@/components/ui/Button";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { PageHero } from "@/components/ui/PageHero";
+import { Reveal } from "@/components/motion/Reveal";
 import { getSchools, getProgrammesBySchool } from "@/services/programmes";
 
 export const metadata = buildMetadata({
@@ -34,13 +35,14 @@ export default async function SchoolsPage() {
       <section className="py-16 lg:py-24">
         <div className="container-nwc space-y-16">
           {programmesBySchool.map(({ school, programmes }) => (
-            <article key={school.id} className="grid gap-8 lg:grid-cols-2 lg:items-center">
+            <Reveal key={school.id}>
+            <article className="group grid gap-8 lg:grid-cols-2 lg:items-center">
               <div className="relative aspect-16/10 overflow-hidden rounded-[var(--radius-card)]">
                 <Image
                   src={school.imageUrl}
-                  alt={school.name}
+                  alt=""
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                   sizes="(max-width: 1024px) 100vw, 600px"
                 />
               </div>
@@ -64,6 +66,7 @@ export default async function SchoolsPage() {
                 </Button>
               </div>
             </article>
+            </Reveal>
           ))}
         </div>
       </section>

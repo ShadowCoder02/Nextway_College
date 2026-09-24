@@ -63,6 +63,30 @@ the same two stock images repeated. Real photography for the BSc IT
 programme and additional campus shots would resolve this — not something to
 paper over with a different stock substitute.
 
+## Branch count headline (this session's gap-audit)
+
+`src/components/marketing/HybridSections.tsx`'s `BranchesSection` (shown on
+Home and About) had a section headline reading "22 branches across Sri
+Lanka" — a specific, checkable number stated as fact right next to a "Find
+your nearest branch" button that leads to a page admitting 15 of those 22
+aren't even named, and the other 7 have no confirmed address/phone/hours at
+all. Reworded to "Branches across Sri Lanka" (no unverified count) and the
+description now lists only the 7 confirmed town names.
+
+- [ ] Once the college confirms a real branch count, restore it to the
+      headline and to the remaining two places still stating it:
+      - `SITE.description` (`src/constants/site.ts`) — used verbatim in
+        meta descriptions, JSON-LD and the About page hero.
+      - Every programme's `location` field defaults to the literal string
+        `"All island — 22 branches"` (`src/data/programmes-seed.ts`, and
+        already-seeded records in `data/cms/programmes.json`) — this is
+        editable per-programme via the admin programme editor already, so
+        fixing it is a content/data correction there, not a code change.
+      The `src/data/content.ts` "Island-wide access" why-us card was
+      reworded here to name only the 7 confirmed towns, matching the
+      headline fix, since it's shared marketing copy rather than
+      per-programme data.
+
 ## Branch directory (Session 3, "branch finder" surface)
 
 `SITE.description` and marketing copy (`src/components/marketing/

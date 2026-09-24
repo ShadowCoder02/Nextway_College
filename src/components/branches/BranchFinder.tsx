@@ -3,11 +3,12 @@
 import { useState } from "react";
 import type { Branch } from "@/data/branches";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
 import { SITE } from "@/constants/site";
 
 function BranchCard({ branch }: { branch: Branch }) {
   return (
-    <article className="premium-card p-6">
+    <article className="premium-card card-choreo h-full p-6">
       <h2 className="mb-3 font-heading text-lg font-bold text-navy">{branch.name}</h2>
       <dl className="space-y-2 text-sm text-charcoal">
         <div>
@@ -90,11 +91,13 @@ export function BranchFinder({ branches }: { branches: Branch[] }) {
           }
         />
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <RevealGroup className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((branch) => (
-            <BranchCard key={branch.slug} branch={branch} />
+            <RevealItem key={branch.slug} className="h-full">
+              <BranchCard branch={branch} />
+            </RevealItem>
           ))}
-        </div>
+        </RevealGroup>
       )}
     </div>
   );

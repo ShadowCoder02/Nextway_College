@@ -8,6 +8,7 @@ import { SITE } from "@/constants/site";
 import { getCareers } from "@/services/careers";
 import { formatDate } from "@/lib/utils";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
 
 export const metadata = buildMetadata({
   title: "Careers",
@@ -45,9 +46,10 @@ export default async function CareersPage() {
           {careers.length === 0 ? (
             <EmptyState heading="No vacancies at the moment" body="Please check back soon, or send a speculative CV to our Admissions team." />
           ) : (
-            <div className="grid gap-6">
+            <RevealGroup className="grid gap-6">
               {careers.map((career) => (
-                <article key={career.id} className="glass-panel p-8 fade-up">
+                <RevealItem key={career.id}>
+                <article className="glass-panel card-choreo p-8">
                   <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
                     <div>
                       <p className="eyebrow mb-2">{career.department}</p>
@@ -78,8 +80,9 @@ export default async function CareersPage() {
                     Apply via Email
                   </Button>
                 </article>
+                </RevealItem>
               ))}
-            </div>
+            </RevealGroup>
           )}
 
           <div className="mt-12 glass-panel p-8 text-center">
